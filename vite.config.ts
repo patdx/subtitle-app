@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import shimReactPdf from 'vite-plugin-shim-react-pdf';
+import ssr from 'vite-plugin-ssr/plugin';
 
 export default defineConfig({
   define: {
@@ -8,7 +9,7 @@ export default defineConfig({
     'process.env.NODE_DEBUG': 'false',
     'process.browser': 'true',
   },
-  plugins: [solidPlugin(), shimReactPdf()],
+  plugins: [solidPlugin({ ssr: true }), shimReactPdf(), ssr()],
   build: {
     target: 'esnext',
     polyfillDynamicImport: false,
