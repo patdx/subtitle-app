@@ -1,8 +1,11 @@
-const express = require('express');
-const { createPageRenderer } = require('vite-plugin-ssr');
+import express from 'express';
+import { createPageRenderer } from 'vite-plugin-ssr';
+import { dirname } from 'dirname-filename-esm';
+
+const __dirname = dirname(import.meta);
 
 const isProduction = process.env.NODE_ENV === 'production';
-const root = `${__dirname}/..`;
+const root = `${__dirname}/../..`;
 
 startServer();
 
@@ -13,8 +16,8 @@ async function startServer() {
   if (isProduction) {
     app.use(express.static(`${root}/dist/client`));
   } else {
-    const vite = require('vite');
-    viteDevServer = await vite.createServer({
+    const { createServer } = await import('vite');
+    viteDevServer = await createServer({
       root,
       server: { middlewareMode: true },
     });

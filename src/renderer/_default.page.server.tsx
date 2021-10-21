@@ -1,11 +1,7 @@
-import {
-  generateHydrationScript,
-  HydrationScript,
-  renderToString,
-} from 'solid-js/web';
-import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr';
-import { PageContext } from './types';
+import { HydrationScript, renderToString } from 'solid-js/web';
+import { dangerouslySkipEscape, escapeInject } from 'vite-plugin-ssr';
 import './styles.css';
+import { PageContext } from './types';
 
 export { render };
 export { passToClient };
