@@ -26,13 +26,13 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "^1.0.6",
+    "clsx": "^1.1.1",
     "dirname-filename-esm": "^1.1.1",
     "express": "^4.17.1",
     "lodash-es": "^4.17.21",
     "luxon": "^2.0.2",
     "solid-js": "^1.1.7",
     "srt-parser-2": "^1.1.6",
-    "subtitle": "^4.1.1",
     "vite-plugin-shim-react-pdf": "^1.0.3"
   },
   "packageManager": "yarn@3.0.2"

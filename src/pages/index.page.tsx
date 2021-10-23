@@ -1,67 +1,8 @@
-import { parse } from '@plussub/srt-vtt-parser';
-import type { Entry } from '@plussub/srt-vtt-parser/dist/src/types';
-import { findLast } from 'lodash-es';
-import { DateTime } from 'luxon';
-import {
-  Component,
-  createResource,
-  createSignal,
-  For,
-  onMount,
-} from 'solid-js';
+import { DateTime, Duration } from 'luxon';
+import { Component, createSignal, onMount } from 'solid-js';
 import { createStore } from 'solid-js/store';
-
-const nodeIsActive = (node: Entry, currentTime: number): boolean => {
-  return currentTime > node.from && currentTime < node.to;
-};
-
-const getActiveNodes = (nodes: Entry[] = [], currentTime: number) => {
-  const selectedNodes = new Set<Entry>();
-
-  const first = nodes?.[0];
-  if (first && currentTime < first.from) {
-    selectedNodes.add(first);
-  }
-
-  nodes.forEach((node, index) => {
-    const isActive = nodeIsActive(node, currentTime);
-    if (!isActive) return;
-    const previous = nodes[index - 1];
-    if (previous) {
-      selectedNodes.add(previous);
-    }
-    selectedNodes.add(node);
-    const next = nodes[index + 1];
-    if (next) {
-      selectedNodes.add(next);
-    }
-  });
-
-  if (selectedNodes.size === 0) {
-    const last = findLast(nodes, (node) => {
-      node.to < currentTime;
-    });
-
-    if (last) {
-      selectedNodes.add(last as any);
-    }
-    // no active nodes, find the next closest node
-    const next = nodes.find((node) => {
-      node.from > currentTime;
-    });
-
-    if (next) {
-      selectedNodes.add(next);
-    }
-  }
-
-  const last = nodes[nodes.length - 1];
-  if (last && currentTime > last.to) {
-    selectedNodes.add(last);
-  }
-
-  return [...selectedNodes];
-};
+import { FileDisplay } from '../components/file-display';
+import { getTimeElapsed, setTimeElapsed } from '../utils';
 
 const [clock, setClock] = createStore({
   lastActionAt: new Date(),
@@ -69,7 +10,6 @@ const [clock, setClock] = createStore({
   playSpeed: 1,
   isPlaying: false,
 });
-const [getTimeElapsed, setTimeElapsed] = createSignal(0);
 
 const App: Component = () => {
   const [getFile, setFile] = createSignal<File>();
@@ -87,11 +27,16 @@ const App: Component = () => {
     requestAnimationFrame(updateElapsedTime);
   });
 
+  const formattedTime = () =>
+    Duration.fromMillis(getTimeElapsed()).toISOTime({
+      suppressMilliseconds: true,
+    });
+
   return (
     <>
-      <pre className="whitespace-pre-wrap">
+      {/* <pre className="whitespace-pre-wrap">
         {JSON.stringify({ ...clock }, undefined, 2)}
-      </pre>
+      </pre> */}
 
       <form>
         <input
@@ -106,13 +51,43 @@ const App: Component = () => {
       <div class="flex gap-2 items-center">
         <div class="inline-flex flex-col items-end">
           <label htmlFor="">Time elapsed</label>
-          <div class="tabular-nums">{getTimeElapsed()}</div>
+          <div class="tabular-nums">{formattedTime()}</div>
+          <input
+            className="form-input text-right py-0"
+            type="text"
+            placeholder="set time"
+            value="00:00:00"
+            onInput={(event) => {
+              const duration = Duration.fromISOTime(
+                (event.target as HTMLInputElement).value,
+                {}
+              );
+              if (!duration.isValid) {
+                return;
+              }
+              setClock({
+                lastActionAt: new Date(),
+                lastTimeElapsedMs: duration.toMillis(),
+              });
+            }}
+          />
         </div>
 
         <div class="inline-flex flex-col items-center">
           <div>Speed</div>
           {clock.playSpeed}x
         </div>
+
+        <button
+          onClick={() => {
+            setClock({
+              lastActionAt: new Date(),
+              lastTimeElapsedMs: getTimeElapsed() - 100,
+            });
+          }}
+        >
+          B100ms
+        </button>
 
         <button
           class="text-2xl"
@@ -127,6 +102,17 @@ const App: Component = () => {
           }}
         >
           {clock.isPlaying ? '⏸️' : '▶️'}
+        </button>
+
+        <button
+          onClick={() => {
+            setClock({
+              lastActionAt: new Date(),
+              lastTimeElapsedMs: getTimeElapsed() + 100,
+            });
+          }}
+        >
+          F100ms
         </button>
 
         <input
@@ -149,41 +135,6 @@ const App: Component = () => {
       </div>
 
       <FileDisplay file={getFile()} />
-    </>
-  );
-};
-
-const FileDisplay = (props: { file?: File }) => {
-  const [nodes] = createResource(
-    () => props.file,
-    async (file) => {
-      if (!file) return;
-      const text = await file.text();
-      const parsed = parse(text);
-      return parsed.entries;
-    }
-  );
-
-  return (
-    <>
-      <div>{props.file?.name ?? 'unknown name'}</div>
-      <div>{nodes()?.length ? `${nodes()?.length} lines` : 'no file'}</div>
-
-      <For each={getActiveNodes(nodes(), getTimeElapsed())}>
-        {(node) => {
-          return (
-            <div
-              class={`p-2${
-                nodeIsActive(node, getTimeElapsed()) ? ' font-bold' : ''
-              }`}
-            >
-              <pre class="shadow whitespace-pre-wrap">
-                {JSON.stringify(node, undefined, 2)}
-              </pre>
-            </div>
-          );
-        }}
-      </For>
     </>
   );
 };

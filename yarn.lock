@@ -450,22 +450,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multipipe@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/multipipe@npm:3.0.0"
-  dependencies:
-    "@types/node": "*"
-  checksum: 633cbf626bb6962cfecf3a3c61dcd69c2fd75a2d8e51b182d0b4336572a7b40a81947e413e946c61ca78abffc76a2d73b0843a25d84f61cd8bcbd97e56feca62
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:*":
-  version: 16.11.1
-  resolution: "@types/node@npm:16.11.1"
-  checksum: 22cea470b89292810733b8b9fc1b6a1873bc3ed4d4cdf2f25e777dc607994bd7c12e64166d1a66dd5924734192b0a891b6aeb6813aa935f731345f4086234375
-  languageName: node
-  linkType: hard
-
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -906,6 +890,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "clsx@npm:1.1.1"
+  checksum: ff052650329773b9b245177305fc4c4dc3129f7b2be84af4f58dc5defa99538c61d4207be7419405a5f8f3d92007c954f4daba5a7b74e563d5de71c28c830063
+  languageName: node
+  linkType: hard
+
 "code-point-at@npm:^1.0.0":
   version: 1.1.0
   resolution: "code-point-at@npm:1.1.0"
@@ -1123,15 +1114,6 @@ __metadata:
   version: 1.1.3
   resolution: "dlv@npm:1.1.3"
   checksum: d7381bca22ed11933a1ccf376db7a94bee2c57aa61e490f680124fa2d1cd27e94eba641d9f45be57caab4f9a6579de0983466f620a2cd6230d7ec93312105ae7
-  languageName: node
-  linkType: hard
-
-"duplexer2@npm:^0.1.2":
-  version: 0.1.4
-  resolution: "duplexer2@npm:0.1.4"
-  dependencies:
-    readable-stream: ^2.0.2
-  checksum: 744961f03c7f54313f90555ac20284a3fb7bf22fdff6538f041a86c22499560eb6eac9d30ab5768054137cb40e6b18b40f621094e0261d7d8c35a37b7a5ad241
   languageName: node
   linkType: hard
 
@@ -2496,16 +2478,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"multipipe@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "multipipe@npm:4.0.0"
-  dependencies:
-    duplexer2: ^0.1.2
-    object-assign: ^4.1.0
-  checksum: 5a494ec2ce5bfdb389882ca595e3c4a33cae6c90dad879db2e3aa9a94484d8b164b0fb7b58ccf7593ae7e8c6213fd3f53a736b2c98e4f14c5ed1d38debc33f98
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.1.28, nanoid@npm:^3.1.30":
   version: 3.1.30
   resolution: "nanoid@npm:3.1.30"
@@ -2929,7 +2901,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^2.0.2, readable-stream@npm:^2.0.6":
+"readable-stream@npm:^2.0.6":
   version: 2.3.7
   resolution: "readable-stream@npm:2.3.7"
   dependencies:
@@ -2941,17 +2913,6 @@ fsevents@~2.3.2:
     string_decoder: ~1.1.1
     util-deprecate: ~1.0.1
   checksum: e4920cf7549a60f8aaf694d483a0e61b2a878b969d224f89b3bc788b8d920075132c4b55a7494ee944c7b6a9a0eada28a7f6220d80b0312ece70bbf08eeca755
-  languageName: node
-  linkType: hard
-
-"readable-stream@npm:^3.0.0":
-  version: 3.6.0
-  resolution: "readable-stream@npm:3.6.0"
-  dependencies:
-    inherits: ^2.0.3
-    string_decoder: ^1.1.1
-    util-deprecate: ^1.0.1
-  checksum: d4ea81502d3799439bb955a3a5d1d808592cf3133350ed352aeaa499647858b27b1c4013984900238b0873ec8d0d8defce72469fb7a83e61d53f5ad61cb80dc8
   languageName: node
   linkType: hard
 
@@ -3224,15 +3185,6 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"split2@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "split2@npm:3.2.2"
-  dependencies:
-    readable-stream: ^3.0.0
-  checksum: 8127ddbedd0faf31f232c0e9192fede469913aa8982aa380752e0463b2e31c2359ef6962eb2d24c125bac59eeec76873678d723b1c7ff696216a1cd071e3994a
-  languageName: node
-  linkType: hard
-
 "srt-parser-2@npm:^1.1.6":
   version: 1.1.6
   resolution: "srt-parser-2@npm:1.1.6"
@@ -3335,25 +3287,6 @@ resolve@^1.20.0:
   dependencies:
     ansi-regex: ^5.0.1
   checksum: f3cd25890aef3ba6e1a74e20896c21a46f482e93df4a06567cebf2b57edabb15133f1f94e57434e0a958d61186087b1008e89c94875d019910a213181a14fc8c
-  languageName: node
-  linkType: hard
-
-"strip-bom@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "strip-bom@npm:4.0.0"
-  checksum: 9dbcfbaf503c57c06af15fe2c8176fb1bf3af5ff65003851a102749f875a6dbe0ab3b30115eccf6e805e9d756830d3e40ec508b62b3f1ddf3761a20ebe29d3f3
-  languageName: node
-  linkType: hard
-
-"subtitle@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "subtitle@npm:4.1.1"
-  dependencies:
-    "@types/multipipe": ^3.0.0
-    multipipe: ^4.0.0
-    split2: ^3.2.2
-    strip-bom: ^4.0.0
-  checksum: c232ae26515504f9fadc9b9ad40c3476f182c807d84f88edd7bc88eed82fcc6ed4b3a697f17261e0404b17eecca6a8ba44487737ec7048b64cc818b93b21a8cc
   languageName: node
   linkType: hard
 
@@ -3647,6 +3580,7 @@ typescript@^4.4.4:
     "@types/lodash-es": ^4.17.5
     "@types/luxon": ^2.0.5
     autoprefixer: ^10.3.7
+    clsx: ^1.1.1
     dirname-filename-esm: ^1.1.1
     express: ^4.17.1
     lodash-es: ^4.17.21
@@ -3655,7 +3589,6 @@ typescript@^4.4.4:
     prettier: ^2.4.1
     solid-js: ^1.1.7
     srt-parser-2: ^1.1.6
-    subtitle: ^4.1.1
     tailwindcss: ^3.0.0-alpha.1
     typescript: ^4.4.4
     vite: ^2.6.10
