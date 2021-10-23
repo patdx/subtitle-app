@@ -2506,7 +2506,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.28":
+"nanoid@npm:^3.1.28, nanoid@npm:^3.1.30":
   version: 3.1.30
   resolution: "nanoid@npm:3.1.30"
   bin:
@@ -2817,7 +2817,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.1.6, postcss@npm:^8.3.8, postcss@npm:^8.3.9":
+"postcss@npm:^8.1.6, postcss@npm:^8.3.8":
   version: 8.3.9
   resolution: "postcss@npm:8.3.9"
   dependencies:
@@ -2825,6 +2825,17 @@ fsevents@~2.3.2:
     picocolors: ^0.2.1
     source-map-js: ^0.6.2
   checksum: b64d0e59bc027b2f09e5a84ca32b4f0620553812110e42295a79fd0e6ea664779e575c2d5e8d35a1b0804f0933ec878404c6e161e008b5bc51cba44eaef216ef
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.3.11":
+  version: 8.3.11
+  resolution: "postcss@npm:8.3.11"
+  dependencies:
+    nanoid: ^3.1.30
+    picocolors: ^1.0.0
+    source-map-js: ^0.6.2
+  checksum: 1a230553d74c66aa9585c90781ed8ea75f19cefea405d2117b67fbeb24b5b5e0e17be2e0c5a07db31dd085643a13394127ab2222e940771b70498331bf20f35e
   languageName: node
   linkType: hard
 
@@ -3176,10 +3187,17 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"solid-js@npm:^1.1.3, solid-js@npm:^1.1.6":
+"solid-js@npm:^1.1.6":
   version: 1.1.6
   resolution: "solid-js@npm:1.1.6"
   checksum: 16aa18fe6233267d0bc974d245859d533606c2f445265202c7f26e274e2d54dda28ffe6c2ea816e2972dd0c842bd9bafd8a848c91dd4103d8f5723eec509ee96
+  languageName: node
+  linkType: hard
+
+"solid-js@npm:^1.1.7":
+  version: 1.1.7
+  resolution: "solid-js@npm:1.1.7"
+  checksum: 796ebdccf0ebde6c5db619e85d4e1f83ca03b3a35cdb1debd476f1aeae5e9fe9f741433d3169bd2f3372286212b143604f154a4c1426f927fe880540e50f3e9f
   languageName: node
   linkType: hard
 
@@ -3455,7 +3473,7 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-typescript@^4.4.3:
+typescript@^4.4.4:
   version: 4.4.4
   resolution: "typescript@npm:4.4.4"
   bin:
@@ -3465,7 +3483,7 @@ typescript@^4.4.3:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.4.4#~builtin<compat/typescript>":
   version: 4.4.4
   resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=32657b"
   bin:
@@ -3584,7 +3602,7 @@ typescript@^4.4.3:
   languageName: node
   linkType: hard
 
-"vite-plugin-solid@npm:^2.0.3":
+"vite-plugin-solid@npm:^2.1.1":
   version: 2.1.1
   resolution: "vite-plugin-solid@npm:2.1.1"
   dependencies:
@@ -3599,9 +3617,9 @@ typescript@^4.4.3:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:^0.3.12":
-  version: 0.3.12
-  resolution: "vite-plugin-ssr@npm:0.3.12"
+"vite-plugin-ssr@npm:^0.3.13":
+  version: 0.3.13
+  resolution: "vite-plugin-ssr@npm:0.3.13"
   dependencies:
     "@brillout/json-s": ^0.3.0
     "@brillout/libassert": ^0.5.2
@@ -3616,7 +3634,7 @@ typescript@^4.4.3:
     vite: ^2.2.3
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: dae87df8f3e776c69ab5e3931bf18261435b7ea156cbc1ef4e5c22cfa42ff04d4d6fe0e9928707376cb957047af4f00c2d3729e5d96580ffd327bc994fe45ca5
+  checksum: 53b044e01d9f98908a6225e76b3820e2fea5162de76db2892fea3c338bf4025493ff75d11fad347b34982a4a2e14ac4033dcdeea76b5409a303827aceb116ec4
   languageName: node
   linkType: hard
 
@@ -3633,21 +3651,21 @@ typescript@^4.4.3:
     express: ^4.17.1
     lodash-es: ^4.17.21
     luxon: ^2.0.2
-    postcss: ^8.3.9
+    postcss: ^8.3.11
     prettier: ^2.4.1
-    solid-js: ^1.1.3
+    solid-js: ^1.1.7
     srt-parser-2: ^1.1.6
     subtitle: ^4.1.1
     tailwindcss: ^3.0.0-alpha.1
-    typescript: ^4.4.3
-    vite: ^2.5.7
+    typescript: ^4.4.4
+    vite: ^2.6.10
     vite-plugin-shim-react-pdf: ^1.0.3
-    vite-plugin-solid: ^2.0.3
-    vite-plugin-ssr: ^0.3.12
+    vite-plugin-solid: ^2.1.1
+    vite-plugin-ssr: ^0.3.13
   languageName: unknown
   linkType: soft
 
-"vite@npm:^2.5.7, vite@npm:^2.6.7":
+"vite@npm:^2.6.10, vite@npm:^2.6.7":
   version: 2.6.10
   resolution: "vite@npm:2.6.10"
   dependencies:
