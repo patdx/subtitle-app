@@ -6,17 +6,10 @@ export const Subtitle = (props: { node: Entry }) => {
   return (
     <div
       class={clsx(
-        'p-2',
+        `text-[64px] text-white`,
         nodeIsActive(props.node, getTimeElapsed()) && 'font-bold'
       )}
-    >
-      <div
-        className="text-[64px] text-center"
-        innerText={props.node.text}
-      ></div>
-      <pre class="text-xs shadow whitespace-pre-wrap">
-        {JSON.stringify(props.node, undefined, 2)}
-      </pre>
-    </div>
+      innerHTML={props.node.text}
+    />
   );
 };

@@ -1,11 +1,11 @@
 import { createResource, For } from 'solid-js';
 import { parse } from '@plussub/srt-vtt-parser';
-import { getActiveNodes, getTimeElapsed } from '../utils';
+import { getActiveNodes, getFile, getTimeElapsed } from '../utils';
 import { Subtitle } from './subtitle';
 
-export const FileDisplay = (props: { file?: File }) => {
+export const FileDisplay = () => {
   const [nodes] = createResource(
-    () => props.file,
+    () => getFile(),
     async (file) => {
       if (!file) return;
       const text = await file.text();
@@ -16,11 +16,13 @@ export const FileDisplay = (props: { file?: File }) => {
 
   return (
     <>
-      <div>{props.file?.name ?? 'unknown name'}</div>
-      {/* <div>{nodes()?.length ? `${nodes()?.length} lines` : 'no file'}</div> */}
-      <For each={getActiveNodes(nodes(), getTimeElapsed())}>
-        {(node) => <Subtitle node={node} />}
-      </For>
+      <div className="h-full flex flex-col justify-center text-center">
+        {/* <div>{props.file?.name ?? 'unknown name'}</div> */}
+        {/* <div>{nodes()?.length ? `${nodes()?.length} lines` : 'no file'}</div> */}
+        <For each={getActiveNodes(nodes(), getTimeElapsed())}>
+          {(node) => <Subtitle node={node} />}
+        </For>
+      </div>
     </>
   );
 };

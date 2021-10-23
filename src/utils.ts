@@ -1,6 +1,7 @@
 import { Entry } from '@plussub/srt-vtt-parser/dist/src/types';
 import { findLast } from 'lodash-es';
 import { createSignal } from 'solid-js';
+import { createStore } from 'solid-js/store';
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
   return currentTime > node.from && currentTime < node.to;
@@ -55,3 +56,12 @@ export const getActiveNodes = (nodes: Entry[] = [], currentTime: number) => {
 
   return [...selectedNodes];
 };
+
+export const [clock, setClock] = createStore({
+  lastActionAt: new Date(),
+  lastTimeElapsedMs: 0,
+  playSpeed: 1,
+  isPlaying: false,
+});
+
+export const [getFile, setFile] = createSignal<File>();

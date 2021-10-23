@@ -1,7 +1,13 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-
 import ssr from 'vite-plugin-ssr/plugin';
+import { execSync } from 'child_process';
+
+const gitpodHost = execSync(`gp url 3001`)
+  .toString('utf8')
+  .replace(/^https:\/\//, '');
+
+console.log(`gitpodHost: ${gitpodHost}`);
 
 export default defineConfig({
   // begin config for gitpod
@@ -10,8 +16,8 @@ export default defineConfig({
     hmr: {
       port: 3001,
       clientPort: 443,
-      host: "3001-indigo-ant-u6pyxf1a.ws-us17.gitpod.io"
-    }
+      host: gitpodHost,
+    },
   },
   // end config for gitpod
 
