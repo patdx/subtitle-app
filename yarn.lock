@@ -2553,6 +2553,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"nosleep.js@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "nosleep.js@npm:0.12.0"
+  checksum: 1bf5f9aaaed80104285e63e440d1cdecfd8eb759e3e1f3b7d1b74a98cd895654b6e99e6947a2ef528099e077b68cd49d92d96d6ae8a3ea8d244bbac3be81e318
+  languageName: node
+  linkType: hard
+
 "npmlog@npm:^4.1.2":
   version: 4.1.2
   resolution: "npmlog@npm:4.1.2"
@@ -3155,6 +3162,15 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
+"solid-icons@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "solid-icons@npm:0.3.2"
+  peerDependencies:
+    solid-js: "*"
+  checksum: b9624caf986a018a34008c5c2652e0619a02657d255a86a0391b49dffa0aeb1d9175423b2dcf465aea36bbbf9b8c8b3feb6fd71898c1b7a9e824b8570259e465
+  languageName: node
+  linkType: hard
+
 "solid-js@npm:^1.1.6":
   version: 1.1.6
   resolution: "solid-js@npm:1.1.6"
@@ -3593,8 +3609,10 @@ typescript@^4.4.4:
     express: ^4.17.1
     lodash-es: ^4.17.21
     luxon: ^2.0.2
+    nosleep.js: ^0.12.0
     postcss: ^8.3.11
     prettier: ^2.4.1
+    solid-icons: ^0.3.2
     solid-js: ^1.1.7
     srt-parser-2: ^1.1.6
     tailwindcss: ^3.0.0-alpha.1

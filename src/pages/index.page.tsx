@@ -1,8 +1,8 @@
 import { DateTime, Duration } from 'luxon';
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component, onMount } from 'solid-js';
 import { Controls } from '../components/controls';
 import { FileDisplay } from '../components/file-display';
-import { clock, getFile, getTimeElapsed, setTimeElapsed } from '../utils';
+import { clock, getTimeElapsed, setTimeElapsed } from '../utils';
 
 const App: Component = () => {
   const updateElapsedTime = () => {
@@ -25,7 +25,7 @@ const App: Component = () => {
 
   return (
     <>
-      <div className="h-screen bg-black relative">
+      <div className="h-screen bg-black relative overflow-hidden">
         <div className="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
           <FileDisplay />
         </div>

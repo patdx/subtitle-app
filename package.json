@@ -32,6 +32,8 @@
     "express": "^4.17.1",
     "lodash-es": "^4.17.21",
     "luxon": "^2.0.2",
+    "nosleep.js": "^0.12.0",
+    "solid-icons": "^0.3.2",
     "solid-js": "^1.1.7",
     "srt-parser-2": "^1.1.6",
     "vite-plugin-shim-react-pdf": "^1.0.3"
