@@ -1,19 +1,11 @@
+import { once } from 'lodash-es';
 import { Duration } from 'luxon';
 import NoSleep from 'nosleep.js';
-import { createSignal, lazy, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { clock, getTimeElapsed, setClock, setFile } from '../utils';
-import { once } from 'lodash-es';
+import { MenuIcon } from './menu-icon';
 
 const getNoSleep = once(() => new NoSleep());
-
-const IoMenuSharp = lazy(async () => {
-  if (typeof window !== 'undefined') {
-    const { IoMenuSharp } = await import('solid-icons/io');
-    return { default: IoMenuSharp };
-  } else {
-    return { default: () => null };
-  }
-});
 
 export const Controls = (props: { timeElapsed: string }) => {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -140,7 +132,7 @@ export const Controls = (props: { timeElapsed: string }) => {
         onClick={() => setIsOpen((isOpen) => !isOpen)}
         className="absolute top-[env(safe-area-inset-top,0)] w-10 right-[env(safe-area-inset-right,0)] h-10 active:ring-white bg-gray-700 flex justify-center items-center"
       >
-        <IoMenuSharp size={24} color="white" />
+        <MenuIcon />
       </button>
     </>
   );

@@ -28,7 +28,11 @@ function render(pageContext: PageContext) {
             name="viewport"
             content="width=device-width, initial-scale=1.0, viewport-fit=cover"
           />
-          <link rel="manifest" href="/manifest.json" />
+          <link
+            rel="manifest"
+            href="/webmanifest.json"
+            crossOrigin="use-credentials"
+          />
           <meta
             name="apple-mobile-web-app-status-bar-style"
             content="black-translucent"

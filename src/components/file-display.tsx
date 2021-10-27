@@ -2,6 +2,7 @@ import { createResource, For } from 'solid-js';
 import { parse } from '@plussub/srt-vtt-parser';
 import { getActiveNodes, getFile, getTimeElapsed } from '../utils';
 import { Subtitle } from './subtitle';
+import alasql from 'alasql';
 
 export const FileDisplay = () => {
   const [nodes] = createResource(
@@ -9,8 +10,12 @@ export const FileDisplay = () => {
     async (file) => {
       if (!file) return;
       const text = await file.text();
-      const parsed = parse(text);
-      return parsed.entries;
+      const { entries } = parse(text);
+
+      const alatest = alasql(`select * from ?`, [entries]);
+      console.log(`alatest`, alatest);
+
+      return entries;
     }
   );
 
