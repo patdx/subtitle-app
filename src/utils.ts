@@ -1,8 +1,8 @@
 import { Entry } from '@plussub/srt-vtt-parser/dist/src/types';
-import { findLast } from 'lodash-es';
 import { createSignal } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import alasql from 'alasql';
+import { openDB } from 'idb';
+import { once } from 'lodash-es';
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
   return currentTime > node.from && currentTime < node.to;
@@ -16,13 +16,11 @@ export const getActiveNodes = (
 ): Entry[] => {
   const selectedNodes = new Set<Entry>();
 
-  const activeNodes = alasql(`select * from ? WHERE from < ? and ? < to`, [
-    nodes,
-    currentTime,
-    currentTime,
-  ]);
+  console.log(`nodes:`, nodes);
 
-  return activeNodes;
+  return [];
+
+  // return activeNodes;
 
   // const first = nodes?.[0];
   // if (first && currentTime < first.from) {
@@ -77,3 +75,25 @@ export const [clock, setClock] = createStore({
 });
 
 export const [getFile, setFile] = createSignal<File>();
+
+export const initAndGetDb = once(async () => {
+  const db = await openDB('subtitle-app', 1, {
+    async upgrade(db, oldVersion, newVersion, transaction) {
+      let currentVersion = oldVersion;
+      console.log(`Upgrading db from version ${oldVersion} to ${newVersion}`);
+
+      if (currentVersion === 0) {
+        db.createObjectStore('files', {
+          keyPath: 'id',
+        });
+        db.createObjectStore('lines', {
+          keyPath: ['fileId', 'id'],
+        });
+      }
+    },
+  });
+
+  console.log('created db!', db);
+
+  return db;
+});

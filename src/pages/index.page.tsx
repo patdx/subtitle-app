@@ -2,7 +2,7 @@ import { DateTime, Duration } from 'luxon';
 import { Component, onMount } from 'solid-js';
 import { Controls } from '../components/controls';
 import { FileDisplay } from '../components/file-display';
-import { clock, getTimeElapsed, setTimeElapsed } from '../utils';
+import { clock, getTimeElapsed, initAndGetDb, setTimeElapsed } from '../utils';
 
 const App: Component = () => {
   const updateElapsedTime = () => {
@@ -16,6 +16,10 @@ const App: Component = () => {
 
   onMount(() => {
     requestAnimationFrame(updateElapsedTime);
+  });
+
+  onMount(() => {
+    initAndGetDb();
   });
 
   const formattedTime = () =>

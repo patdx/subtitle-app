@@ -1,8 +1,13 @@
-import { createResource, For } from 'solid-js';
 import { parse } from '@plussub/srt-vtt-parser';
-import { getActiveNodes, getFile, getTimeElapsed } from '../utils';
+import cuid from 'cuid';
+import { createResource, For } from 'solid-js';
+import {
+  getActiveNodes,
+  getFile,
+  getTimeElapsed,
+  initAndGetDb,
+} from '../utils';
 import { Subtitle } from './subtitle';
-import alasql from 'alasql';
 
 export const FileDisplay = () => {
   const [nodes] = createResource(
@@ -12,8 +17,27 @@ export const FileDisplay = () => {
       const text = await file.text();
       const { entries } = parse(text);
 
-      const alatest = alasql(`select * from ?`, [entries]);
-      console.log(`alatest`, alatest);
+      const db = await initAndGetDb();
+
+      const fileId = cuid();
+
+      console.log('adding file to db');
+      await db.add('files', {
+        id: fileId,
+        name: file.name,
+      });
+      console.log('adding lines to db');
+      await Promise.all(
+        entries.map((entry) =>
+          db.add('lines', {
+            fileId,
+            ...entry,
+          })
+        )
+      );
+      console.log('done adding lines to db');
+
+      console.log(`entries:`, entries);
 
       return entries;
     }
