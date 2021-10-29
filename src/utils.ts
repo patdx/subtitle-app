@@ -2,7 +2,7 @@ import { Entry } from '@plussub/srt-vtt-parser/dist/src/types';
 import { createSignal } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { openDB, DBSchema } from 'idb';
-import { once } from 'lodash-es';
+import { findLast, once } from 'lodash-es';
 import { parse } from '@plussub/srt-vtt-parser';
 import cuid from 'cuid';
 
@@ -20,53 +20,53 @@ export const getActiveNodes = (
 
   console.log(`nodes:`, nodes);
 
-  return [];
+  // return [];
 
   // return activeNodes;
 
-  // const first = nodes?.[0];
-  // if (first && currentTime < first.from) {
-  //   selectedNodes.add(first);
-  // }
+  const first = nodes?.[0];
+  if (first && currentTime < first.from) {
+    selectedNodes.add(first);
+  }
 
-  // nodes.forEach((node, index) => {
-  //   const isActive = nodeIsActive(node, currentTime);
-  //   if (!isActive) return;
-  //   const previous = nodes[index - 1];
-  //   if (previous) {
-  //     selectedNodes.add(previous);
-  //   }
-  //   selectedNodes.add(node);
-  //   const next = nodes[index + 1];
-  //   if (next) {
-  //     selectedNodes.add(next);
-  //   }
-  // });
+  nodes.forEach((node, index) => {
+    const isActive = nodeIsActive(node, currentTime);
+    if (!isActive) return;
+    const previous = nodes[index - 1];
+    if (previous) {
+      selectedNodes.add(previous);
+    }
+    selectedNodes.add(node);
+    const next = nodes[index + 1];
+    if (next) {
+      selectedNodes.add(next);
+    }
+  });
 
-  // if (selectedNodes.size === 0) {
-  //   const last = findLast(nodes, (node) => {
-  //     node.to < currentTime;
-  //   });
+  if (selectedNodes.size === 0) {
+    const last = findLast(nodes, (node) => {
+      node.to < currentTime;
+    });
 
-  //   if (last) {
-  //     selectedNodes.add(last as any);
-  //   }
-  //   // no active nodes, find the next closest node
-  //   const next = nodes.find((node) => {
-  //     node.from > currentTime;
-  //   });
+    if (last) {
+      selectedNodes.add(last as any);
+    }
+    // no active nodes, find the next closest node
+    const next = nodes.find((node) => {
+      node.from > currentTime;
+    });
 
-  //   if (next) {
-  //     selectedNodes.add(next);
-  //   }
-  // }
+    if (next) {
+      selectedNodes.add(next);
+    }
+  }
 
-  // const last = nodes[nodes.length - 1];
-  // if (last && currentTime > last.to) {
-  //   selectedNodes.add(last);
-  // }
+  const last = nodes[nodes.length - 1];
+  if (last && currentTime > last.to) {
+    selectedNodes.add(last);
+  }
 
-  // return [...selectedNodes];
+  return [...selectedNodes];
 };
 
 export const [clock, setClock] = createStore({
@@ -76,7 +76,16 @@ export const [clock, setClock] = createStore({
   isPlaying: false,
 });
 
-export const [getFile, setFile] = createSignal<File>();
+export const [getFile, setFile] = createSignal<DbLine[]>();
+
+export interface DbLine {
+  id: string;
+  fileId: string;
+  originalId: string;
+  text: string;
+  from: number;
+  to: number;
+}
 
 interface MyDB extends DBSchema {
   files: {
@@ -88,14 +97,7 @@ interface MyDB extends DBSchema {
   };
   lines: {
     key: string;
-    value: {
-      id: string;
-      fileId: string;
-      originalId: string;
-      text: string;
-      from: number;
-      to: number;
-    };
+    value: DbLine;
     indexes: {
       'by-file-id': string;
     };

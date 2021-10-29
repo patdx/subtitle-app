@@ -1,43 +1,75 @@
-import { DateTime, Duration } from 'luxon';
-import { Component, onMount } from 'solid-js';
-import { Controls } from '../components/controls';
-import { FileDisplay } from '../components/file-display';
-import { clock, getTimeElapsed, initAndGetDb, setTimeElapsed } from '../utils';
+import { createResource, createSignal, createUniqueId, For } from 'solid-js';
+import { addFileToDatabase, initAndGetDb } from '../utils';
 
-const App: Component = () => {
-  const updateElapsedTime = () => {
-    const timeSinceLastAction = clock.isPlaying
-      ? Math.abs(DateTime.fromJSDate(clock.lastActionAt).diffNow().toMillis()) *
-        clock.playSpeed
-      : 0;
-    setTimeElapsed(timeSinceLastAction + clock.lastTimeElapsedMs);
-    requestAnimationFrame(updateElapsedTime);
-  };
+const EditFilesPage = () => {
+  const id = createUniqueId();
+  const [mode, setMode] = createSignal<undefined | 'upload'>();
 
-  onMount(() => {
-    requestAnimationFrame(updateElapsedTime);
+  const [data, handler] = createResource(async () => {
+    const db = await initAndGetDb();
+    const files = await db.getAll('files');
+    return files;
   });
-
-  onMount(() => {
-    initAndGetDb();
-  });
-
-  const formattedTime = () =>
-    Duration.fromMillis(getTimeElapsed()).toISOTime({
-      suppressMilliseconds: true,
-    });
 
   return (
     <>
-      <div className="h-screen bg-black relative overflow-hidden">
-        <div className="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
-          <FileDisplay />
-        </div>
+      <div className="h-screen bg-white relative overflow-hidden">
+        <input
+          id={`${id}-file-upload`}
+          class="hidden"
+          type="file"
+          onChange={async (event) => {
+            const target = event.target as HTMLInputElement;
+            const file = target.files?.[0];
+            target.value = '';
+            if (!file) return;
+            await addFileToDatabase(file);
+            handler.refetch();
+          }}
+        />
+        <label
+          htmlFor={`${id}-file-upload`}
+          class="p-2 bg-gray-200 rounded cursor-pointer"
+        >
+          Upload file
+        </label>
+        <ul>
+          <For each={data()}>
+            {(file) => (
+              <li>
+                <a href={`/play/${file.id}`}>{file.name}</a>{' '}
+                <button
+                  onClick={async () => {
+                    const db = await initAndGetDb();
+                    const tx = db.transaction(['files', 'lines'], 'readwrite');
+                    tx.objectStore('files').delete(file.id);
 
-        <Controls timeElapsed={formattedTime()} />
+                    let cursor = await tx
+                      .objectStore('lines')
+                      .index('by-file-id')
+                      .openKeyCursor(file.id);
+
+                    while (cursor) {
+                      await tx.objectStore('lines').delete(cursor.primaryKey);
+                      cursor = await cursor.continue();
+                    }
+
+                    tx.commit();
+
+                    handler.refetch();
+                  }}
+                >
+                  Delete
+                </button>
+              </li>
+            )}
+          </For>
+        </ul>
+
+        {/* <Controls timeElapsed={formattedTime()} /> */}
       </div>
     </>
   );
 };
 
-export default App;
+export default EditFilesPage;

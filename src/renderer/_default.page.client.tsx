@@ -6,6 +6,7 @@ let dispose: () => void;
 
 const { hydrationPromise } = useClientRouter({
   render(pageContext) {
+    console.log(`pageContext`, pageContext);
     const content = document.getElementById('page-view');
     const { Page, pageProps } = pageContext;
 

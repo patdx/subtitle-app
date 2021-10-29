@@ -2,7 +2,7 @@ import { once } from 'lodash-es';
 import { Duration } from 'luxon';
 import NoSleep from 'nosleep.js';
 import { createSignal, Show } from 'solid-js';
-import { clock, getTimeElapsed, setClock, setFile } from '../utils';
+import { clock, getTimeElapsed, setClock } from '../utils';
 import { MenuIcon } from './menu-icon';
 
 const getNoSleep = once(() => new NoSleep());
@@ -13,19 +13,11 @@ export const Controls = (props: { timeElapsed: string }) => {
   return (
     <>
       <Show when={isOpen()}>
-        <form className="absolute left-0 right-0 top-0 bg-gradient-to-b from-white to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
-          <a href="/edit-files">Manage files</a>
+        <div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-white to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
           {/* padding */}
           <div className="h-[env(safe-area-inset-top,0)]"></div>
-
-          <input
-            class="block w-full"
-            type="file"
-            onChange={(event) =>
-              setFile((event.target as HTMLInputElement).files?.[0])
-            }
-          />
-        </form>
+          <a href="/">Manage files</a>
+        </div>
 
         <div class="absolute bottom-0 left-0 right-0  bg-gradient-to-t from-white to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
           <div className="flex flex-wrap justify-center gap-2 items-center">
