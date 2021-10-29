@@ -16,7 +16,7 @@ function render(pageContext: PageContext) {
 
   // See https://vite-plugin-ssr.com/html-head
   const { documentProps } = pageContext;
-  const title = documentProps?.title;
+  const title = documentProps?.title ?? 'Subtitle App';
   const description = documentProps?.description;
 
   return escapeInject`<!DOCTYPE html>${dangerouslySkipEscape(
@@ -54,7 +54,7 @@ function render(pageContext: PageContext) {
             sizes="16x16"
             href="/favicon-16x16.png"
           />
-          {title && <title>{title}</title>}
+          {<title>{title}</title>}
           {description && <meta name="description" content={description} />}
           <HydrationScript />
         </head>

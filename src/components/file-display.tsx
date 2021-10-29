@@ -28,12 +28,19 @@ export const FileDisplay = () => {
       });
       console.log('adding lines to db');
       await Promise.all(
-        entries.map((entry) =>
-          db.add('lines', {
+        entries.map((entry) => {
+          const { id: originalId, text, ...remaining } = entry;
+          return db.add('lines', {
+            id: cuid(),
             fileId,
-            ...entry,
-          })
-        )
+            // sometimes originalId and text
+            // have an extra /r at the end,
+            // etc, so trim them
+            originalId: originalId.trim(),
+            text: text.trim(),
+            ...remaining,
+          });
+        })
       );
       console.log('done adding lines to db');
 

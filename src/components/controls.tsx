@@ -14,6 +14,7 @@ export const Controls = (props: { timeElapsed: string }) => {
     <>
       <Show when={isOpen()}>
         <form className="absolute left-0 right-0 top-0 bg-gradient-to-b from-white to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+          <a href="/edit-files">Manage files</a>
           {/* padding */}
           <div className="h-[env(safe-area-inset-top,0)]"></div>
 
