@@ -13,6 +13,8 @@ const gitpodHost = (() => {
   }
 })();
 
+const IS_GITPOD = false
+
 console.log(`gitpodHost: ${gitpodHost}`);
 
 export default defineConfig({
@@ -22,11 +24,15 @@ export default defineConfig({
     hmr: {
       port: 3001,
       clientPort: 443,
-      ...(gitpodHost
-        ? {
+      ...IS_GITPOD ? {
+        ...(gitpodHost
+          ? {
             host: gitpodHost,
           }
-        : {}),
+          : {}),
+      } : {
+        clientPort: 3001
+      }
     },
   },
   // end config for gitpod
