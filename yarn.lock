@@ -696,21 +696,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:^10.3.7":
-  version: 10.3.7
-  resolution: "autoprefixer@npm:10.3.7"
+"autoprefixer@npm:^10.4.0":
+  version: 10.4.0
+  resolution: "autoprefixer@npm:10.4.0"
   dependencies:
-    browserslist: ^4.17.3
-    caniuse-lite: ^1.0.30001264
+    browserslist: ^4.17.5
+    caniuse-lite: ^1.0.30001272
     fraction.js: ^4.1.1
     normalize-range: ^0.1.2
-    picocolors: ^0.2.1
+    picocolors: ^1.0.0
     postcss-value-parser: ^4.1.0
   peerDependencies:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: e5b0a8ca75164cb1aa688dd5a4210b0e3720abb94910eed7f32790aeff352ed26adc47bed145cd22c83fe03d059d903b62baa7130ed2785990e7e42a8b952704
+  checksum: 7d511c64daeaa13c7888b40b0394cd891fab1852a1f60165330c9e49ab70ac29ad1e3386665d86361661cf2bbe90cea42b78ea73cb77b373ffe30a8f4973a955
   languageName: node
   linkType: hard
 
@@ -832,7 +832,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.16.6, browserslist@npm:^4.17.3":
+"browserslist@npm:^4.16.6":
   version: 4.17.4
   resolution: "browserslist@npm:4.17.4"
   dependencies:
@@ -844,6 +844,21 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 830a25a70f33804ac4f5f884da3747028b9efe5190bf69ffe447d8651c8d09d91cfa1e534f2b71f06fbe13a3ce871cfcb416de498c726c91cad11818e80470e7
+  languageName: node
+  linkType: hard
+
+"browserslist@npm:^4.17.5":
+  version: 4.17.5
+  resolution: "browserslist@npm:4.17.5"
+  dependencies:
+    caniuse-lite: ^1.0.30001271
+    electron-to-chromium: ^1.3.878
+    escalade: ^3.1.1
+    node-releases: ^2.0.1
+    picocolors: ^1.0.0
+  bin:
+    browserslist: cli.js
+  checksum: 0a1d762305c39dd317bb21e3159f44250bb1029a497f9a901ef5066f909263372eaacda58fd39174121c2741c0c32a7e6ace04df9172abe22c2fb69eba139a01
   languageName: node
   linkType: hard
 
@@ -921,10 +936,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001264, caniuse-lite@npm:^1.0.30001265":
+"caniuse-lite@npm:^1.0.30001265":
   version: 1.0.30001269
   resolution: "caniuse-lite@npm:1.0.30001269"
   checksum: 23a6bd029c4120a084056dae4eeecc552eba55c434035306e7ee4060aed1b6babed5f6d832f6ba359f13376356464a1673bc6c625c2932e376156f7f7fa1a3c0
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001271, caniuse-lite@npm:^1.0.30001272":
+  version: 1.0.30001274
+  resolution: "caniuse-lite@npm:1.0.30001274"
+  checksum: 75790d021edbc68dbb36c0bc63255fad1e7aa3986039e685d10340e7e9a37147b0ddedaba22cf6c52b3657cca794ed41af88045ad5cce79084e9361e95f1c5d4
   languageName: node
   linkType: hard
 
@@ -1336,6 +1358,13 @@ __metadata:
   version: 1.3.873
   resolution: "electron-to-chromium@npm:1.3.873"
   checksum: 65c368b4d963432f5025be27036f01999555c04b96dc4200001d7373bdeacf8449787898a61bb8a0602944c7a54849184dcedf022b4a79b4257200c95574e481
+  languageName: node
+  linkType: hard
+
+"electron-to-chromium@npm:^1.3.878":
+  version: 1.3.885
+  resolution: "electron-to-chromium@npm:1.3.885"
+  checksum: 6a92ad89a103dc11f22a1b7012c5dc2b7288e9f22ad71ba397b631106db7e7af4afb5e8defa317457cf3ef558afd343fa8b83c1b3d7f3d7d706bb10c0f9dd907
   languageName: node
   linkType: hard
 
@@ -2916,6 +2945,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"node-releases@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "node-releases@npm:2.0.1"
+  checksum: b20dd8d4bced11f75060f0387e05e76b9dc4a0451f7bb3516eade6f50499ea7768ba95d8a60d520c193402df1e58cb3fe301510cc1c1ad68949c3d57b5149866
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^5.0.0":
   version: 5.0.0
   resolution: "nopt@npm:5.0.0"
@@ -3647,10 +3683,10 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"solid-js@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "solid-js@npm:1.2.0"
-  checksum: a462ba6ea10139c728eca7f280fd08535079b762b77a7afd9071644cae4fa3ef5554342696da9fcb8fc8ee5bb214eb517c1f2b0f3d0905b94bb795f701e136b0
+"solid-js@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "solid-js@npm:1.2.1"
+  checksum: da2369ed7264c2ef0d8fa75c41821bd268cf71558743fe52fbab6ee486d724bd24ea2a446cf4ff5c78362d20f2250549ae82f0a8386cbbc61ce12180e3638dbc
   languageName: node
   linkType: hard
 
@@ -4127,9 +4163,9 @@ typescript@^4.4.4:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:^0.3.19":
-  version: 0.3.19
-  resolution: "vite-plugin-ssr@npm:0.3.19"
+"vite-plugin-ssr@npm:^0.3.20":
+  version: 0.3.20
+  resolution: "vite-plugin-ssr@npm:0.3.20"
   dependencies:
     "@brillout/json-s": ^0.3.0
     "@brillout/libassert": ^0.5.2
@@ -4143,7 +4179,7 @@ typescript@^4.4.4:
     vite: ^2.5.0
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 1c610919995a804dab23231b5c8ca912e1904400de04af2bb6da78a43ed351462f2d346feb1ae022d16b15e504109b4780fa971edbbb5c6931d47ace3cec0f29
+  checksum: 3928f0adab220856186b91773403467d7e7d857c19e06960df9c4f453162254ba6526e731a36f062977c40ca4c569fb1f42b268aac4b20fc9b8dfc8ce0a61fb6
   languageName: node
   linkType: hard
 
@@ -4157,7 +4193,7 @@ typescript@^4.4.4:
     "@types/luxon": ^2.0.5
     "@types/node": ^16.11.6
     alasql: ^1.7.3
-    autoprefixer: ^10.3.7
+    autoprefixer: ^10.4.0
     clsx: ^1.1.1
     cuid: ^2.1.8
     dirname-filename-esm: ^1.1.1
@@ -4168,14 +4204,14 @@ typescript@^4.4.4:
     nosleep.js: ^0.12.0
     postcss: ^8.3.11
     prettier: ^2.4.1
-    solid-js: ^1.2.0
+    solid-js: ^1.2.1
     srt-parser-2: ^1.1.6
     tailwindcss: ^3.0.0-alpha.1
     typescript: ^4.4.4
     vite: ^2.6.13
     vite-plugin-shim-react-pdf: ^1.0.3
     vite-plugin-solid: ^2.1.1
-    vite-plugin-ssr: ^0.3.19
+    vite-plugin-ssr: ^0.3.20
   languageName: unknown
   linkType: soft
 

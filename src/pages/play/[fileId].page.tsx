@@ -1,14 +1,14 @@
 import { DateTime, Duration } from 'luxon';
 import { Component, onMount } from 'solid-js';
-import { Controls } from '../components/controls';
-import { FileDisplay } from '../components/file-display';
+import { Controls } from '../../components/controls';
+import { FileDisplay } from '../../components/file-display';
 import {
   clock,
   getTimeElapsed,
   initAndGetDb,
   setFile,
   setTimeElapsed,
-} from '../utils';
+} from '../../utils';
 
 const App: Component = (props) => {
   console.log(`props`, props);
