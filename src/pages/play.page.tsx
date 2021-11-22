@@ -1,16 +1,16 @@
 import { DateTime, Duration } from 'luxon';
 import { Component, onMount } from 'solid-js';
-import { Controls } from '../../components/controls';
-import { FileDisplay } from '../../components/file-display';
+import { Controls } from '../components/controls';
+import { FileDisplay } from '../components/file-display';
 import {
   clock,
   getTimeElapsed,
   initAndGetDb,
   setFile,
   setTimeElapsed,
-} from '../../utils';
+} from '../utils';
 
-const App: Component = (props) => {
+const PlayPage: Component = (props) => {
   console.log(`props`, props);
 
   const updateElapsedTime = () => {
@@ -23,7 +23,11 @@ const App: Component = (props) => {
   };
 
   onMount(async () => {
-    const fileId = location.pathname.split('/').pop();
+    const fileId = new URL(location.href).searchParams.get('id');
+    if (!fileId) {
+      console.warn(`No id provided, waiting for file id...`);
+      return;
+    }
     const db = await initAndGetDb();
     const lines = await db.getAllFromIndex('lines', 'by-file-id', fileId);
     console.log(`loaded ${lines.length} lines`);
@@ -52,4 +56,4 @@ const App: Component = (props) => {
   );
 };
 
-export default App;
+export default PlayPage;

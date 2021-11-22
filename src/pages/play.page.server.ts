@@ -4,4 +4,5 @@ export { passToClient }
 const passToClient = [
   'pageProps',
   'routeParams',
+  'urlParsed'
 ]

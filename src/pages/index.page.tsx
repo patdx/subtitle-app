@@ -37,7 +37,7 @@ const EditFilesPage = () => {
           <For each={data()}>
             {(file) => (
               <li>
-                <a href={`/play/${file.id}`}>{file.name}</a>{' '}
+                <a href={`/play?id=${file.id}`}>{file.name}</a>{' '}
                 <button
                   onClick={async () => {
                     const db = await initAndGetDb();
