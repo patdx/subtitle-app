@@ -13,7 +13,9 @@ const EditFilesPage = () => {
 
   return (
     <>
-      <div className="h-screen bg-white relative overflow-hidden">
+      <div className="min-h-full bg-white relative overflow-hidden">
+        {/* padding */}
+        <div className="h-[env(safe-area-inset-top,0)]"></div>
         <input
           id={`${id}-file-upload`}
           class="hidden"
@@ -27,18 +29,27 @@ const EditFilesPage = () => {
             handler.refetch();
           }}
         />
+
         <label
           htmlFor={`${id}-file-upload`}
-          class="p-2 bg-gray-200 rounded cursor-pointer"
+          class="block max-w-md mx-auto py-4 px-8 bg-blue-300 shadow-lg rounded-lg my-20 text-gray-800 text-3xl font-semibold cursor-pointer"
         >
-          Upload file
+          Upload SRT file...
         </label>
-        <ul>
-          <For each={data()}>
-            {(file) => (
-              <li>
-                <a href={`/play?id=${file.id}`}>{file.name}</a>{' '}
+
+        <For each={data()}>
+          {(file) => (
+            <div class="max-w-md mx-auto py-4 px-8 bg-white shadow-lg rounded-lg my-20">
+              <a
+                href={`/play?id=${file.id}`}
+                class="text-gray-800 text-3xl font-semibold break-all"
+              >
+                Hometown.Cha.Cha.Cha.E13.211009.HDTV.H264-NEXT-NF.srt
+              </a>
+
+              <div class="flex justify-end mt-4">
                 <button
+                  class="text-xl font-medium text-indigo-500"
                   onClick={async () => {
                     const db = await initAndGetDb();
                     const tx = db.transaction(['files', 'lines'], 'readwrite');
@@ -61,10 +72,10 @@ const EditFilesPage = () => {
                 >
                   Delete
                 </button>
-              </li>
-            )}
-          </For>
-        </ul>
+              </div>
+            </div>
+          )}
+        </For>
 
         {/* <Controls timeElapsed={formattedTime()} /> */}
       </div>

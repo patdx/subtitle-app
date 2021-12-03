@@ -45,7 +45,7 @@ const PlayPage: Component = (props) => {
 
   return (
     <>
-      <div className="h-screen bg-black relative overflow-hidden">
+      <div className="h-full bg-black relative overflow-hidden">
         <div className="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
           <FileDisplay />
         </div>

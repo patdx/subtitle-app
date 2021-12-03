@@ -1,13 +1,13 @@
 import { hydrate, render } from 'solid-js/web';
 import { useClientRouter } from 'vite-plugin-ssr/client/router';
-import './styles.css';
+import 'tailwindcss/tailwind.css';
 
 let dispose: () => void;
 
 const { hydrationPromise } = useClientRouter({
   render(pageContext) {
     console.log(`pageContext`, pageContext);
-    const content = document.getElementById('page-view');
+    const content = document.getElementById('app');
     const { Page, pageProps } = pageContext;
 
     // Dispose to prevent duplicate pages when navigating.

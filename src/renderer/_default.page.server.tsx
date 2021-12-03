@@ -1,6 +1,6 @@
 import { HydrationScript, renderToString } from 'solid-js/web';
 import { dangerouslySkipEscape, escapeInject } from 'vite-plugin-ssr';
-import './styles.css';
+import 'tailwindcss/tailwind.css';
 import { PageContext } from './types';
 
 export { render };
@@ -21,7 +21,7 @@ function render(pageContext: PageContext) {
 
   return escapeInject`<!DOCTYPE html>${dangerouslySkipEscape(
     renderToString(() => (
-      <html lang="en">
+      <html lang="en" class="h-full">
         <head>
           <meta charset="UTF-8" />
           <meta
@@ -58,8 +58,8 @@ function render(pageContext: PageContext) {
           {description && <meta name="description" content={description} />}
           <HydrationScript />
         </head>
-        <body>
-          <div id="page-view" innerHTML={pageHtml} />
+        <body class="h-full">
+          <div class="h-full" id="app" innerHTML={pageHtml} />
         </body>
       </html>
     ))
