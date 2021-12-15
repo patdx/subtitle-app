@@ -5,12 +5,19 @@ import { openDB, DBSchema } from 'idb';
 import { findLast, once } from 'lodash-es';
 import { parse } from '@plussub/srt-vtt-parser';
 import cuid from 'cuid';
+import { Duration } from 'luxon';
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
   return currentTime > node.from && currentTime < node.to;
 };
 
 export const [getTimeElapsed, setTimeElapsed] = createSignal(0);
+
+export const getTimeElapsedAsDuration = () => {
+  const d = Duration.fromMillis(getTimeElapsed()).shiftTo("hours", "minutes", "seconds", "milliseconds");
+  console.log(d);
+  return d;
+}
 
 export const getActiveNodes = (
   nodes: Entry[] = [],

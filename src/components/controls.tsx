@@ -2,12 +2,18 @@ import { once } from 'lodash-es';
 import { Duration } from 'luxon';
 import NoSleep from 'nosleep.js';
 import { createSignal, Show } from 'solid-js';
-import { clock, getTimeElapsed, setClock } from '../utils';
-import { MenuIcon } from './menu-icon';
+import {
+  clock,
+  getTimeElapsed,
+  getTimeElapsedAsDuration,
+  setClock,
+} from '../utils';
+import { LeftIcon, MenuIcon, RightIcon } from './icons';
+import { NumberInput } from './text-input';
 
 const getNoSleep = once(() => new NoSleep());
 
-export const Controls = (props: { timeElapsed: string }) => {
+export const Controls = () => {
   const [isOpen, setIsOpen] = createSignal(true);
 
   return (
@@ -21,22 +27,61 @@ export const Controls = (props: { timeElapsed: string }) => {
 
         <div class="absolute bottom-0 left-0 right-0  bg-gradient-to-t from-white to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
           <div className="flex flex-wrap justify-center gap-2 items-center">
-            <div class="inline-flex flex-col items-end">
-              <label htmlFor="">Time elapsed</label>
-              <div class="tabular-nums">{props.timeElapsed}</div>
-              <input
-                className="form-input text-right py-0"
-                type="text"
-                placeholder="set time"
-                value="00:00:00"
-                onInput={(event) => {
-                  const duration = Duration.fromISOTime(
-                    (event.target as HTMLInputElement).value,
-                    {}
-                  );
-                  if (!duration.isValid) {
-                    return;
-                  }
+            <div>
+              <NumberInput
+                value={getTimeElapsedAsDuration().hours}
+                padWidth={2}
+                suffix="h"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    hours: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
+
+              <NumberInput
+                value={getTimeElapsedAsDuration().minutes}
+                padWidth={2}
+                suffix="m"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    minutes: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
+
+              <NumberInput
+                value={getTimeElapsedAsDuration().seconds}
+                padWidth={2}
+                suffix="s"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    seconds: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
+
+              <NumberInput
+                widthClassName="w-20"
+                padWidth={3}
+                value={getTimeElapsedAsDuration().milliseconds}
+                suffix="ms"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    milliseconds: value,
+                  });
                   setClock({
                     lastActionAt: new Date(),
                     lastTimeElapsedMs: duration.toMillis(),
@@ -45,12 +90,38 @@ export const Controls = (props: { timeElapsed: string }) => {
               />
             </div>
 
-            <div class="inline-flex flex-col items-center">
-              <div>Speed</div>
-              {clock.playSpeed}x
-            </div>
+            <NumberInput
+              value={clock.playSpeed}
+              suffix="x"
+              onChange={(value) => {
+                const newPlaySpeed =
+                  typeof value === 'string' ? parseFloat(value) : undefined;
+
+                if (Number.isFinite(newPlaySpeed)) {
+                  setClock({
+                    playSpeed: newPlaySpeed,
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: getTimeElapsed(),
+                  });
+                }
+              }}
+            />
 
             <button
+              className="flex flex-col"
+              onClick={() => {
+                setClock({
+                  lastActionAt: new Date(),
+                  lastTimeElapsedMs: getTimeElapsed() - 1000,
+                });
+              }}
+            >
+              <LeftIcon />
+              <div>1s</div>
+            </button>
+
+            <button
+              className="flex flex-col"
               onClick={() => {
                 setClock({
                   lastActionAt: new Date(),
@@ -58,7 +129,8 @@ export const Controls = (props: { timeElapsed: string }) => {
                 });
               }}
             >
-              B100ms
+              <LeftIcon />
+              <div>0.1s</div>
             </button>
 
             <button
@@ -85,6 +157,7 @@ export const Controls = (props: { timeElapsed: string }) => {
             </button>
 
             <button
+              className="flex flex-col"
               onClick={() => {
                 setClock({
                   lastActionAt: new Date(),
@@ -92,28 +165,22 @@ export const Controls = (props: { timeElapsed: string }) => {
                 });
               }}
             >
-              F100ms
+              <RightIcon />
+              <div>0.1s</div>
             </button>
 
-            <input
-              type="text"
-              class="form-input"
-              value={clock.playSpeed}
-              onInput={(event) => {
-                const newPlaySpeed = parseFloat(
-                  (event.target as HTMLInputElement).value
-                );
-                if (Number.isFinite(newPlaySpeed)) {
-                  setClock({
-                    playSpeed: parseFloat(
-                      (event.target as HTMLInputElement).value
-                    ),
-                    lastActionAt: new Date(),
-                    lastTimeElapsedMs: getTimeElapsed(),
-                  });
-                }
+            <button
+              className="flex flex-col"
+              onClick={() => {
+                setClock({
+                  lastActionAt: new Date(),
+                  lastTimeElapsedMs: getTimeElapsed() + 1000,
+                });
               }}
-            />
+            >
+              <RightIcon />
+              <div>1s</div>
+            </button>
           </div>
 
           {/* padding */}

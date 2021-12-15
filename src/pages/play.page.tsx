@@ -1,14 +1,8 @@
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
 import { Component, onMount } from 'solid-js';
 import { Controls } from '../components/controls';
 import { FileDisplay } from '../components/file-display';
-import {
-  clock,
-  getTimeElapsed,
-  initAndGetDb,
-  setFile,
-  setTimeElapsed,
-} from '../utils';
+import { clock, initAndGetDb, setFile, setTimeElapsed } from '../utils';
 
 const PlayPage: Component = (props) => {
   console.log(`props`, props);
@@ -38,11 +32,6 @@ const PlayPage: Component = (props) => {
     requestAnimationFrame(updateElapsedTime);
   });
 
-  const formattedTime = () =>
-    Duration.fromMillis(getTimeElapsed()).toISOTime({
-      suppressMilliseconds: true,
-    });
-
   return (
     <>
       <div className="h-full bg-black relative overflow-hidden">
@@ -50,7 +39,7 @@ const PlayPage: Component = (props) => {
           <FileDisplay />
         </div>
 
-        <Controls timeElapsed={formattedTime()} />
+        <Controls />
       </div>
     </>
   );
