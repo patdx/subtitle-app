@@ -15,7 +15,7 @@ export const [getTimeElapsed, setTimeElapsed] = createSignal(0);
 
 export const getTimeElapsedAsDuration = () => {
   const d = Duration.fromMillis(getTimeElapsed()).shiftTo("hours", "minutes", "seconds", "milliseconds");
-  console.log(d);
+  // console.log(d);
   return d;
 }
 
