@@ -27,160 +27,164 @@ export const Controls = () => {
 
         <div class="absolute bottom-0 left-0 right-0  bg-gradient-to-t from-white to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
           <div className="flex flex-wrap justify-center gap-2 items-center">
-            <div>
-              <NumberInput
-                value={getTimeElapsedAsDuration().hours}
-                padWidth={2}
-                suffix="h"
-                onChange={(value) => {
-                  const duration = getTimeElapsedAsDuration().set({
-                    hours: value,
-                  });
-                  setClock({
-                    lastActionAt: new Date(),
-                    lastTimeElapsedMs: duration.toMillis(),
-                  });
-                }}
-              />
+            <div className="flex gap-2 justify-center items-center">
+              <div>
+                <NumberInput
+                  value={getTimeElapsedAsDuration().hours}
+                  padWidth={2}
+                  suffix="h"
+                  onChange={(value) => {
+                    const duration = getTimeElapsedAsDuration().set({
+                      hours: value,
+                    });
+                    setClock({
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: duration.toMillis(),
+                    });
+                  }}
+                />
+
+                <NumberInput
+                  value={getTimeElapsedAsDuration().minutes}
+                  padWidth={2}
+                  suffix="m"
+                  onChange={(value) => {
+                    const duration = getTimeElapsedAsDuration().set({
+                      minutes: value,
+                    });
+                    setClock({
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: duration.toMillis(),
+                    });
+                  }}
+                />
+
+                <NumberInput
+                  value={getTimeElapsedAsDuration().seconds}
+                  padWidth={2}
+                  suffix="s"
+                  onChange={(value) => {
+                    const duration = getTimeElapsedAsDuration().set({
+                      seconds: value,
+                    });
+                    setClock({
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: duration.toMillis(),
+                    });
+                  }}
+                />
+
+                <NumberInput
+                  widthClassName="w-20"
+                  padWidth={3}
+                  value={getTimeElapsedAsDuration().milliseconds}
+                  suffix="ms"
+                  onChange={(value) => {
+                    const duration = getTimeElapsedAsDuration().set({
+                      milliseconds: value,
+                    });
+                    setClock({
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: duration.toMillis(),
+                    });
+                  }}
+                />
+              </div>
 
               <NumberInput
-                value={getTimeElapsedAsDuration().minutes}
-                padWidth={2}
-                suffix="m"
+                value={clock.playSpeed}
+                suffix="x"
                 onChange={(value) => {
-                  const duration = getTimeElapsedAsDuration().set({
-                    minutes: value,
-                  });
-                  setClock({
-                    lastActionAt: new Date(),
-                    lastTimeElapsedMs: duration.toMillis(),
-                  });
-                }}
-              />
+                  const newPlaySpeed =
+                    typeof value === 'string' ? parseFloat(value) : undefined;
 
-              <NumberInput
-                value={getTimeElapsedAsDuration().seconds}
-                padWidth={2}
-                suffix="s"
-                onChange={(value) => {
-                  const duration = getTimeElapsedAsDuration().set({
-                    seconds: value,
-                  });
-                  setClock({
-                    lastActionAt: new Date(),
-                    lastTimeElapsedMs: duration.toMillis(),
-                  });
-                }}
-              />
-
-              <NumberInput
-                widthClassName="w-20"
-                padWidth={3}
-                value={getTimeElapsedAsDuration().milliseconds}
-                suffix="ms"
-                onChange={(value) => {
-                  const duration = getTimeElapsedAsDuration().set({
-                    milliseconds: value,
-                  });
-                  setClock({
-                    lastActionAt: new Date(),
-                    lastTimeElapsedMs: duration.toMillis(),
-                  });
+                  if (Number.isFinite(newPlaySpeed)) {
+                    setClock({
+                      playSpeed: newPlaySpeed,
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: getTimeElapsed(),
+                    });
+                  }
                 }}
               />
             </div>
 
-            <NumberInput
-              value={clock.playSpeed}
-              suffix="x"
-              onChange={(value) => {
-                const newPlaySpeed =
-                  typeof value === 'string' ? parseFloat(value) : undefined;
-
-                if (Number.isFinite(newPlaySpeed)) {
+            <div className="flex gap-2 justify-center items-center">
+              <button
+                className="flex flex-col"
+                onClick={() => {
                   setClock({
-                    playSpeed: newPlaySpeed,
                     lastActionAt: new Date(),
-                    lastTimeElapsedMs: getTimeElapsed(),
+                    lastTimeElapsedMs: getTimeElapsed() - 1000,
                   });
-                }
-              }}
-            />
+                }}
+              >
+                <LeftIcon />
+                <div>1s</div>
+              </button>
 
-            <button
-              className="flex flex-col"
-              onClick={() => {
-                setClock({
-                  lastActionAt: new Date(),
-                  lastTimeElapsedMs: getTimeElapsed() - 1000,
-                });
-              }}
-            >
-              <LeftIcon />
-              <div>1s</div>
-            </button>
+              <button
+                className="flex flex-col"
+                onClick={() => {
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: getTimeElapsed() - 100,
+                  });
+                }}
+              >
+                <LeftIcon />
+                <div>0.1s</div>
+              </button>
 
-            <button
-              className="flex flex-col"
-              onClick={() => {
-                setClock({
-                  lastActionAt: new Date(),
-                  lastTimeElapsedMs: getTimeElapsed() - 100,
-                });
-              }}
-            >
-              <LeftIcon />
-              <div>0.1s</div>
-            </button>
+              <button
+                class="text-2xl"
+                onClick={() => {
+                  const isPlaying = !clock.isPlaying;
 
-            <button
-              class="text-2xl"
-              onClick={() => {
-                const isPlaying = !clock.isPlaying;
+                  if (isPlaying) {
+                    getNoSleep().enable();
+                  } else {
+                    getNoSleep().disable();
+                  }
 
-                if (isPlaying) {
-                  getNoSleep().enable();
-                } else {
-                  getNoSleep().disable();
-                }
+                  setClock({
+                    lastActionAt: new Date(),
+                    // todo: recalculate at time of action
+                    // instead of using Signal
+                    lastTimeElapsedMs: getTimeElapsed(),
+                    isPlaying,
+                  });
+                }}
+              >
+                {clock.isPlaying ? '⏸️' : '▶️'}
+              </button>
 
-                setClock({
-                  lastActionAt: new Date(),
-                  // todo: recalculate at time of action
-                  // instead of using Signal
-                  lastTimeElapsedMs: getTimeElapsed(),
-                  isPlaying,
-                });
-              }}
-            >
-              {clock.isPlaying ? '⏸️' : '▶️'}
-            </button>
+              <button
+                className="flex flex-col"
+                onClick={() => {
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: getTimeElapsed() + 100,
+                  });
+                }}
+              >
+                <RightIcon />
+                <div>0.1s</div>
+              </button>
 
-            <button
-              className="flex flex-col"
-              onClick={() => {
-                setClock({
-                  lastActionAt: new Date(),
-                  lastTimeElapsedMs: getTimeElapsed() + 100,
-                });
-              }}
-            >
-              <RightIcon />
-              <div>0.1s</div>
-            </button>
-
-            <button
-              className="flex flex-col"
-              onClick={() => {
-                setClock({
-                  lastActionAt: new Date(),
-                  lastTimeElapsedMs: getTimeElapsed() + 1000,
-                });
-              }}
-            >
-              <RightIcon />
-              <div>1s</div>
-            </button>
+              <button
+                className="flex flex-col"
+                onClick={() => {
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: getTimeElapsed() + 1000,
+                  });
+                }}
+              >
+                <RightIcon />
+                <div>1s</div>
+              </button>
+            </div>
           </div>
 
           {/* padding */}

@@ -48,8 +48,6 @@ export const NumberInput = (props: {
             }
           }}
           onBlur={(event) => {
-            setMode('view');
-
             // compare the normalized values
             // to see if anything changed
             const oldValue = value();
@@ -63,6 +61,8 @@ export const NumberInput = (props: {
             ) {
               props.onChange?.(parsed);
             }
+
+            setMode('view');
           }}
         />
       </Match>
