@@ -36,6 +36,7 @@ export const NumberInput = (props: {
           ref={setRef}
           value={untrack(value)}
           type="text"
+          inputMode="numeric"
           class={clsx(
             `form-input tabular-nums h-10 px-0 py-1 text-center`,
             widthClassName()
