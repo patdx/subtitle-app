@@ -135,8 +135,9 @@ export const initAndGetDb = once(async () => {
   return db;
 });
 
-export const addFileToDatabase = async (file: File) => {
-  const text = await file.text();
+export const addFileToDatabase = async (text: string, fileName: string) => {
+  // console.log(`analyzing text for ${fileName}`, text)
+  // const text = await file.text();
   const { entries } = parse(text);
 
   const db = await initAndGetDb();
@@ -147,7 +148,7 @@ export const addFileToDatabase = async (file: File) => {
 
   tx.objectStore('files').add({
     id: fileId,
-    name: file.name,
+    name: fileName,
   });
 
   const lines = tx.objectStore('lines');
