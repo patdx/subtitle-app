@@ -86,7 +86,7 @@ const EditFilesPage = () => {
         <label
           tabIndex={0}
           htmlFor={`${id}-file-upload`}
-          class="flex gap-2 justify-between items-center max-w-md mx-auto py-4 px-8 bg-blue-300 shadow-lg rounded-lg my-20 text-gray-800 text-3xl font-semibold cursor-pointer hover:bg-blue-400 active:bg-blue-500"
+          class="flex gap-2 justify-between items-center max-w-md mx-auto py-4 px-8 watch:p-2 watch:text-sm bg-blue-300 shadow-lg rounded-lg my-20 watch:my-0 text-gray-800 text-3xl font-semibold cursor-pointer hover:bg-blue-400 active:bg-blue-500"
         >
           Add SRT or ZIP...
           <Show when={isProcessing()}>
