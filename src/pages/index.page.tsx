@@ -99,12 +99,12 @@ const EditFilesPage = () => {
             const metadata = parseVideo(file.name);
 
             return (
-              <div class="group max-w-md mx-auto py-4 px-8 bg-white shadow-lg rounded-lg my-20 hover:bg-gray-100 active:bg-gray-200">
+              <div class="group max-w-md mx-auto py-4 px-8 watch:p-2 watch:m-0 bg-white shadow-lg rounded-lg my-20 hover:bg-gray-100 active:bg-gray-200">
                 <a
                   href={`/play?id=${file.id}`}
                   class="flex flex-col gap-2 outline-offset-8"
                 >
-                  <div className="text-gray-800 text-3xl font-semibold break-all">
+                  <div className="text-gray-800 text-3xl watch:text-sm font-semibold break-all">
                     {file.name}
                   </div>
 
@@ -123,7 +123,7 @@ const EditFilesPage = () => {
 
                 <div class="flex justify-end mt-4">
                   <button
-                    class="text-xl font-medium text-indigo-500 hover:text-indigo-600 active:text-indigo-700 outline-offset-4"
+                    class="text-xl watch:text-sm font-medium text-indigo-500 hover:text-indigo-600 active:text-indigo-700 outline-offset-4"
                     onClick={async () => {
                       const db = await initAndGetDb();
                       const tx = db.transaction(

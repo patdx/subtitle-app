@@ -56,6 +56,12 @@ function render(pageContext: PageContext) {
           />
           {<title>{title}</title>}
           {description && <meta name="description" content={description} />}
+          {/*
+            make the site show normally on apple watch -- could add remote control features
+            or 
+            https://erikrunyon.com/2018/06/designing-web-content-for-watchos/
+          */}
+          <meta name="disabled-adaptations" content="watch" />
           <HydrationScript />
         </head>
         <body class="h-full">
