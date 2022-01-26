@@ -21,26 +21,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.16.7":
-  version: 7.16.7
-  resolution: "@babel/core@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fcore%2F-%2Fcore-7.16.7.tgz"
+"@babel/core@npm:^7.16.12":
+  version: 7.16.12
+  resolution: "@babel/core@npm:7.16.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fcore%2F-%2Fcore-7.16.12.tgz"
   dependencies:
     "@babel/code-frame": ^7.16.7
-    "@babel/generator": ^7.16.7
+    "@babel/generator": ^7.16.8
     "@babel/helper-compilation-targets": ^7.16.7
     "@babel/helper-module-transforms": ^7.16.7
     "@babel/helpers": ^7.16.7
-    "@babel/parser": ^7.16.7
+    "@babel/parser": ^7.16.12
     "@babel/template": ^7.16.7
-    "@babel/traverse": ^7.16.7
-    "@babel/types": ^7.16.7
+    "@babel/traverse": ^7.16.10
+    "@babel/types": ^7.16.8
     convert-source-map: ^1.7.0
     debug: ^4.1.0
     gensync: ^1.0.0-beta.2
     json5: ^2.1.2
     semver: ^6.3.0
     source-map: ^0.5.0
-  checksum: 3206e077e76db189726c4da19a5296eae11c6c1f5abea7013e74f18708bb91616914717ff8d8ca466cc0ba9d2d2147e9a84c3c357b9ad4cba601da14107838ed
+  checksum: 29b56f3cb7c329fc038a2efaccf64ac3025835676b3d90f57f2265b6acd477a970114d09021b38d019ac8f20b2bb1596a9e79ce1f820d6b8cf0e4a802891817c
   languageName: node
   linkType: hard
 
@@ -52,6 +52,17 @@ __metadata:
     jsesc: ^2.5.1
     source-map: ^0.5.0
   checksum: 20c6a7c5e372a66ec2900c074b2ec3634d3f615cafccbb416770f4b419251c6dc27a0a137b71407e218463fe059a3a6a5afb734f35089d94bdb66e01fe8a9e6f
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.16.8":
+  version: 7.16.8
+  resolution: "@babel/generator@npm:7.16.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fgenerator%2F-%2Fgenerator-7.16.8.tgz"
+  dependencies:
+    "@babel/types": ^7.16.8
+    jsesc: ^2.5.1
+    source-map: ^0.5.0
+  checksum: 83af38b34735605c9d5f774c87a46c2cffaf666b28e9eeba883b2d7076412257e5c2264c26d9740ce44da6955fdaf857659391db02c012714a2a6dc19e403105
   languageName: node
   linkType: hard
 
@@ -259,6 +270,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/parser@npm:^7.16.10, @babel/parser@npm:^7.16.12":
+  version: 7.16.12
+  resolution: "@babel/parser@npm:7.16.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fparser%2F-%2Fparser-7.16.12.tgz"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: af287f0f3dfa564958a7dddfeb62e08c0de9ce9bd8447fcde0997da26ec477bf19f37161b9d970e2c7e0d1f77e441258907d3347beddd0d42cae85ed46947703
+  languageName: node
+  linkType: hard
+
 "@babel/parser@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/parser@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fparser%2F-%2Fparser-7.16.7.tgz"
@@ -327,6 +347,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/traverse@npm:^7.16.10":
+  version: 7.16.10
+  resolution: "@babel/traverse@npm:7.16.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftraverse%2F-%2Ftraverse-7.16.10.tgz"
+  dependencies:
+    "@babel/code-frame": ^7.16.7
+    "@babel/generator": ^7.16.8
+    "@babel/helper-environment-visitor": ^7.16.7
+    "@babel/helper-function-name": ^7.16.7
+    "@babel/helper-hoist-variables": ^7.16.7
+    "@babel/helper-split-export-declaration": ^7.16.7
+    "@babel/parser": ^7.16.10
+    "@babel/types": ^7.16.8
+    debug: ^4.1.0
+    globals: ^11.1.0
+  checksum: 58f52314f8a02157cd3004712e703e6b22dff57cee4bc1ab1954c511c6f885fd7763ea68d2d5f006891bc7b77b1f2e9c8c7cb0354f580c8343d5559ed971d087
+  languageName: node
+  linkType: hard
+
 "@babel/traverse@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/traverse@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftraverse%2F-%2Ftraverse-7.16.7.tgz"
@@ -352,6 +390,16 @@ __metadata:
     "@babel/helper-validator-identifier": ^7.16.7
     to-fast-properties: ^2.0.0
   checksum: df9210723259df9faea8c7e5674a59e57ead82664aab9f54daae887db5a50a956f30f57ed77a2d6cbb89b908d520cf8d883267c4e9098e31bc74649f2f714654
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.16.8":
+  version: 7.16.8
+  resolution: "@babel/types@npm:7.16.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftypes%2F-%2Ftypes-7.16.8.tgz"
+  dependencies:
+    "@babel/helper-validator-identifier": ^7.16.7
+    to-fast-properties: ^2.0.0
+  checksum: 4f6a187b2924df70e21d6e6c0822f91b1b936fe060bc92bb477b93bd8a712c88fe41a73f85c0ec53b033353374fe33e773b04ffc340ad36afd8f647dd05c4ee1
   languageName: node
   linkType: hard
 
@@ -2176,10 +2224,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"is-what@npm:^3.14.1":
-  version: 3.14.1
-  resolution: "is-what@npm:3.14.1"
-  checksum: a9a6ce92d33799f1ae0916c7afb6f8128a23ce9d28bd69d9ec3ec88910e7a1f68432e6236c3c8a4d544cf0b864675e5d828437efde60ee0cf8102061d395c1df
+"is-what@npm:^4.1.6":
+  version: 4.1.7
+  resolution: "is-what@npm:4.1.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fis-what%2F-%2Fis-what-4.1.7.tgz"
+  checksum: aade39dcc45a209d6cb2f2d5dbcf0e63ed894aadbae37bd5693c64e9876a27632431b43fc9d9332ebf0795eddd2abc11a2d0f3c6fa41c36330616a645660530e
   languageName: node
   linkType: hard
 
@@ -2360,13 +2408,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"merge-anything@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "merge-anything@npm:4.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fmerge-anything%2F-%2Fmerge-anything-4.0.2.tgz"
+"merge-anything@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "merge-anything@npm:5.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fmerge-anything%2F-%2Fmerge-anything-5.0.2.tgz"
   dependencies:
-    is-what: ^3.14.1
+    is-what: ^4.1.6
     ts-toolbelt: ^9.6.0
-  checksum: 39f68b7909f40f58c1a134abc7b10fab6a83fdfe07f6b28dfc71c60f3b10ece3b0c15467d314b7794adb2a0d99715c50b0d9bcf2e070cc3f9c389d80fcaee205
+  checksum: 5dccdb681e707177a110825f8f1a8b2618b3a3e3f204ab69288a32383de0d6e906bed40beace75104e805ceef1a06c0bde0933f7cdb6952242e3b739672998c7
   languageName: node
   linkType: hard
 
@@ -3246,7 +3294,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.3.3, solid-js@npm:^1.3.0":
+"solid-js@npm:1.3.3, solid-js@npm:^1.3.3":
   version: 1.3.3
   resolution: "solid-js@npm:1.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.3.3.tgz"
   checksum: 3ce169ac778f502ed5b18d69dbfb6d0b29b34528675f405052b73eb6be069e8c395a8d64d1ee4fefa4f32ee7eea19377b853917d29acf273e0049d7da3ad2d9f
@@ -3632,18 +3680,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-solid@npm:2.2.4":
-  version: 2.2.4
-  resolution: "vite-plugin-solid@npm:2.2.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.2.4.tgz"
+"vite-plugin-solid@npm:2.2.5":
+  version: 2.2.5
+  resolution: "vite-plugin-solid@npm:2.2.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.2.5.tgz"
   dependencies:
-    "@babel/core": ^7.16.7
+    "@babel/core": ^7.16.12
     "@babel/preset-typescript": ^7.16.7
     babel-preset-solid: ^1.3.0
-    merge-anything: ^4.0.2
-    solid-js: ^1.3.0
+    merge-anything: ^5.0.2
+    solid-js: ^1.3.3
     solid-refresh: ^0.4.0
     vite: ^2.7.13
-  checksum: e6701819c78c2688ed5d75f37589bb483f50f105614340aee3f01fb9a01d58316cc2c4283b3f1cb4e35de642fc8ae8167d71201b85762cfc502a5c201a6fa4b7
+  checksum: e6d44fc086b83a84f268e4504bcb35481ffa2e978a56a9375b58c0cd1c9846378ddf46ab84ee6ff28cd07ce5222c2494993a6749817146b8e99a95a03ea9c37d
   languageName: node
   linkType: hard
 
@@ -3695,7 +3743,7 @@ fsevents@~2.3.2:
     typescript: 4.5.5
     video-name-parser: 1.4.6
     vite: 2.7.13
-    vite-plugin-solid: 2.2.4
+    vite-plugin-solid: 2.2.5
     vite-plugin-ssr: 0.3.47
   languageName: unknown
   linkType: soft
