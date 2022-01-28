@@ -403,10 +403,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/json-s@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@brillout/json-s@npm:0.3.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-s%2F-%2Fjson-s-0.3.1.tgz"
-  checksum: 2a54f99f0de3c5409fc32619c05bbf3b34303080f54c7950687dfff0255ae349885045933bac5e34893aa1d22e010e171d66853ddce718ba25abb3ba8f5b43b7
+"@brillout/json-s@npm:^0.4.2":
+  version: 0.4.3
+  resolution: "@brillout/json-s@npm:0.4.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-s%2F-%2Fjson-s-0.4.3.tgz"
+  checksum: 1b0cbe98592cffbfd451269f4cd7276b5eac5a7d6b27bb3a0d83377a8a38c88e521b0ea5708a4b35f2f4246ae6a43b47431b26591704a4d603a2b46e0d0f5e86
   languageName: node
   linkType: hard
 
@@ -3712,11 +3712,11 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.3.49":
-  version: 0.3.49
-  resolution: "vite-plugin-ssr@npm:0.3.49::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.49.tgz"
+"vite-plugin-ssr@npm:0.3.50":
+  version: 0.3.50
+  resolution: "vite-plugin-ssr@npm:0.3.50::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.50.tgz"
   dependencies:
-    "@brillout/json-s": ^0.3.1
+    "@brillout/json-s": ^0.4.2
     "@brillout/libassert": ^0.5.2
     cac: ^6.7.12
     es-module-lexer: ^0.9.3
@@ -3728,7 +3728,7 @@ fsevents@~2.3.2:
     vite: ^2.5.0
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 56178cd35d655b3f6cae606d7c0d894c4320b7338e2c53654d8f3262b04edd401f29f318749e399c0b1804a19bc6b0581b40b5e57b9ad02f43e64d61721c5fd7
+  checksum: c1478fa4fec3ff5d26845c53a70d96f8293d457d7bac5d5064bc949d09d17c3061b3ca4cbf7c6fac55533a01ae88f280fdad53bbb7343a04cc107c02bebb1e0b
   languageName: node
   linkType: hard
 
@@ -3761,7 +3761,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 2.7.13
     vite-plugin-solid: 2.2.5
-    vite-plugin-ssr: 0.3.49
+    vite-plugin-ssr: 0.3.50
   languageName: unknown
   linkType: soft
 
