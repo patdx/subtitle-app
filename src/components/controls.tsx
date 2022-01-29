@@ -1,5 +1,4 @@
 import { once } from 'lodash-es';
-import { Duration } from 'luxon';
 import NoSleep from 'nosleep.js';
 import { createSignal, Show } from 'solid-js';
 import {
@@ -7,11 +6,38 @@ import {
   getTimeElapsed,
   getTimeElapsedAsDuration,
   setClock,
+  setTextSize,
+  TEXT_SIZES,
 } from '../utils';
-import { LeftIcon, MenuIcon, RightIcon } from './icons';
+import { LeftIcon, MenuIcon, PauseIcon, PlayIcon, RightIcon } from './icons';
 import { NumberInput } from './text-input';
 
 const getNoSleep = once(() => new NoSleep());
+
+const IconTextButton = ({ icon, text, onClick }: any) => {
+  return (
+    <button
+      className="h-10 w-10 relative hover:bg-white active:bg-white"
+      onClick={onClick}
+    >
+      <div className="absolute top-0 left-0 right-0 flex justify-center">
+        {icon}
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 text-center">{text}</div>
+    </button>
+  );
+};
+
+const TextButton = ({ children, onClick }: any) => {
+  return (
+    <button
+      className="h-10 w-10 relative hover:bg-white active:bg-white flex justify-center items-center"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+};
 
 export const Controls = () => {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -109,35 +135,31 @@ export const Controls = () => {
               />
             </div>
 
-            <div className="flex gap-2 justify-center items-center">
-              <button
-                className="flex flex-col"
+            <div className="flex justify-center items-center">
+              <IconTextButton
+                icon={<LeftIcon />}
+                text={'1s'}
                 onClick={() => {
                   setClock({
                     lastActionAt: new Date(),
                     lastTimeElapsedMs: getTimeElapsed() - 1000,
                   });
                 }}
-              >
-                <LeftIcon />
-                <div>1s</div>
-              </button>
+              />
 
-              <button
-                className="flex flex-col"
+              <IconTextButton
+                icon={<LeftIcon />}
+                text={'0.1s'}
                 onClick={() => {
                   setClock({
                     lastActionAt: new Date(),
                     lastTimeElapsedMs: getTimeElapsed() - 100,
                   });
                 }}
-              >
-                <LeftIcon />
-                <div>0.1s</div>
-              </button>
+              />
 
               <button
-                class="text-2xl"
+                class="h-10 w-10 flex justify-center items-center hover:bg-white active:bg-white"
                 onClick={() => {
                   const isPlaying = !clock.isPlaying;
 
@@ -156,34 +178,46 @@ export const Controls = () => {
                   });
                 }}
               >
-                {clock.isPlaying ? '⏸️' : '▶️'}
+                {clock.isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>
 
-              <button
-                className="flex flex-col"
+              <IconTextButton
+                icon={<RightIcon />}
+                text={'0.1s'}
                 onClick={() => {
                   setClock({
                     lastActionAt: new Date(),
                     lastTimeElapsedMs: getTimeElapsed() + 100,
                   });
                 }}
-              >
-                <RightIcon />
-                <div>0.1s</div>
-              </button>
+              />
 
-              <button
-                className="flex flex-col"
+              <IconTextButton
+                icon={<RightIcon />}
+                text={'1s'}
                 onClick={() => {
                   setClock({
                     lastActionAt: new Date(),
                     lastTimeElapsedMs: getTimeElapsed() + 1000,
                   });
                 }}
-              >
-                <RightIcon />
-                <div>1s</div>
-              </button>
+              />
+            </div>
+
+            {/* text size */}
+            <div className="flex justify-center items-center">
+              <TextButton onClick={() => setTextSize(TEXT_SIZES[0])}>
+                XS
+              </TextButton>
+              <TextButton onClick={() => setTextSize(TEXT_SIZES[1])}>
+                SM
+              </TextButton>
+              <TextButton onClick={() => setTextSize(TEXT_SIZES[2])}>
+                MD
+              </TextButton>
+              <TextButton onClick={() => setTextSize(TEXT_SIZES[3])}>
+                LG
+              </TextButton>
             </div>
           </div>
 

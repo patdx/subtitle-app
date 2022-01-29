@@ -39,15 +39,18 @@ export const getActiveNodes = (
   nodes.forEach((node, index) => {
     const isActive = nodeIsActive(node, currentTime);
     if (!isActive) return;
-    const previous = nodes[index - 1];
-    if (previous) {
-      selectedNodes.add(previous);
-    }
+
+    // TODO: find a way to show next uppcoming node
+    // even if no active node is currently set
+    // const previous = nodes[index - 1];
+    // if (previous) {
+    //   selectedNodes.add(previous);
+    // }
     selectedNodes.add(node);
-    const next = nodes[index + 1];
-    if (next) {
-      selectedNodes.add(next);
-    }
+    // const next = nodes[index + 1];
+    // if (next) {
+    //   selectedNodes.add(next);
+    // }
   });
 
   if (selectedNodes.size === 0) {
@@ -82,6 +85,11 @@ export const [clock, setClock] = createStore({
   playSpeed: 1,
   isPlaying: false,
 });
+
+export const TEXT_SIZES = ["text-sm", "text-base", "text-[32px]", "text-[64px]"] as const;
+type TextSize = typeof TEXT_SIZES[number];
+
+export const [getTextSize, setTextSize] = createSignal<TextSize>("text-[32px]");
 
 export const [getFile, setFile] = createSignal<DbLine[]>();
 
