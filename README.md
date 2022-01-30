@@ -1,4 +1,4 @@
-# subtitle-app-solid
+# subtitle-app
 
 ## Usage
 
