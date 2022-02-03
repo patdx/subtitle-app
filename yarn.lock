@@ -471,10 +471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@plussub/srt-vtt-parser@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@plussub/srt-vtt-parser@npm:1.0.6"
-  checksum: b6e3bd1327272102a7618d834ae02064c90bc3deddf0157038264357b6bf57ac3773999c2211330aad47cef2c3d0137689367ebe008a4b4aa768cfd8b65501ab
+"@plussub/srt-vtt-parser@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@plussub/srt-vtt-parser@npm:1.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40plussub%2Fsrt-vtt-parser%2F-%2Fsrt-vtt-parser-1.1.0.tgz"
+  checksum: 7bcdcbdd240dff653cd7c45de2899d56582a2db443e3ffdddf3738506271aa07d49c1e72bdea14a4b6f82e7c7afaf70d94fe66f88482f62fa87ce867323223d6
   languageName: node
   linkType: hard
 
@@ -3763,7 +3763,7 @@ fsevents@~2.3.2:
   version: 0.0.0-use.local
   resolution: "vite-template-solid@workspace:."
   dependencies:
-    "@plussub/srt-vtt-parser": 1.0.6
+    "@plussub/srt-vtt-parser": 1.1.0
     "@tailwindcss/forms": 0.4.0
     "@types/lodash-es": 4.17.5
     "@types/luxon": 2.0.9
