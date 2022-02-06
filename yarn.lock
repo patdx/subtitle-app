@@ -496,12 +496,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:4.17.5":
-  version: 4.17.5
-  resolution: "@types/lodash-es@npm:4.17.5"
+"@types/lodash-es@npm:4.17.6":
+  version: 4.17.6
+  resolution: "@types/lodash-es@npm:4.17.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Flodash-es%2F-%2Flodash-es-4.17.6.tgz"
   dependencies:
     "@types/lodash": "*"
-  checksum: 8910f646310aa008bb45071619fe85abf917bbc2c7cc0af883a971de261723247695a58dd966bfa9defd946cef79811d8b075eb6f0af12343080ab0ae6614e12
+  checksum: 9bd239dd525086e278821949ce12fbdd4f100a060fed9323fc7ad5661113e1641f28a7ebab617230ed3474680d8f4de705c1928b48252bb684be6ec9eed715db
   languageName: node
   linkType: hard
 
@@ -3765,7 +3765,7 @@ fsevents@~2.3.2:
   dependencies:
     "@plussub/srt-vtt-parser": 1.1.0
     "@tailwindcss/forms": 0.4.0
-    "@types/lodash-es": 4.17.5
+    "@types/lodash-es": 4.17.6
     "@types/luxon": 2.0.9
     "@types/node": 16.11.22
     "@zip.js/zip.js": 2.4.3
