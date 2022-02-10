@@ -3551,10 +3551,10 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.3.6":
-  version: 1.3.6
-  resolution: "solid-js@npm:1.3.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.3.6.tgz"
-  checksum: 6245a76e21b50bc5ef98fef2738302eb5b94ade5684aa78a976b0a4b4dd0e1080c392c7d7ac5a1ca12d945210c97a5c4990bf476f5855db5f353e5afa66492aa
+"solid-js@npm:1.3.7":
+  version: 1.3.7
+  resolution: "solid-js@npm:1.3.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.3.7.tgz"
+  checksum: a46923b9cfed9d27b0729dd398ddfaa0b83433a771bfa22c81cf7ff86940f6122e5d78cc42a0fa71f2a47221844a74cff21f467696160a6b716fc1f87f576f65
   languageName: node
   linkType: hard
 
@@ -4008,7 +4008,7 @@ resolve@^1.20.0:
     nosleep.js: 0.12.0
     postcss: 8.4.6
     prettier: 2.5.1
-    solid-js: 1.3.6
+    solid-js: 1.3.7
     srt-parser-2: 1.1.7
     tailwindcss: 3.0.19
     typescript: 4.5.5
