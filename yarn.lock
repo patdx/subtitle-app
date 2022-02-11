@@ -3728,9 +3728,9 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:3.0.21":
-  version: 3.0.21
-  resolution: "tailwindcss@npm:3.0.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftailwindcss%2F-%2Ftailwindcss-3.0.21.tgz"
+"tailwindcss@npm:3.0.22":
+  version: 3.0.22
+  resolution: "tailwindcss@npm:3.0.22::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftailwindcss%2F-%2Ftailwindcss-3.0.22.tgz"
   dependencies:
     arg: ^5.0.1
     chalk: ^4.1.2
@@ -3745,6 +3745,7 @@ resolve@^1.20.0:
     is-glob: ^4.0.3
     normalize-path: ^3.0.0
     object-hash: ^2.2.0
+    postcss: ^8.4.6
     postcss-js: ^4.0.0
     postcss-load-config: ^3.1.0
     postcss-nested: 5.0.6
@@ -3758,7 +3759,7 @@ resolve@^1.20.0:
   bin:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
-  checksum: 5ee9bd7bfc746a929ec9d6fe4bd3be0d9e7b2cebf5f1047aab58795773d9c456dd1b7dbedb6b59d58a5c36605445f97626e9132c420394b73f006bbbd2c3e759
+  checksum: 52ec8c4e635d65b708ce762e93d327b3bed9e100db43749bb515e19d4b1af4fe1b0752b57a09939074c265ff63e5ee3451b6ceb7ab7e0da9aa02584cb33eef29
   languageName: node
   linkType: hard
 
@@ -4010,7 +4011,7 @@ resolve@^1.20.0:
     prettier: 2.5.1
     solid-js: 1.3.7
     srt-parser-2: 1.1.7
-    tailwindcss: 3.0.21
+    tailwindcss: 3.0.22
     typescript: 4.5.5
     video-name-parser: 1.4.6
     vite: 2.8.1
