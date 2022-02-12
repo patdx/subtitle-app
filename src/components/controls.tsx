@@ -9,7 +9,15 @@ import {
   setTextSize,
   TEXT_SIZES,
 } from '../utils';
-import { LeftIcon, MenuIcon, PauseIcon, PlayIcon, RightIcon } from './icons';
+import {
+  FullScreenIcon,
+  GoBackIcon,
+  LeftIcon,
+  MenuIcon,
+  PauseIcon,
+  PlayIcon,
+  RightIcon,
+} from './icons';
 import { NumberInput } from './text-input';
 
 const getNoSleep = once(() => new NoSleep());
@@ -17,13 +25,15 @@ const getNoSleep = once(() => new NoSleep());
 const IconTextButton = ({ icon, text, onClick }: any) => {
   return (
     <button
-      className="h-10 w-10 relative hover:bg-white active:bg-white"
+      className="relative h-10 w-10 text-gray-200 hover:text-white active:text-white"
       onClick={onClick}
     >
       <div className="absolute top-0 left-0 right-0 flex justify-center">
         {icon}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 text-center">{text}</div>
+      <div className="absolute bottom-0.5 left-0 right-0 text-center text-xs">
+        {text}
+      </div>
     </button>
   );
 };
@@ -31,7 +41,7 @@ const IconTextButton = ({ icon, text, onClick }: any) => {
 const TextButton = ({ children, onClick }: any) => {
   return (
     <button
-      className="h-10 w-10 relative hover:bg-white active:bg-white flex justify-center items-center"
+      className="relative flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
       onClick={onClick}
     >
       {children}
@@ -44,98 +54,127 @@ export const Controls = () => {
 
   return (
     <>
-      <Show when={isOpen()}>
-        <div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-white to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
-          {/* padding */}
-          <div className="h-[env(safe-area-inset-top,0)]"></div>
-          <a href="/">Manage files</a>
+      <div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+        {/* padding for iOS */}
+        <div className="h-[env(safe-area-inset-top,0)]"></div>
+        <div className="flex">
+          <Show when={isOpen()}>
+            {/* go back button */}
+            <a
+              href="/"
+              class="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+            >
+              <GoBackIcon />
+            </a>
+          </Show>
+
+          <div className="flex-1"></div>
+
+          <Show when={isOpen()}>
+            {/* full screen button (for Android) */}
+            <button
+              onClick={() => {
+                let elem = document.getElementById('app');
+
+                if (!elem) throw new Error('cannot find #app element!');
+
+                if (!document.fullscreenElement) {
+                  elem
+                    .requestFullscreen({
+                      navigationUI: 'hide',
+                    })
+                    .catch((err) => {
+                      alert(
+                        `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+                      );
+                    });
+                } else {
+                  document.exitFullscreen();
+                }
+              }}
+              className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+            >
+              <FullScreenIcon />
+            </button>
+          </Show>
+
+          {/* toggle menu */}
+          <button
+            onClick={() => setIsOpen((isOpen) => !isOpen)}
+            className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+          >
+            <MenuIcon />
+          </button>
         </div>
+      </div>
 
-        <div class="absolute bottom-0 left-0 right-0  bg-gradient-to-t from-white to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
-          <div className="flex flex-wrap justify-center gap-2 items-center">
-            <div className="flex gap-2 justify-center items-center">
-              <div>
-                <NumberInput
-                  value={getTimeElapsedAsDuration().hours}
-                  padWidth={2}
-                  suffix="h"
-                  onChange={(value) => {
-                    const duration = getTimeElapsedAsDuration().set({
-                      hours: value,
-                    });
-                    setClock({
-                      lastActionAt: new Date(),
-                      lastTimeElapsedMs: duration.toMillis(),
-                    });
-                  }}
-                />
-
-                <NumberInput
-                  value={getTimeElapsedAsDuration().minutes}
-                  padWidth={2}
-                  suffix="m"
-                  onChange={(value) => {
-                    const duration = getTimeElapsedAsDuration().set({
-                      minutes: value,
-                    });
-                    setClock({
-                      lastActionAt: new Date(),
-                      lastTimeElapsedMs: duration.toMillis(),
-                    });
-                  }}
-                />
-
-                <NumberInput
-                  value={getTimeElapsedAsDuration().seconds}
-                  padWidth={2}
-                  suffix="s"
-                  onChange={(value) => {
-                    const duration = getTimeElapsedAsDuration().set({
-                      seconds: value,
-                    });
-                    setClock({
-                      lastActionAt: new Date(),
-                      lastTimeElapsedMs: duration.toMillis(),
-                    });
-                  }}
-                />
-
-                <NumberInput
-                  widthClassName="w-20"
-                  padWidth={3}
-                  value={getTimeElapsedAsDuration().milliseconds}
-                  suffix="ms"
-                  onChange={(value) => {
-                    const duration = getTimeElapsedAsDuration().set({
-                      milliseconds: value,
-                    });
-                    setClock({
-                      lastActionAt: new Date(),
-                      lastTimeElapsedMs: duration.toMillis(),
-                    });
-                  }}
-                />
-              </div>
+      <Show when={isOpen()}>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+          <div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
+            <div className="flex items-center justify-between sm:justify-center">
+              <NumberInput
+                value={getTimeElapsedAsDuration().hours}
+                padWidth={2}
+                suffix="h"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    hours: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
 
               <NumberInput
-                value={clock.playSpeed}
-                suffix="x"
+                value={getTimeElapsedAsDuration().minutes}
+                padWidth={2}
+                suffix="m"
                 onChange={(value) => {
-                  const newPlaySpeed =
-                    typeof value === 'string' ? parseFloat(value) : undefined;
+                  const duration = getTimeElapsedAsDuration().set({
+                    minutes: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
 
-                  if (Number.isFinite(newPlaySpeed)) {
-                    setClock({
-                      playSpeed: newPlaySpeed,
-                      lastActionAt: new Date(),
-                      lastTimeElapsedMs: getTimeElapsed(),
-                    });
-                  }
+              <NumberInput
+                value={getTimeElapsedAsDuration().seconds}
+                padWidth={2}
+                suffix="s"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    seconds: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
+                }}
+              />
+
+              <NumberInput
+                widthClassName="w-20"
+                padWidth={3}
+                value={getTimeElapsedAsDuration().milliseconds}
+                suffix="ms"
+                onChange={(value) => {
+                  const duration = getTimeElapsedAsDuration().set({
+                    milliseconds: value,
+                  });
+                  setClock({
+                    lastActionAt: new Date(),
+                    lastTimeElapsedMs: duration.toMillis(),
+                  });
                 }}
               />
             </div>
 
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-between sm:justify-center">
               <IconTextButton
                 icon={<LeftIcon />}
                 text={'1s'}
@@ -159,7 +198,7 @@ export const Controls = () => {
               />
 
               <button
-                class="h-10 w-10 flex justify-center items-center hover:bg-white active:bg-white"
+                class="flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
                 onClick={() => {
                   const isPlaying = !clock.isPlaying;
 
@@ -205,7 +244,23 @@ export const Controls = () => {
             </div>
 
             {/* text size */}
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-between sm:justify-center">
+              <NumberInput
+                value={clock.playSpeed}
+                suffix="x"
+                onChange={(value) => {
+                  const newPlaySpeed =
+                    typeof value === 'string' ? parseFloat(value) : undefined;
+
+                  if (Number.isFinite(newPlaySpeed)) {
+                    setClock({
+                      playSpeed: newPlaySpeed,
+                      lastActionAt: new Date(),
+                      lastTimeElapsedMs: getTimeElapsed(),
+                    });
+                  }
+                }}
+              />
               <TextButton onClick={() => setTextSize(TEXT_SIZES[0])}>
                 XS
               </TextButton>
@@ -225,13 +280,6 @@ export const Controls = () => {
           <div className="h-[env(safe-area-inset-bottom,0)]"></div>
         </div>
       </Show>
-
-      <button
-        onClick={() => setIsOpen((isOpen) => !isOpen)}
-        className="absolute top-[env(safe-area-inset-top,0)] w-10 right-[env(safe-area-inset-right,0)] h-10 active:ring-white bg-gray-700 flex justify-center items-center"
-      >
-        <MenuIcon />
-      </button>
     </>
   );
 };

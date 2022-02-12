@@ -44,18 +44,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.16.0, @babel/generator@npm:^7.16.7":
-  version: 7.16.7
-  resolution: "@babel/generator@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fgenerator%2F-%2Fgenerator-7.16.7.tgz"
-  dependencies:
-    "@babel/types": ^7.16.7
-    jsesc: ^2.5.1
-    source-map: ^0.5.0
-  checksum: 20c6a7c5e372a66ec2900c074b2ec3634d3f615cafccbb416770f4b419251c6dc27a0a137b71407e218463fe059a3a6a5afb734f35089d94bdb66e01fe8a9e6f
-  languageName: node
-  linkType: hard
-
-"@babel/generator@npm:^7.16.8":
+"@babel/generator@npm:^7.16.0, @babel/generator@npm:^7.16.8":
   version: 7.16.8
   resolution: "@babel/generator@npm:7.16.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fgenerator%2F-%2Fgenerator-7.16.8.tgz"
   dependencies:
@@ -270,21 +259,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.16.10, @babel/parser@npm:^7.16.12":
+"@babel/parser@npm:^7.16.10, @babel/parser@npm:^7.16.12, @babel/parser@npm:^7.16.7":
   version: 7.16.12
   resolution: "@babel/parser@npm:7.16.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fparser%2F-%2Fparser-7.16.12.tgz"
   bin:
     parser: ./bin/babel-parser.js
   checksum: af287f0f3dfa564958a7dddfeb62e08c0de9ce9bd8447fcde0997da26ec477bf19f37161b9d970e2c7e0d1f77e441258907d3347beddd0d42cae85ed46947703
-  languageName: node
-  linkType: hard
-
-"@babel/parser@npm:^7.16.7":
-  version: 7.16.7
-  resolution: "@babel/parser@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Fparser%2F-%2Fparser-7.16.7.tgz"
-  bin:
-    parser: ./bin/babel-parser.js
-  checksum: e664ff1edda164ab3f3c97fc1dd1a8930b0fba9981cbf873d3f25a22d16d50e2efcfaf81daeefa978bff2c4f268d34832f6817c8bc4e03594c3f43beba92fb68
   languageName: node
   linkType: hard
 
@@ -347,7 +327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.16.10":
+"@babel/traverse@npm:^7.16.10, @babel/traverse@npm:^7.16.7":
   version: 7.16.10
   resolution: "@babel/traverse@npm:7.16.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftraverse%2F-%2Ftraverse-7.16.10.tgz"
   dependencies:
@@ -365,35 +345,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.16.7":
-  version: 7.16.7
-  resolution: "@babel/traverse@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftraverse%2F-%2Ftraverse-7.16.7.tgz"
-  dependencies:
-    "@babel/code-frame": ^7.16.7
-    "@babel/generator": ^7.16.7
-    "@babel/helper-environment-visitor": ^7.16.7
-    "@babel/helper-function-name": ^7.16.7
-    "@babel/helper-hoist-variables": ^7.16.7
-    "@babel/helper-split-export-declaration": ^7.16.7
-    "@babel/parser": ^7.16.7
-    "@babel/types": ^7.16.7
-    debug: ^4.1.0
-    globals: ^11.1.0
-  checksum: 65261f7a5bf257c10a9415b6c227fb555ace359ad786645d9cf22f0e3fc8dc8e38895269f3b93cc39eccd8ed992e7bacc358b4cb7d3496fe54f91cda49220834
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.16.0, @babel/types@npm:^7.16.7, @babel/types@npm:^7.8.3":
-  version: 7.16.7
-  resolution: "@babel/types@npm:7.16.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftypes%2F-%2Ftypes-7.16.7.tgz"
-  dependencies:
-    "@babel/helper-validator-identifier": ^7.16.7
-    to-fast-properties: ^2.0.0
-  checksum: df9210723259df9faea8c7e5674a59e57ead82664aab9f54daae887db5a50a956f30f57ed77a2d6cbb89b908d520cf8d883267c4e9098e31bc74649f2f714654
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.16.8":
+"@babel/types@npm:^7.16.0, @babel/types@npm:^7.16.7, @babel/types@npm:^7.16.8, @babel/types@npm:^7.8.3":
   version: 7.16.8
   resolution: "@babel/types@npm:7.16.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40babel%2Ftypes%2F-%2Ftypes-7.16.8.tgz"
   dependencies:
@@ -1411,24 +1363,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-android-arm64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-android-arm64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-android-arm64%2F-%2Fesbuild-android-arm64-0.13.15.tgz"
-  conditions: os=android & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "esbuild-android-arm64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-android-arm64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-android-arm64%2F-%2Fesbuild-android-arm64-0.14.21.tgz"
   conditions: os=android & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"esbuild-darwin-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-darwin-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-darwin-64%2F-%2Fesbuild-darwin-64-0.13.15.tgz"
-  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1439,24 +1377,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-darwin-arm64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-darwin-arm64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-darwin-arm64%2F-%2Fesbuild-darwin-arm64-0.13.15.tgz"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "esbuild-darwin-arm64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-darwin-arm64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-darwin-arm64%2F-%2Fesbuild-darwin-arm64-0.14.21.tgz"
   conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"esbuild-freebsd-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-freebsd-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-freebsd-64%2F-%2Fesbuild-freebsd-64-0.13.15.tgz"
-  conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1467,24 +1391,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-freebsd-arm64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-freebsd-arm64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-freebsd-arm64%2F-%2Fesbuild-freebsd-arm64-0.13.15.tgz"
-  conditions: os=freebsd & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "esbuild-freebsd-arm64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-freebsd-arm64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-freebsd-arm64%2F-%2Fesbuild-freebsd-arm64-0.14.21.tgz"
   conditions: os=freebsd & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"esbuild-linux-32@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-32@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-32%2F-%2Fesbuild-linux-32-0.13.15.tgz"
-  conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
 
@@ -1495,24 +1405,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-linux-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-64%2F-%2Fesbuild-linux-64-0.13.15.tgz"
-  conditions: os=linux & cpu=x64
-  languageName: node
-  linkType: hard
-
 "esbuild-linux-64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-linux-64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-64%2F-%2Fesbuild-linux-64-0.14.21.tgz"
   conditions: os=linux & cpu=x64
-  languageName: node
-  linkType: hard
-
-"esbuild-linux-arm64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-arm64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-arm64%2F-%2Fesbuild-linux-arm64-0.13.15.tgz"
-  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
@@ -1523,13 +1419,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-linux-arm@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-arm@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-arm%2F-%2Fesbuild-linux-arm-0.13.15.tgz"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
 "esbuild-linux-arm@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-linux-arm@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-arm%2F-%2Fesbuild-linux-arm-0.14.21.tgz"
@@ -1537,24 +1426,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-linux-mips64le@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-mips64le@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-mips64le%2F-%2Fesbuild-linux-mips64le-0.13.15.tgz"
-  conditions: os=linux & cpu=mips64el
-  languageName: node
-  linkType: hard
-
 "esbuild-linux-mips64le@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-linux-mips64le@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-mips64le%2F-%2Fesbuild-linux-mips64le-0.14.21.tgz"
   conditions: os=linux & cpu=mips64el
-  languageName: node
-  linkType: hard
-
-"esbuild-linux-ppc64le@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-linux-ppc64le@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-linux-ppc64le%2F-%2Fesbuild-linux-ppc64le-0.13.15.tgz"
-  conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
 
@@ -1579,24 +1454,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-netbsd-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-netbsd-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-netbsd-64%2F-%2Fesbuild-netbsd-64-0.13.15.tgz"
-  conditions: os=netbsd & cpu=x64
-  languageName: node
-  linkType: hard
-
 "esbuild-netbsd-64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-netbsd-64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-netbsd-64%2F-%2Fesbuild-netbsd-64-0.14.21.tgz"
   conditions: os=netbsd & cpu=x64
-  languageName: node
-  linkType: hard
-
-"esbuild-openbsd-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-openbsd-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-openbsd-64%2F-%2Fesbuild-openbsd-64-0.13.15.tgz"
-  conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1607,24 +1468,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-sunos-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-sunos-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-sunos-64%2F-%2Fesbuild-sunos-64-0.13.15.tgz"
-  conditions: os=sunos & cpu=x64
-  languageName: node
-  linkType: hard
-
 "esbuild-sunos-64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-sunos-64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-sunos-64%2F-%2Fesbuild-sunos-64-0.14.21.tgz"
   conditions: os=sunos & cpu=x64
-  languageName: node
-  linkType: hard
-
-"esbuild-windows-32@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-windows-32@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-windows-32%2F-%2Fesbuild-windows-32-0.13.15.tgz"
-  conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
@@ -1635,13 +1482,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-windows-64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-windows-64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-windows-64%2F-%2Fesbuild-windows-64-0.13.15.tgz"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
 "esbuild-windows-64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-windows-64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-windows-64%2F-%2Fesbuild-windows-64-0.14.21.tgz"
@@ -1649,79 +1489,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-windows-arm64@npm:0.13.15":
-  version: 0.13.15
-  resolution: "esbuild-windows-arm64@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-windows-arm64%2F-%2Fesbuild-windows-arm64-0.13.15.tgz"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "esbuild-windows-arm64@npm:0.14.21":
   version: 0.14.21
   resolution: "esbuild-windows-arm64@npm:0.14.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild-windows-arm64%2F-%2Fesbuild-windows-arm64-0.14.21.tgz"
   conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"esbuild@npm:^0.13.12":
-  version: 0.13.15
-  resolution: "esbuild@npm:0.13.15::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild%2F-%2Fesbuild-0.13.15.tgz"
-  dependencies:
-    esbuild-android-arm64: 0.13.15
-    esbuild-darwin-64: 0.13.15
-    esbuild-darwin-arm64: 0.13.15
-    esbuild-freebsd-64: 0.13.15
-    esbuild-freebsd-arm64: 0.13.15
-    esbuild-linux-32: 0.13.15
-    esbuild-linux-64: 0.13.15
-    esbuild-linux-arm: 0.13.15
-    esbuild-linux-arm64: 0.13.15
-    esbuild-linux-mips64le: 0.13.15
-    esbuild-linux-ppc64le: 0.13.15
-    esbuild-netbsd-64: 0.13.15
-    esbuild-openbsd-64: 0.13.15
-    esbuild-sunos-64: 0.13.15
-    esbuild-windows-32: 0.13.15
-    esbuild-windows-64: 0.13.15
-    esbuild-windows-arm64: 0.13.15
-  dependenciesMeta:
-    esbuild-android-arm64:
-      optional: true
-    esbuild-darwin-64:
-      optional: true
-    esbuild-darwin-arm64:
-      optional: true
-    esbuild-freebsd-64:
-      optional: true
-    esbuild-freebsd-arm64:
-      optional: true
-    esbuild-linux-32:
-      optional: true
-    esbuild-linux-64:
-      optional: true
-    esbuild-linux-arm:
-      optional: true
-    esbuild-linux-arm64:
-      optional: true
-    esbuild-linux-mips64le:
-      optional: true
-    esbuild-linux-ppc64le:
-      optional: true
-    esbuild-netbsd-64:
-      optional: true
-    esbuild-openbsd-64:
-      optional: true
-    esbuild-sunos-64:
-      optional: true
-    esbuild-windows-32:
-      optional: true
-    esbuild-windows-64:
-      optional: true
-    esbuild-windows-arm64:
-      optional: true
-  bin:
-    esbuild: bin/esbuild
-  checksum: d5fac8f28a6328592e45f9d49a7e98420cf2c2a3ff5a753bbf011ab79bcb5c062209ef862d3ae0875d8f2a50d40c112b0224e8b419a7cbffc6e2b02cee11ef7e
   languageName: node
   linkType: hard
 
@@ -2363,7 +2134,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.8.0, is-core-module@npm:^2.8.1":
+"is-core-module@npm:^2.8.1":
   version: 2.8.1
   resolution: "is-core-module@npm:2.8.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fis-core-module%2F-%2Fis-core-module-2.8.1.tgz"
   dependencies:
@@ -2800,15 +2571,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.30":
-  version: 3.1.30
-  resolution: "nanoid@npm:3.1.30"
-  bin:
-    nanoid: bin/nanoid.cjs
-  checksum: 276d0d4b0c41c46aeefec5f09f093e4085a2352d06881c845db22b84f8ef72cc8defae6d76bfb1d8a2a128eb2dec42ab148d16582be4e7754c97905806ef57b6
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.2.0":
   version: 3.2.0
   resolution: "nanoid@npm:3.2.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fnanoid%2F-%2Fnanoid-3.2.0.tgz"
@@ -3075,17 +2837,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:^6.0.6":
-  version: 6.0.8
-  resolution: "postcss-selector-parser@npm:6.0.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss-selector-parser%2F-%2Fpostcss-selector-parser-6.0.8.tgz"
-  dependencies:
-    cssesc: ^3.0.0
-    util-deprecate: ^1.0.2
-  checksum: 550351c8d04216106e259f7c433652aa6742dd7ddbedf7afdc313526963bb170589a6fefd1bc1fe6268a2cf9f5073d4ecb09bc7b5b4bef49edf80634300500af
-  languageName: node
-  linkType: hard
-
-"postcss-selector-parser@npm:^6.0.9":
+"postcss-selector-parser@npm:^6.0.6, postcss-selector-parser@npm:^6.0.9":
   version: 6.0.9
   resolution: "postcss-selector-parser@npm:6.0.9::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss-selector-parser%2F-%2Fpostcss-selector-parser-6.0.9.tgz"
   dependencies:
@@ -3113,14 +2865,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.5":
-  version: 8.4.5
-  resolution: "postcss@npm:8.4.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.5.tgz"
-  dependencies:
-    nanoid: ^3.1.30
-    picocolors: ^1.0.0
-    source-map-js: ^1.0.1
-  checksum: b78abdd89c10f7b48f4bdcd376104a19d6e9c7495ab521729bdb3df315af6c211360e9f06887ad3bc0ab0f61a04b91d68ea11462997c79cced58b9ccd66fac07
+"prettier-plugin-tailwindcss@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "prettier-plugin-tailwindcss@npm:0.1.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fprettier-plugin-tailwindcss%2F-%2Fprettier-plugin-tailwindcss-0.1.7.tgz"
+  peerDependencies:
+    prettier: ">=2.2.0"
+  checksum: a692a025a1c73bc95b0c1b2d1763ee47023908f95e83f120517e87f82bc4885a202ef5a0819f8b3c12bf71286b9ab6d4d014342983d84ba878bcef0e20a4e0d8
   languageName: node
   linkType: hard
 
@@ -3328,19 +3078,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-resolve@^1.20.0:
-  version: 1.21.0
-  resolution: "resolve@npm:1.21.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fresolve%2F-%2Fresolve-1.21.0.tgz"
-  dependencies:
-    is-core-module: ^2.8.0
-    path-parse: ^1.0.7
-    supports-preserve-symlinks-flag: ^1.0.0
-  bin:
-    resolve: bin/resolve
-  checksum: d7d9092a5c04a048bea16c7e5a2eb605ac3e8363a0cc5644de1fde17d5028e8d5f4343aab1d99bd327b98e91a66ea83e242718150c64dfedcb96e5e7aad6c4f5
-  languageName: node
-  linkType: hard
-
 "resolve@npm:^1.22.0":
   version: 1.22.0
   resolution: "resolve@npm:1.22.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fresolve%2F-%2Fresolve-1.22.0.tgz"
@@ -3351,19 +3088,6 @@ resolve@^1.20.0:
   bin:
     resolve: bin/resolve
   checksum: a2d14cc437b3a23996f8c7367eee5c7cf8149c586b07ca2ae00e96581ce59455555a1190be9aa92154785cf9f2042646c200d0e00e0bbd2b8a995a93a0ed3e4e
-  languageName: node
-  linkType: hard
-
-"resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>":
-  version: 1.21.0
-  resolution: "resolve@patch:resolve@npm%3A1.21.0%3A%3A__archiveUrl=https%253A%252F%252Fregistry.npmjs.org%252Fresolve%252F-%252Fresolve-1.21.0.tgz#~builtin<compat/resolve>::version=1.21.0&hash=07638b"
-  dependencies:
-    is-core-module: ^2.8.0
-    path-parse: ^1.0.7
-    supports-preserve-symlinks-flag: ^1.0.0
-  bin:
-    resolve: bin/resolve
-  checksum: a0a4d1f7409e73190f31f901f8a619960bb3bd4ae38ba3a54c7ea7e1c87758d28a73256bb8d6a35996a903d1bf14f53883f0dcac6c571c063cb8162d813ad26e
   languageName: node
   linkType: hard
 
@@ -3551,17 +3275,10 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.3.7":
+"solid-js@npm:1.3.7, solid-js@npm:^1.3.3":
   version: 1.3.7
   resolution: "solid-js@npm:1.3.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.3.7.tgz"
   checksum: a46923b9cfed9d27b0729dd398ddfaa0b83433a771bfa22c81cf7ff86940f6122e5d78cc42a0fa71f2a47221844a74cff21f467696160a6b716fc1f87f576f65
-  languageName: node
-  linkType: hard
-
-"solid-js@npm:^1.3.3":
-  version: 1.3.3
-  resolution: "solid-js@npm:1.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.3.3.tgz"
-  checksum: 3ce169ac778f502ed5b18d69dbfb6d0b29b34528675f405052b73eb6be069e8c395a8d64d1ee4fefa4f32ee7eea19377b853917d29acf273e0049d7da3ad2d9f
   languageName: node
   linkType: hard
 
@@ -3575,13 +3292,6 @@ resolve@^1.20.0:
   peerDependencies:
     solid-js: ^1.3.0
   checksum: 84852c896ca237001431585b141ebad30fd06387bb5a25100b106a4742fffd9e437b4dcd5dd4e3569c4d0acf50f8b652e9a299af9a31fed4e8d9b46855ed7485
-  languageName: node
-  linkType: hard
-
-"source-map-js@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "source-map-js@npm:1.0.1"
-  checksum: 22606113d62bbd468712b0cb0c46e9a8629de7eb081049c62a04d977a211abafd7d61455617f8b78daba0b6c0c7e7c88f8c6b5aaeacffac0a6676ecf5caac5ce
   languageName: node
   linkType: hard
 
@@ -4009,6 +3719,7 @@ resolve@^1.20.0:
     nosleep.js: 0.12.0
     postcss: 8.4.6
     prettier: 2.5.1
+    prettier-plugin-tailwindcss: ^0.1.7
     solid-js: 1.3.7
     srt-parser-2: 1.1.7
     tailwindcss: 3.0.22
@@ -4020,7 +3731,7 @@ resolve@^1.20.0:
   languageName: unknown
   linkType: soft
 
-"vite@npm:2.8.1":
+"vite@npm:2.8.1, vite@npm:^2.7.13":
   version: 2.8.1
   resolution: "vite@npm:2.8.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.8.1.tgz"
   dependencies:
@@ -4046,35 +3757,6 @@ resolve@^1.20.0:
   bin:
     vite: bin/vite.js
   checksum: 4ce8acc2dd2a7ca8727511ff575f72de162114402e55e5d081001f05ef1656782cd5611d4f6091c29efb455e72d30967467bad5b6b329bfe5279fbe8d5169d67
-  languageName: node
-  linkType: hard
-
-"vite@npm:^2.7.13":
-  version: 2.7.13
-  resolution: "vite@npm:2.7.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.7.13.tgz"
-  dependencies:
-    esbuild: ^0.13.12
-    fsevents: ~2.3.2
-    postcss: ^8.4.5
-    resolve: ^1.20.0
-    rollup: ^2.59.0
-  peerDependencies:
-    less: "*"
-    sass: "*"
-    stylus: "*"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    less:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 3d8780754974c5012b768b5394dce15a171e2f9e061f86517a9c934bfff02855439d411c6769efc0a1791f6c511e703e1ade8ac14a8030b0e62408af39eea456
   languageName: node
   linkType: hard
 

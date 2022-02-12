@@ -108,6 +108,10 @@ interface MyDB extends DBSchema {
     value: {
       id: string;
       name: string;
+      /** length of file (TBD) */
+      length?: any;
+      watched?: boolean;
+      progress?: string;
     };
   };
   lines: {

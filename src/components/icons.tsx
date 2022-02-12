@@ -6,8 +6,7 @@ export const MenuIcon = () => (
     className="h-6 w-6"
     fill="none"
     viewBox="0 0 24 24"
-    // stroke="currentColor"
-    stroke="white"
+    stroke="currentColor"
   >
     <path
       stroke-linecap="round"
@@ -77,6 +76,40 @@ export const PauseIcon = () => (
       fill-rule="evenodd"
       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
       clip-rule="evenodd"
+    />
+  </svg>
+);
+
+export const FullScreenIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+    />
+  </svg>
+);
+
+export const GoBackIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"
     />
   </svg>
 );
