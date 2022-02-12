@@ -37,7 +37,7 @@ const EditFilesPage = () => {
 
   return (
     <>
-      <div className="min-h-full bg-white relative overflow-hidden">
+      <div className="relative min-h-full overflow-hidden bg-white">
         {/* padding */}
         <div className="h-[env(safe-area-inset-top,0)]"></div>
         <input
@@ -86,7 +86,7 @@ const EditFilesPage = () => {
         <label
           tabIndex={0}
           htmlFor={`${id}-file-upload`}
-          class="flex gap-2 justify-between items-center max-w-md mx-auto py-4 px-8 watch:p-2 watch:text-sm bg-blue-300 shadow-lg rounded-lg my-20 watch:my-0 text-gray-800 text-3xl font-semibold cursor-pointer hover:bg-blue-400 active:bg-blue-500"
+          class="mx-auto my-20 flex max-w-md cursor-pointer items-center justify-between gap-2 rounded-lg bg-blue-300 py-4 px-8 text-3xl font-semibold text-gray-800 shadow-lg hover:bg-blue-400 active:bg-blue-500 watch:my-0 watch:p-2 watch:text-sm"
         >
           Add SRT or ZIP...
           <Show when={isProcessing()}>
@@ -99,12 +99,12 @@ const EditFilesPage = () => {
             const metadata = parseVideo(file.name);
 
             return (
-              <div class="group max-w-md mx-auto py-4 px-8 watch:p-2 watch:m-0 bg-white shadow-lg rounded-lg my-20 hover:bg-gray-100 active:bg-gray-200">
+              <div class="group mx-auto my-4 max-w-md rounded bg-white py-4 px-4 shadow-lg hover:bg-gray-100 active:bg-gray-200 watch:m-0 watch:p-2">
                 <a
                   href={`/play?id=${file.id}`}
                   class="flex flex-col gap-2 outline-offset-8"
                 >
-                  <div className="text-gray-800 text-3xl watch:text-sm font-semibold break-all">
+                  <div className="break-all text-xl font-semibold text-gray-800 watch:text-sm">
                     {file.name}
                   </div>
 
@@ -121,9 +121,9 @@ const EditFilesPage = () => {
                   ) : null}
                 </a>
 
-                <div class="flex justify-end mt-4">
+                <div class="mt-4 flex justify-end">
                   <button
-                    class="text-xl watch:text-sm font-medium text-indigo-500 hover:text-indigo-600 active:text-indigo-700 outline-offset-4"
+                    class=" font-medium text-red-500 outline-offset-4 hover:text-red-600 active:text-red-700 watch:text-sm"
                     onClick={async () => {
                       const db = await initAndGetDb();
                       const tx = db.transaction(

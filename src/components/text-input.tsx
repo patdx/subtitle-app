@@ -27,7 +27,7 @@ export const NumberInput = (props: {
     }
   });
 
-  const widthClassName = () => props.widthClassName ?? 'w-12';
+  const widthClassName = () => props.widthClassName ?? 'w-10';
 
   return (
     <Switch>
@@ -38,7 +38,7 @@ export const NumberInput = (props: {
           type="text"
           inputMode="numeric"
           class={clsx(
-            `form-input tabular-nums h-10 px-0 py-1 text-center`,
+            `form-input h-10 px-0 py-1 text-center tabular-nums`,
             widthClassName()
           )}
           onKeyDown={(event) => {
@@ -69,7 +69,7 @@ export const NumberInput = (props: {
       <Match when={mode() === 'view'}>
         <button
           class={clsx(
-            'h-10 tabular-nums hover:bg-gray-100 px-0 py-1 text-center',
+            'h-10 px-0 py-1 text-center tabular-nums text-gray-200 hover:text-white active:text-white',
             widthClassName()
           )}
           // classList={{
