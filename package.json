@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
-    "@zip.js/zip.js": "2.4.3",
+    "@zip.js/zip.js": "2.4.4",
     "alasql": "1.7.3",
     "clsx": "1.1.1",
     "cuid": "2.1.8",
