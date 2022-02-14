@@ -15,7 +15,7 @@
     "@tailwindcss/forms": "0.4.0",
     "@types/lodash-es": "4.17.6",
     "@types/luxon": "2.0.9",
-    "@types/node": "16.11.24",
+    "@types/node": "16.11.25",
     "autoprefixer": "10.4.2",
     "postcss": "8.4.6",
     "prettier": "2.5.1",
