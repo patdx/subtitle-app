@@ -448,16 +448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^27.4.0":
-  version: 27.4.0
-  resolution: "@types/jest@npm:27.4.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fjest%2F-%2Fjest-27.4.0.tgz"
-  dependencies:
-    jest-diff: ^27.0.0
-    pretty-format: ^27.0.0
-  checksum: d2350267f954f9a2e4a15e5f02fbf19a77abfb9fd9e57a954de1fb0e9a0d3d5f8d3646ac7d9c42aeb4b4d828d2e70624ec149c85bb50a48634a54eed8429e1f8
-  languageName: node
-  linkType: hard
-
 "@types/lodash-es@npm:4.17.6":
   version: 4.17.6
   resolution: "@types/lodash-es@npm:4.17.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Flodash-es%2F-%2Flodash-es-4.17.6.tgz"
@@ -655,13 +645,6 @@ __metadata:
   dependencies:
     color-convert: ^2.0.1
   checksum: 513b44c3b2105dd14cc42a19271e80f386466c4be574bccf60b627432f9198571ebf4ab1e4c3ba17347658f4ee1711c163d574248c0c1cdc2d5917a0ad582ec4
-  languageName: node
-  linkType: hard
-
-"ansi-styles@npm:^5.0.0":
-  version: 5.2.0
-  resolution: "ansi-styles@npm:5.2.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fansi-styles%2F-%2Fansi-styles-5.2.0.tgz"
-  checksum: d7f4e97ce0623aea6bc0d90dcd28881ee04cba06c570b97fd3391bd7a268eedfd9d5e2dd4fdcbdd82b8105df5faf6f24aaedc08eaf3da898e702db5948f63469
   languageName: node
   linkType: hard
 
@@ -944,16 +927,6 @@ __metadata:
     escape-string-regexp: ^1.0.5
     supports-color: ^5.3.0
   checksum: ec3661d38fe77f681200f878edbd9448821924e0f93a9cefc0e26a33b145f1027a2084bf19967160d11e1f03bfe4eaffcabf5493b89098b2782c3fe0b03d80c2
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^4.0.0":
-  version: 4.1.2
-  resolution: "chalk@npm:4.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fchalk%2F-%2Fchalk-4.1.2.tgz"
-  dependencies:
-    ansi-styles: ^4.1.0
-    supports-color: ^7.1.0
-  checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
   languageName: node
   linkType: hard
 
@@ -1282,13 +1255,6 @@ __metadata:
   version: 1.2.2
   resolution: "didyoumean@npm:1.2.2"
   checksum: d5d98719d58b3c2fa59663c4c42ba9716f1fd01245c31d5fce31915bd3aa26e6aac149788e007358f778ebbd68a2256eb5973e8ca6f221df221ba060115acf2e
-  languageName: node
-  linkType: hard
-
-"diff-sequences@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "diff-sequences@npm:27.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fdiff-sequences%2F-%2Fdiff-sequences-27.5.1.tgz"
-  checksum: a00db5554c9da7da225db2d2638d85f8e41124eccbd56cbaefb3b276dcbb1c1c2ad851c32defe2055a54a4806f030656cbf6638105fd6ce97bb87b90b32a33ca
   languageName: node
   linkType: hard
 
@@ -2258,25 +2224,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"jest-diff@npm:^27.0.0":
-  version: 27.5.1
-  resolution: "jest-diff@npm:27.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fjest-diff%2F-%2Fjest-diff-27.5.1.tgz"
-  dependencies:
-    chalk: ^4.0.0
-    diff-sequences: ^27.5.1
-    jest-get-type: ^27.5.1
-    pretty-format: ^27.5.1
-  checksum: 8be27c1e1ee57b2bb2bef9c0b233c19621b4c43d53a3c26e2c00a4e805eb4ea11fe1694a06a9fb0e80ffdcfdc0d2b1cb0b85920b3f5c892327ecd1e7bd96b865
-  languageName: node
-  linkType: hard
-
-"jest-get-type@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "jest-get-type@npm:27.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fjest-get-type%2F-%2Fjest-get-type-27.5.1.tgz"
-  checksum: 63064ab70195c21007d897c1157bf88ff94a790824a10f8c890392e7d17eda9c3900513cb291ca1c8d5722cad79169764e9a1279f7c8a9c4cd6e9109ff04bbc0
-  languageName: node
-  linkType: hard
-
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -2959,17 +2906,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^27.0.0, pretty-format@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "pretty-format@npm:27.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpretty-format%2F-%2Fpretty-format-27.5.1.tgz"
-  dependencies:
-    ansi-regex: ^5.0.1
-    ansi-styles: ^5.0.0
-    react-is: ^17.0.1
-  checksum: cf610cffcb793885d16f184a62162f2dd0df31642d9a18edf4ca298e909a8fe80bdbf556d5c9573992c102ce8bf948691da91bf9739bee0ffb6e79c8a8a6e088
-  languageName: node
-  linkType: hard
-
 "printj@npm:~1.1.0":
   version: 1.1.2
   resolution: "printj@npm:1.1.2"
@@ -3089,13 +3025,6 @@ fsevents@~2.3.2:
     iconv-lite: 0.4.24
     unpipe: 1.0.0
   checksum: d2961fa3c71c9c22dc2c3fd60ff377bf36dfed7d7a748f2b25d585934a3e9df565bb9aa5bc2e3a716ea941f4bc2a6ddc795c8b0cf7219fb071029b59b1985394
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^17.0.1":
-  version: 17.0.2
-  resolution: "react-is@npm:17.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Freact-is%2F-%2Freact-is-17.0.2.tgz"
-  checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
   languageName: node
   linkType: hard
 
@@ -3771,13 +3700,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.3.55":
-  version: 0.3.55
-  resolution: "vite-plugin-ssr@npm:0.3.55::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.55.tgz"
+"vite-plugin-ssr@npm:0.3.56":
+  version: 0.3.56
+  resolution: "vite-plugin-ssr@npm:0.3.56::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.56.tgz"
   dependencies:
     "@brillout/json-s": ^0.4.3
     "@brillout/libassert": ^0.5.4
-    "@types/jest": ^27.4.0
     cac: ^6.7.12
     es-module-lexer: ^0.9.3
     fast-glob: ^3.2.11
@@ -3788,7 +3716,7 @@ fsevents@~2.3.2:
     vite: ^2.5.0
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: ce74230f352ae0aca07af4bf23a41f8575af8a0e2b10c6ed2aa599eadd342009e30c243de11ac36d1bf22782490295e8a269bb83068ae3026ca241bc7a6ea5b0
+  checksum: 124398a11a713b264d0724e920aff684db365ef16407bf09627ce655696c5afe4cdfa1fa3c36f42261b4c8963c81b59825de85ebc25bd7ddaec4be021512eeba
   languageName: node
   linkType: hard
 
@@ -3822,7 +3750,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 2.8.4
     vite-plugin-solid: 2.2.5
-    vite-plugin-ssr: 0.3.55
+    vite-plugin-ssr: 0.3.56
   languageName: unknown
   linkType: soft
 
