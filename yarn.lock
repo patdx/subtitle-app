@@ -1349,10 +1349,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^0.9.3":
-  version: 0.9.3
-  resolution: "es-module-lexer@npm:0.9.3"
-  checksum: 84bbab23c396281db2c906c766af58b1ae2a1a2599844a504df10b9e8dc77ec800b3211fdaa133ff700f5703d791198807bba25d9667392d27a5e9feda344da8
+"es-module-lexer@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "es-module-lexer@npm:0.10.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fes-module-lexer%2F-%2Fes-module-lexer-0.10.0.tgz"
+  checksum: ffdf70d9df93ccafbc064da63d01be3dfeb3b83e8f5642145e3273a365e89e815bf3fde8cdf36fe16909765d9c95f73acbac0dc3ee724d072b966a65f024ce66
   languageName: node
   linkType: hard
 
@@ -3685,10 +3685,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-import-build@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "vite-plugin-import-build@npm:0.1.2"
-  checksum: 881ced517857020c307785f11d6754912d44facc7b27395fed6fc012bec242448e022f707b6d0c85a82d03108fe3864487ed9d2b4b99011c7f7c3e2ad429ad46
+"vite-plugin-import-build@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "vite-plugin-import-build@npm:0.1.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.1.3.tgz"
+  checksum: 2a96894a11b7148705f8a97ae9cd31bbba6e1c66592b76444c04d732c304b350233bbd2bef5378c1b6bb632c5fa6f432e424c3ceb94cc6eef783ffa79f034a99
   languageName: node
   linkType: hard
 
@@ -3707,23 +3707,23 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.3.58":
-  version: 0.3.58
-  resolution: "vite-plugin-ssr@npm:0.3.58::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.58.tgz"
+"vite-plugin-ssr@npm:0.3.59":
+  version: 0.3.59
+  resolution: "vite-plugin-ssr@npm:0.3.59::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.59.tgz"
   dependencies:
     "@brillout/json-s": ^0.4.3
     "@brillout/libassert": ^0.5.4
     cac: ^6.7.12
-    es-module-lexer: ^0.9.3
+    es-module-lexer: ^0.10.0
     fast-glob: ^3.2.11
     kolorist: ^1.5.1
     p-limit: ^3.1.0
-    vite-plugin-import-build: ^0.1.2
+    vite-plugin-import-build: ^0.1.3
   peerDependencies:
     vite: ^2.5.0
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 20512fa9c6cfb9a3592366776a13fd6114b6d1853ee7188d5136aaffa7171b44ec5245b41e43752d94c8d27c2c25283b939d2cdcb11ce768c021d526e753e774
+  checksum: 43fbba904c4edcfec705709a025b400413b772378b79ff2754e1eb138f4bd49c2b9fd57d6d34aa3359acfaa0bf8af5810c1e0763e3c499766ccc78bcf033a257
   languageName: node
   linkType: hard
 
@@ -3757,7 +3757,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 2.8.4
     vite-plugin-solid: 2.2.5
-    vite-plugin-ssr: 0.3.58
+    vite-plugin-ssr: 0.3.59
   languageName: unknown
   linkType: soft
 
