@@ -471,10 +471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:16.11.25":
-  version: 16.11.25
-  resolution: "@types/node@npm:16.11.25::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fnode%2F-%2Fnode-16.11.25.tgz"
-  checksum: 0b6e25a81364be89256ad1a36341e27b387e646d3186e270108a8bb7b6ecdfdf5ae037aa1c75a5117b8a7509c80093b75431cd5cfcfbc4d553b52e7db2ca272e
+"@types/node@npm:16.11.26":
+  version: 16.11.26
+  resolution: "@types/node@npm:16.11.26::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fnode%2F-%2Fnode-16.11.26.tgz"
+  checksum: 57757caaba3f0d95de82198cb276a1002c49b710108c932a1d02d7c91ff2fa57cfe2dd19fde60853b6dd90b0964b3cf35557981d2628e20aed6a909057aedfe6
   languageName: node
   linkType: hard
 
@@ -3735,7 +3735,7 @@ fsevents@~2.3.2:
     "@tailwindcss/forms": 0.4.0
     "@types/lodash-es": 4.17.6
     "@types/luxon": 2.0.9
-    "@types/node": 16.11.25
+    "@types/node": 16.11.26
     "@zip.js/zip.js": 2.4.4
     alasql: 1.7.3
     autoprefixer: 10.4.2
