@@ -1,6 +1,8 @@
-import express from 'express';
+import { createServer } from 'http';
+import { createApp, assertMethod } from 'h3';
 import { createPageRenderer } from 'vite-plugin-ssr';
 import { dirname } from 'dirname-filename-esm';
+import serveStatic from 'serve-static';
 
 const __dirname = dirname(import.meta);
 
@@ -10,11 +12,11 @@ const root = `${__dirname}/../..`;
 startServer();
 
 async function startServer() {
-  const app = express();
+  const app = createApp();
 
   let viteDevServer;
   if (isProduction) {
-    app.use(express.static(`${root}/dist/client`));
+    app.use(serveStatic(`${root}/dist/client`));
   } else {
     const { createServer } = await import('vite');
     viteDevServer = await createServer({
@@ -25,7 +27,8 @@ async function startServer() {
   }
 
   const renderPage = createPageRenderer({ viteDevServer, isProduction, root });
-  app.get('*', async (req, res, next) => {
+  app.use(async (req, res, next) => {
+    assertMethod(req, 'GET', true);
     const url = req.originalUrl;
     const pageContextInit = {
       url,
@@ -34,10 +37,11 @@ async function startServer() {
     const { httpResponse } = pageContext;
     if (!httpResponse) return next();
     const { statusCode, body } = httpResponse;
-    res.status(statusCode).send(body);
+    res.statusCode = statusCode;
+    res.end(body);
   });
 
   const port = process.env.PORT || 3000;
-  app.listen(port);
+  createServer(app).listen(port);
   console.log(`Server running at http://localhost:${port}`);
 }
