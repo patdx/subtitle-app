@@ -3471,9 +3471,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-solid@npm:2.2.5":
-  version: 2.2.5
-  resolution: "vite-plugin-solid@npm:2.2.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.2.5.tgz"
+"vite-plugin-solid@npm:2.2.6":
+  version: 2.2.6
+  resolution: "vite-plugin-solid@npm:2.2.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.2.6.tgz"
   dependencies:
     "@babel/core": ^7.16.12
     "@babel/preset-typescript": ^7.16.7
@@ -3481,8 +3481,8 @@ fsevents@~2.3.2:
     merge-anything: ^5.0.2
     solid-js: ^1.3.3
     solid-refresh: ^0.4.0
-    vite: ^2.7.13
-  checksum: e6d44fc086b83a84f268e4504bcb35481ffa2e978a56a9375b58c0cd1c9846378ddf46ab84ee6ff28cd07ce5222c2494993a6749817146b8e99a95a03ea9c37d
+    vite: ^2.8.0
+  checksum: 922487147a66dce5f00148255b978d48d6212214661d30d3a2c1b888ef3435c7fdad52c10231901c9d2f171a9131a06ff2cec25ae1434590c979666dc4e02137
   languageName: node
   linkType: hard
 
@@ -3537,12 +3537,12 @@ fsevents@~2.3.2:
     typescript: 4.6.2
     video-name-parser: 1.4.6
     vite: 2.8.6
-    vite-plugin-solid: 2.2.5
+    vite-plugin-solid: 2.2.6
     vite-plugin-ssr: 0.3.59
   languageName: unknown
   linkType: soft
 
-"vite@npm:2.8.6":
+"vite@npm:2.8.6, vite@npm:^2.8.0":
   version: 2.8.6
   resolution: "vite@npm:2.8.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.8.6.tgz"
   dependencies:
@@ -3568,35 +3568,6 @@ fsevents@~2.3.2:
   bin:
     vite: bin/vite.js
   checksum: 4b02d133892c98362c10214b7ad518d74b59745889197a2ba0b63260ed083fcef75a447e8fb58dbd2af8747386274b36017983d93031254df6ead38701950dcc
-  languageName: node
-  linkType: hard
-
-"vite@npm:^2.7.13":
-  version: 2.8.4
-  resolution: "vite@npm:2.8.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.8.4.tgz"
-  dependencies:
-    esbuild: ^0.14.14
-    fsevents: ~2.3.2
-    postcss: ^8.4.6
-    resolve: ^1.22.0
-    rollup: ^2.59.0
-  peerDependencies:
-    less: "*"
-    sass: "*"
-    stylus: "*"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    less:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 0531ea17d354c35026c87e732d28c777492cc5165c4abdaa507c4894535ecbbfcf447fa3f270bbb160cd7cba8ad319cc86a221be18b2ccd40d8be139f9d7381d
   languageName: node
   linkType: hard
 
