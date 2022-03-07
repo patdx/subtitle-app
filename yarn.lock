@@ -2716,7 +2716,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.4.7, postcss@npm:^8.4.6":
+"postcss@npm:8.4.8":
+  version: 8.4.8
+  resolution: "postcss@npm:8.4.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.8.tgz"
+  dependencies:
+    nanoid: ^3.3.1
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: 8e42def1ea98a4ac800d2b8937b19c83c6722da6c39ded72b1877eb743922f51b6e93be3667284b685ac18e8b583f21d97f24e0a73161c70fe8dc6901e614b87
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.6":
   version: 8.4.7
   resolution: "postcss@npm:8.4.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.7.tgz"
   dependencies:
@@ -3527,7 +3538,7 @@ fsevents@~2.3.2:
     lodash-es: 4.17.21
     luxon: 2.3.1
     nosleep.js: 0.12.0
-    postcss: 8.4.7
+    postcss: 8.4.8
     prettier: 2.5.1
     prettier-plugin-tailwindcss: 0.1.8
     serve-static: 1.14.2
