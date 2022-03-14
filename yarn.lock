@@ -1947,10 +1947,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"idb@npm:7.0.0":
-  version: 7.0.0
-  resolution: "idb@npm:7.0.0"
-  checksum: 561ccdfa0c5c799ac1abb946058dfbbd954e3df97b3efceb864069893f040f8169f44a64d6b1c496c3d70ebe9d8180c0f6bf50bff0e41423bc6b147c621f94f1
+"idb@npm:7.0.1":
+  version: 7.0.1
+  resolution: "idb@npm:7.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fidb%2F-%2Fidb-7.0.1.tgz"
+  checksum: 61526789562cc3518a1a030c7a06cc98edfcd62795700ff28c701d6f84c178aee4e98bedfc79e6c394ba26084aa4667d6594b1728e5868f305f9b34148662679
   languageName: node
   linkType: hard
 
@@ -3567,7 +3567,7 @@ fsevents@~2.3.2:
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
     h3: 0.4.1
-    idb: 7.0.0
+    idb: 7.0.1
     lodash-es: 4.17.21
     luxon: 2.3.1
     nosleep.js: 0.12.0

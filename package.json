@@ -35,7 +35,7 @@
     "cuid": "2.1.8",
     "dirname-filename-esm": "1.1.1",
     "h3": "0.4.1",
-    "idb": "7.0.0",
+    "idb": "7.0.1",
     "lodash-es": "4.17.21",
     "luxon": "2.3.1",
     "nosleep.js": "0.12.0",
