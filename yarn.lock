@@ -2051,15 +2051,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:0.4.2":
-  version: 0.4.2
-  resolution: "h3@npm:0.4.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.4.2.tgz"
+"h3@npm:0.5.1":
+  version: 0.5.1
+  resolution: "h3@npm:0.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.5.1.tgz"
   dependencies:
     cookie-es: ^0.5.0
     destr: ^1.1.0
     radix3: ^0.1.1
     ufo: ^0.7.11
-  checksum: 8467d562a31e782e3456ebad55b90ac6f2a8f44c1857a9e82f9bcb839c5ef9ba7d3eb34c752b21b0498f385dcca5a282e9895353a34347af229143293fef6eed
+  checksum: dd966b714687c146df2b6a69a879797be68b4e0cbe184515fc63f6b480932ae7b1f2ab8cfcfa229734cf9c86f55f0b21512f8919377b095aa93046f020624dc7
   languageName: node
   linkType: hard
 
@@ -3813,7 +3813,7 @@ fsevents@~2.3.2:
     clsx: 1.1.1
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
-    h3: 0.4.2
+    h3: 0.5.1
     idb: 7.0.1
     lodash-es: 4.17.21
     luxon: 2.3.1
