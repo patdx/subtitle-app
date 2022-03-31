@@ -25,7 +25,7 @@
     "typescript": "4.6.3",
     "vite": "2.9.0",
     "vite-plugin-solid": "2.2.6",
-    "vite-plugin-ssr": "0.3.60"
+    "vite-plugin-ssr": "0.3.61"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
