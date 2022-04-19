@@ -2886,12 +2886,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"prettier-plugin-tailwindcss@npm:0.1.8":
-  version: 0.1.8
-  resolution: "prettier-plugin-tailwindcss@npm:0.1.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fprettier-plugin-tailwindcss%2F-%2Fprettier-plugin-tailwindcss-0.1.8.tgz"
+"prettier-plugin-tailwindcss@npm:0.1.9":
+  version: 0.1.9
+  resolution: "prettier-plugin-tailwindcss@npm:0.1.9::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fprettier-plugin-tailwindcss%2F-%2Fprettier-plugin-tailwindcss-0.1.9.tgz"
   peerDependencies:
     prettier: ">=2.2.0"
-  checksum: b183f061dfd07dd6faee5244c1d1f9efe39ec58b4b8382bb6de379e2a831484bd9b59baca1cb58b46872de40c63d7958cdb2adc953706019b0929843b3406228
+  checksum: f11de2659e5103474413764626cc9ba15c87542eb2d9e96b606a8a909c76f189ca94c56cae7b273076e13db55747111c12d138d010913d3470418511175c63b6
   languageName: node
   linkType: hard
 
@@ -3678,7 +3678,7 @@ fsevents@~2.3.2:
     nosleep.js: 0.12.0
     postcss: 8.4.12
     prettier: 2.6.2
-    prettier-plugin-tailwindcss: 0.1.8
+    prettier-plugin-tailwindcss: 0.1.9
     serve-static: 1.15.0
     solid-js: 1.3.15
     srt-parser-2: 1.1.7
