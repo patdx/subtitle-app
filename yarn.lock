@@ -3692,15 +3692,15 @@ fsevents@~2.3.2:
     tailwindcss: 3.0.24
     typescript: 4.6.3
     video-name-parser: 1.4.6
-    vite: 2.9.5
+    vite: 2.9.6
     vite-plugin-solid: 2.2.6
     vite-plugin-ssr: 0.3.64
   languageName: unknown
   linkType: soft
 
-"vite@npm:2.9.5":
-  version: 2.9.5
-  resolution: "vite@npm:2.9.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.9.5.tgz"
+"vite@npm:2.9.6":
+  version: 2.9.6
+  resolution: "vite@npm:2.9.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-2.9.6.tgz"
   dependencies:
     esbuild: ^0.14.27
     fsevents: ~2.3.2
@@ -3723,7 +3723,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 354189cbce6904a3b58ca70b7ad9e1bb751ded9c13e483165562e634804cfb29bbf1507a4e6334cb9987e3f1f41e9f50764878a3c837523762e9da65229c9543
+  checksum: 79bbf516547f4adb1a297ac8648f8818b3e2a7bb113a7e12acc2355498d247556f58fc50d39eec4891c07250e7420e72773e358eeb8dc62af62fc1ff32c70877
   languageName: node
   linkType: hard
 
