@@ -2613,6 +2613,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "nanoid@npm:3.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fnanoid%2F-%2Fnanoid-3.3.3.tgz"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: ada019402a07464a694553c61d2dca8a4353645a7d92f2830f0d487fedff403678a0bee5323a46522752b2eab95a0bc3da98b6cccaa7c0c55cd9975130e6d6f0
+  languageName: node
+  linkType: hard
+
 "negotiator@npm:^0.6.2":
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fnegotiator%2F-%2Fnegotiator-0.6.3.tgz"
@@ -2871,7 +2880,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.4.12, postcss@npm:^8.4.12":
+"postcss@npm:8.4.13":
+  version: 8.4.13
+  resolution: "postcss@npm:8.4.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.13.tgz"
+  dependencies:
+    nanoid: ^3.3.3
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: 514fb3552805a5d039a2d6b4df3e73f657001716ca93c0d57e6067b0473abdea70276d80afc96005c9aaff82ed5d98062bd97724d3f47ca400fba0b5e9e436ed
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.12":
   version: 8.4.12
   resolution: "postcss@npm:8.4.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.12.tgz"
   dependencies:
@@ -3683,7 +3703,7 @@ fsevents@~2.3.2:
     lodash-es: 4.17.21
     luxon: 2.3.2
     nosleep.js: 0.12.0
-    postcss: 8.4.12
+    postcss: 8.4.13
     prettier: 2.6.2
     prettier-plugin-tailwindcss: 0.1.10
     serve-static: 1.15.0
