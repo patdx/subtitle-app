@@ -2012,15 +2012,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:0.7.6":
-  version: 0.7.6
-  resolution: "h3@npm:0.7.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.7.6.tgz"
+"h3@npm:0.7.8":
+  version: 0.7.8
+  resolution: "h3@npm:0.7.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.7.8.tgz"
   dependencies:
     cookie-es: ^0.5.0
     destr: ^1.1.1
-    radix3: ^0.1.1
+    radix3: ^0.1.2
     ufo: ^0.8.3
-  checksum: e3268fffd89ee9964137b4ff3ea451c531c070b15095513a62e415f071ecc4f8562f7a43835b98b3d33735559ad4f2b120ff8b8290dd477dcbb1b1fda4613009
+  checksum: eb8cf97376102b1b246eaabca40c1a6e71f97d3e407c94d5e243f354b68bab527147f9d05fb384277d31255b741f9bbcaded2f86ee8f1c569a8505dfc5ee0530
   languageName: node
   linkType: hard
 
@@ -3017,10 +3017,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"radix3@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "radix3@npm:0.1.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fradix3%2F-%2Fradix3-0.1.1.tgz"
-  checksum: 06ca57c4eea58b82a84a7d4763ce3a904a03f4ae9b59433787411e96bd53186c17a5beca356184ae61ff44aabb97315a5fe0cc09b1cf849f5dc957a4901fba77
+"radix3@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "radix3@npm:0.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fradix3%2F-%2Fradix3-0.1.2.tgz"
+  checksum: 483ecb97ae51e8dbda04e1c393bb001739635799bd1d7a7d1086193458df61d85f9e936c44c7bde81aba370dfd6bce8ccbf0fa691911bb8ba83379c90f96fea4
   languageName: node
   linkType: hard
 
@@ -3698,7 +3698,7 @@ fsevents@~2.3.2:
     clsx: 1.1.1
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
-    h3: 0.7.6
+    h3: 0.7.8
     idb: 7.0.1
     lodash-es: 4.17.21
     luxon: 2.3.2
