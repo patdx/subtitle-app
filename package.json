@@ -31,7 +31,7 @@
     "@plussub/srt-vtt-parser": "1.1.0",
     "@zip.js/zip.js": "2.4.26",
     "alasql": "1.7.3",
-    "clsx": "1.1.1",
+    "clsx": "1.2.0",
     "cuid": "2.1.8",
     "dirname-filename-esm": "1.1.1",
     "h3": "0.7.10",
