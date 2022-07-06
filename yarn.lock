@@ -971,10 +971,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:1.2.0":
-  version: 1.2.0
-  resolution: "clsx@npm:1.2.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fclsx%2F-%2Fclsx-1.2.0.tgz"
-  checksum: 551a0b4f182270cf9ab26b5f4f93d3b01a663b66adeaff58e4c51bc5170a2bfaed03779513925c63d2d31d748c5bc4f1cbad7d3e76a051f5a9301754563ff43a
+"clsx@npm:1.2.1":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fclsx%2F-%2Fclsx-1.2.1.tgz"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
   languageName: node
   linkType: hard
 
@@ -3741,7 +3741,7 @@ fsevents@~2.3.2:
     "@zip.js/zip.js": 2.5.3
     alasql: 1.7.3
     autoprefixer: 10.4.7
-    clsx: 1.2.0
+    clsx: 1.2.1
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
     h3: 0.7.10
