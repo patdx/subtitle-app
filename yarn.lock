@@ -1897,15 +1897,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:0.7.10":
-  version: 0.7.10
-  resolution: "h3@npm:0.7.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.7.10.tgz"
+"h3@npm:0.7.12":
+  version: 0.7.12
+  resolution: "h3@npm:0.7.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-0.7.12.tgz"
   dependencies:
     cookie-es: ^0.5.0
     destr: ^1.1.1
     radix3: ^0.1.2
-    ufo: ^0.8.4
-  checksum: 81493bc7373bc6d934d947434a929197820661ea7126c5da4c6d9e0ea9a3bd1c67b895cb7afb1e6692fa573e23a8b69cfba1786c6aa3b99256835821bb3473c5
+    ufo: ^0.8.5
+  checksum: cde4a733910a06a36fb9a26222a624bdd51314bd4a82c7f3830405d76f152cbaf59bbf8438207d76ce5e49a8d23807ba14055965bad64f9e11c598002aeafd1a
   languageName: node
   linkType: hard
 
@@ -3495,10 +3495,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"ufo@npm:^0.8.4":
-  version: 0.8.4
-  resolution: "ufo@npm:0.8.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-0.8.4.tgz"
-  checksum: a2ebef6f64b9cc4114fc65405837eeb83eb8975edd6d54c7f37abb6905da6fd1f63524e4a02c8b087e7b0b3db6e6f4f798a3d86a96500410ff590b405f807dc9
+"ufo@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "ufo@npm:0.8.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-0.8.5.tgz"
+  checksum: 4dcf657a906550112ab1eb045110ebb768a914fb653373a2c363776a1f6ba25ea9d20bd5ed7f4bb44fb72bd4421b37d62991cd5ce4e3a2aef7e3eae450bb9508
   languageName: node
   linkType: hard
 
@@ -3636,7 +3636,7 @@ fsevents@~2.3.2:
     clsx: 1.2.1
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
-    h3: 0.7.10
+    h3: 0.7.12
     idb: 7.0.2
     lodash-es: 4.17.21
     luxon: 3.0.1
