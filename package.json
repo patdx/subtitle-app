@@ -17,7 +17,7 @@
     "@types/luxon": "3.0.0",
     "@types/node": "16.11.46",
     "@types/serve-static": "1.13.10",
-    "autoprefixer": "10.4.7",
+    "autoprefixer": "10.4.8",
     "postcss": "8.4.14",
     "prettier": "2.7.1",
     "prettier-plugin-tailwindcss": "0.1.13",
