@@ -2294,10 +2294,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.0.2":
-  version: 3.0.2
-  resolution: "luxon@npm:3.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fluxon%2F-%2Fluxon-3.0.2.tgz"
-  checksum: 39a29b225cb951530cfec0a18b336841c427edd29af0a26649179b892a5bb9c9134012c0d985a3a3a7667612c84db0a54fa353ca152c80033d5acb78a7ba80da
+"luxon@npm:3.0.3":
+  version: 3.0.3
+  resolution: "luxon@npm:3.0.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fluxon%2F-%2Fluxon-3.0.3.tgz"
+  checksum: 67d143f102f520761c4202086579a5cf30b230ea299da27cacb31e9f9d372cadef90f14cbe7e2621b70825b267fe00128b8176ed8b7172b48f77a403a662d5aa
   languageName: node
   linkType: hard
 
@@ -3665,7 +3665,7 @@ fsevents@~2.3.2:
     h3: 0.7.16
     idb: 7.0.2
     lodash-es: 4.17.21
-    luxon: 3.0.2
+    luxon: 3.0.3
     nosleep.js: 0.12.0
     postcss: 8.4.16
     prettier: 2.7.1
