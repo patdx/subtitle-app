@@ -3617,9 +3617,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-solid@npm:2.3.2":
-  version: 2.3.2
-  resolution: "vite-plugin-solid@npm:2.3.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.3.2.tgz"
+"vite-plugin-solid@npm:2.3.3":
+  version: 2.3.3
+  resolution: "vite-plugin-solid@npm:2.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.3.3.tgz"
   dependencies:
     "@babel/core": ^7.18.6
     "@babel/preset-typescript": ^7.18.6
@@ -3629,7 +3629,7 @@ fsevents@~2.3.2:
   peerDependencies:
     solid-js: ^1.3.17
     vite: ^3.0.0
-  checksum: 1114f3ec4ad2039ccd91fa82f7d67005dbc1770b3c1da619f54e5082e793c3c42cb0433c787db38b9312d91e5ce8da3f8210c07c72ec76d23ed1b05ab029214a
+  checksum: 7e02ee6e276d73ceca22c362c0fea0c44d37d074efead997caa2e0ef98e5e689240c9d97361e93b99e7734380d1d735abd6470834e174062698bfcb389e2abbb
   languageName: node
   linkType: hard
 
@@ -3684,7 +3684,7 @@ fsevents@~2.3.2:
     typescript: 4.8.3
     video-name-parser: 1.4.6
     vite: 2.9.15
-    vite-plugin-solid: 2.3.2
+    vite-plugin-solid: 2.3.3
     vite-plugin-ssr: 0.3.64
   languageName: unknown
   linkType: soft
