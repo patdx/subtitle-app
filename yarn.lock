@@ -386,17 +386,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/json-s@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "@brillout/json-s@npm:0.4.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-s%2F-%2Fjson-s-0.4.3.tgz"
-  checksum: 1b0cbe98592cffbfd451269f4cd7276b5eac5a7d6b27bb3a0d83377a8a38c88e521b0ea5708a4b35f2f4246ae6a43b47431b26591704a4d603a2b46e0d0f5e86
+"@brillout/json-serializer@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@brillout/json-serializer@npm:0.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-serializer%2F-%2Fjson-serializer-0.5.1.tgz"
+  checksum: be9c65898df97b328c619a80338721bcd64d9d3f9f4822e62f6efaa33533652543d6b89632693a3351a337dae416b3dcd77c1c2e0ed79db32f1128f8a299a442
   languageName: node
   linkType: hard
 
-"@brillout/libassert@npm:^0.5.4":
-  version: 0.5.4
-  resolution: "@brillout/libassert@npm:0.5.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Flibassert%2F-%2Flibassert-0.5.4.tgz"
-  checksum: d20d9fbacc5df2927b738b060231119ba1b5b0d4fc1936bd5d2492f7d8dd57ac5e59e79e41c7aeb4277b7b55a46ce37da9cc080b50783123903a6b3574997ee0
+"@brillout/vite-plugin-import-build@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@brillout/vite-plugin-import-build@npm:0.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.1.0.tgz"
+  checksum: 26094e724eef65aa1947fb2d3ab86bfb29f7f138a9093770d75176625a67244d54587c1f7950f123bfa9e0e9fb82353b2f8cae50c71115ec2fa3e270b1ffb19c
   languageName: node
   linkType: hard
 
@@ -589,6 +589,15 @@ __metadata:
   version: 2.6.29
   resolution: "@zip.js/zip.js@npm:2.6.29::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.29.tgz"
   checksum: a7d6a7c0a1fcf6709a3077df035e6f4dcda011a2e8309f7829de312f08592e9ce56893ca661e88ef245dfbee4f1ab8bf081877ee96ad54191595753d948872a4
+  languageName: node
+  linkType: hard
+
+"@zkochan/rimraf@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@zkochan/rimraf@npm:2.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zkochan%2Frimraf%2F-%2Frimraf-2.1.2.tgz"
+  dependencies:
+    rimraf: ^3.0.2
+  checksum: 4f7fbfe837b7957bd33b12ce3d41639c737be115122fcad9ce3a96cf02c47da6f4b9be06f9efef2c7f5d94a401a96d593fe07be1d9f181b70437e844f2f211c3
   languageName: node
   linkType: hard
 
@@ -865,6 +874,15 @@ __metadata:
   dependencies:
     tweetnacl: ^0.14.3
   checksum: 4edfc9fe7d07019609ccf797a2af28351736e9d012c8402a07120c4453a3b789a15f2ee1530dc49eee8f7eb9379331a8dd4b3766042b9e502f74a68e7f662291
+  languageName: node
+  linkType: hard
+
+"better-path-resolve@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "better-path-resolve@npm:1.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbetter-path-resolve%2F-%2Fbetter-path-resolve-1.0.0.tgz"
+  dependencies:
+    is-windows: ^1.0.0
+  checksum: 5392dbe04e7fe68b944eb37961d9dfa147aaac3ee9ee3f6e13d42e2c9fbe949e68d16e896c14ee9016fa5f8e6e53ec7fd8b5f01b50a32067a7d94ac9cfb9a050
   languageName: node
   linkType: hard
 
@@ -1404,10 +1422,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "es-module-lexer@npm:0.10.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fes-module-lexer%2F-%2Fes-module-lexer-0.10.0.tgz"
-  checksum: ffdf70d9df93ccafbc064da63d01be3dfeb3b83e8f5642145e3273a365e89e815bf3fde8cdf36fe16909765d9c95f73acbac0dc3ee724d072b966a65f024ce66
+"es-module-lexer@npm:^0.10.5":
+  version: 0.10.5
+  resolution: "es-module-lexer@npm:0.10.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fes-module-lexer%2F-%2Fes-module-lexer-0.10.5.tgz"
+  checksum: d2f9debd9d913323322095934653e0558bb8220177645eb76d316b4afd911e8d83ffee0b748b0faa9f3ce1560db3eee4a0ac68d6c2f750c11f4250adce84cf02
   languageName: node
   linkType: hard
 
@@ -2171,6 +2189,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"is-windows@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "is-windows@npm:1.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fis-windows%2F-%2Fis-windows-1.0.2.tgz"
+  checksum: 438b7e52656fe3b9b293b180defb4e448088e7023a523ec21a91a80b9ff8cdb3377ddb5b6e60f7c7de4fa8b63ab56e121b6705fe081b3cf1b828b0a380009ad7
+  languageName: node
+  linkType: hard
+
 "isarray@npm:~1.0.0":
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
@@ -2254,13 +2279,6 @@ fsevents@~2.3.2:
     json-schema: 0.2.3
     verror: 1.10.0
   checksum: 6bcb20ec265ae18bb48e540a6da2c65f9c844f7522712d6dfcb01039527a49414816f4869000493363f1e1ea96cbad00e46188d5ecc78257a19f152467587373
-  languageName: node
-  linkType: hard
-
-"kolorist@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "kolorist@npm:1.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fkolorist%2F-%2Fkolorist-1.5.1.tgz"
-  checksum: c113be08834fc03a24699612141c79879fceba9ff9765ad500507fb594ee4fa3465a3453ea90bbc9b0dd82f7ba5dbd79814da28e9ebaf8da27266a0088ba2714
   languageName: node
   linkType: hard
 
@@ -2651,15 +2669,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "p-limit@npm:3.1.0"
-  dependencies:
-    yocto-queue: ^0.1.0
-  checksum: 7c3690c4dbf62ef625671e20b7bdf1cbc9534e83352a2780f165b0d3ceba21907e77ad63401708145ca4e25bfc51636588d89a8c0aeb715e6c37d1c066430360
-  languageName: node
-  linkType: hard
-
 "p-map@npm:^4.0.0":
   version: 4.0.0
   resolution: "p-map@npm:4.0.0"
@@ -2979,6 +2988,15 @@ fsevents@~2.3.2:
   dependencies:
     picomatch: ^2.2.1
   checksum: 1ced032e6e45670b6d7352d71d21ce7edf7b9b928494dcaba6f11fba63180d9da6cd7061ebc34175ffda6ff529f481818c962952004d273178acd70f7059b320
+  languageName: node
+  linkType: hard
+
+"rename-overwrite@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "rename-overwrite@npm:4.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Frename-overwrite%2F-%2Frename-overwrite-4.0.2.tgz"
+  dependencies:
+    "@zkochan/rimraf": ^2.1.2
+  checksum: 9a6466a1b6c24b6452757c3295d7223183c561706b46e6a2b02908c2b4404158de57971ce8ad6ca6d5301ef69cac99b60750d1c01d86f60b94e2eef3682b718a
   languageName: node
   linkType: hard
 
@@ -3389,6 +3407,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"symlink-dir@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "symlink-dir@npm:5.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsymlink-dir%2F-%2Fsymlink-dir-5.0.1.tgz"
+  dependencies:
+    better-path-resolve: ^1.0.0
+    rename-overwrite: ^4.0.0
+  bin:
+    symlink-dir: dist/cli.js
+  checksum: 73694291cb357c07eb60241d509c6faa2350a4bccfa5b5278101d3d7b7bfa9ad7a3884ada5d11920aece59a1af4e43ba99c4c1bad845c2901f7bcf0a0bea9e32
+  languageName: node
+  linkType: hard
+
 "tailwindcss@npm:3.1.8":
   version: 3.1.8
   resolution: "tailwindcss@npm:3.1.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftailwindcss%2F-%2Ftailwindcss-3.1.8.tgz"
@@ -3610,13 +3640,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-import-build@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "vite-plugin-import-build@npm:0.1.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.1.3.tgz"
-  checksum: 2a96894a11b7148705f8a97ae9cd31bbba6e1c66592b76444c04d732c304b350233bbd2bef5378c1b6bb632c5fa6f432e424c3ceb94cc6eef783ffa79f034a99
-  languageName: node
-  linkType: hard
-
 "vite-plugin-solid@npm:2.3.3":
   version: 2.3.3
   resolution: "vite-plugin-solid@npm:2.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-solid%2F-%2Fvite-plugin-solid-2.3.3.tgz"
@@ -3633,23 +3656,23 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.3.64":
-  version: 0.3.64
-  resolution: "vite-plugin-ssr@npm:0.3.64::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.3.64.tgz"
+"vite-plugin-ssr@npm:0.4.36":
+  version: 0.4.36
+  resolution: "vite-plugin-ssr@npm:0.4.36::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.36.tgz"
   dependencies:
-    "@brillout/json-s": ^0.4.3
-    "@brillout/libassert": ^0.5.4
+    "@brillout/json-serializer": ^0.5.1
+    "@brillout/vite-plugin-import-build": ^0.1.0
     cac: ^6.7.12
-    es-module-lexer: ^0.10.0
+    es-module-lexer: ^0.10.5
     fast-glob: ^3.2.11
-    kolorist: ^1.5.1
-    p-limit: ^3.1.0
-    vite-plugin-import-build: ^0.1.3
+    picocolors: ^1.0.0
+    resolve: ^1.22.0
+    symlink-dir: ^5.0.1
   peerDependencies:
-    vite: ^2.8.4
+    vite: ">=3.0.0"
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 9669ab26923653bdbf9be952285861920a28645916f578200911d94d90a2596d631d16d162620af340aa9a116a053a6216524fb314cdcdcb6d98d80c34e3b639
+  checksum: 481becbba8ecd74779df29c9be0d4c17df1745ce6210d169ffb6b8ec43c134fdce1a2b145bbd8ca0852c6596d1e5efcc4a07fc52e583f9e61581db550980c7c3
   languageName: node
   linkType: hard
 
@@ -3685,7 +3708,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 2.9.15
     vite-plugin-solid: 2.3.3
-    vite-plugin-ssr: 0.3.64
+    vite-plugin-ssr: 0.4.36
   languageName: unknown
   linkType: soft
 
@@ -3837,12 +3860,5 @@ fsevents@~2.3.2:
     y18n: ^5.0.5
     yargs-parser: ^20.2.2
   checksum: b14afbb51e3251a204d81937c86a7e9d4bdbf9a2bcee38226c900d00f522969ab675703bee2a6f99f8e20103f608382936034e64d921b74df82b63c07c5e8f59
-  languageName: node
-  linkType: hard
-
-"yocto-queue@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "yocto-queue@npm:0.1.0"
-  checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
   languageName: node
   linkType: hard
