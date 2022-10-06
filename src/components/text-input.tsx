@@ -96,9 +96,7 @@ export const ValueWithPlaceholder = (props: {
   };
   return (
     <>
-      <span className="invisible">
-        {times(remaining(), () => '0').join('')}
-      </span>
+      <span class="invisible">{times(remaining(), () => '0').join('')}</span>
       <span>{props.value}</span>
     </>
   );

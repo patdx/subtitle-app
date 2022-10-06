@@ -25,13 +25,13 @@ const getNoSleep = once(() => new NoSleep());
 const IconTextButton = ({ icon, text, onClick }: any) => {
   return (
     <button
-      className="relative h-10 w-10 text-gray-200 hover:text-white active:text-white"
+      class="relative h-10 w-10 text-gray-200 hover:text-white active:text-white"
       onClick={onClick}
     >
-      <div className="absolute top-0 left-0 right-0 flex justify-center">
+      <div class="absolute top-0 left-0 right-0 flex justify-center">
         {icon}
       </div>
-      <div className="absolute bottom-0.5 left-0 right-0 text-center text-xs">
+      <div class="absolute bottom-0.5 left-0 right-0 text-center text-xs">
         {text}
       </div>
     </button>
@@ -41,7 +41,7 @@ const IconTextButton = ({ icon, text, onClick }: any) => {
 const TextButton = ({ children, onClick }: any) => {
   return (
     <button
-      className="relative flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
+      class="relative flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
       onClick={onClick}
     >
       {children}
@@ -54,10 +54,10 @@ export const Controls = () => {
 
   return (
     <>
-      <div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+      <div class="absolute left-0 right-0 top-0 bg-gradient-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
         {/* padding for iOS */}
-        <div className="h-[env(safe-area-inset-top,0)]"></div>
-        <div className="flex">
+        <div class="h-[env(safe-area-inset-top,0)]"></div>
+        <div class="flex">
           <Show when={isOpen()}>
             {/* go back button */}
             <a
@@ -68,7 +68,7 @@ export const Controls = () => {
             </a>
           </Show>
 
-          <div className="flex-1"></div>
+          <div class="flex-1"></div>
 
           <Show when={isOpen()}>
             {/* full screen button (for Android) */}
@@ -92,7 +92,7 @@ export const Controls = () => {
                   document.exitFullscreen();
                 }
               }}
-              className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+              class="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
             >
               <FullScreenIcon />
             </button>
@@ -101,7 +101,7 @@ export const Controls = () => {
           {/* toggle menu */}
           <button
             onClick={() => setIsOpen((isOpen) => !isOpen)}
-            className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+            class="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
           >
             <MenuIcon />
           </button>
@@ -110,8 +110,8 @@ export const Controls = () => {
 
       <Show when={isOpen()}>
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
-          <div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
-            <div className="flex items-center justify-between sm:justify-center">
+          <div class="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
+            <div class="flex items-center justify-between sm:justify-center">
               <NumberInput
                 value={getTimeElapsedAsDuration().hours}
                 padWidth={2}
@@ -158,7 +158,7 @@ export const Controls = () => {
               />
 
               <NumberInput
-                widthClassName="w-20"
+                widthclass="w-20"
                 padWidth={3}
                 value={getTimeElapsedAsDuration().milliseconds}
                 suffix="ms"
@@ -174,7 +174,7 @@ export const Controls = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between sm:justify-center">
+            <div class="flex items-center justify-between sm:justify-center">
               <IconTextButton
                 icon={<LeftIcon />}
                 text={'1s'}
@@ -244,7 +244,7 @@ export const Controls = () => {
             </div>
 
             {/* text size */}
-            <div className="flex items-center justify-between sm:justify-center">
+            <div class="flex items-center justify-between sm:justify-center">
               <NumberInput
                 value={clock.playSpeed}
                 suffix="x"
@@ -277,7 +277,7 @@ export const Controls = () => {
           </div>
 
           {/* padding */}
-          <div className="h-[env(safe-area-inset-bottom,0)]"></div>
+          <div class="h-[env(safe-area-inset-bottom,0)]"></div>
         </div>
       </Show>
     </>

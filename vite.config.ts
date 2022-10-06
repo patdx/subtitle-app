@@ -46,12 +46,13 @@ export default defineConfig({
   },
   plugins: [
     solidPlugin({ ssr: true }),
-    //  shimReactPdf(),
-    ssr(),
+
+    ssr({
+      prerender: true
+    }),
   ],
   build: {
     target: 'esnext',
-    polyfillDynamicImport: false,
   },
 
   ssr: {

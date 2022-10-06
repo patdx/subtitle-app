@@ -3,7 +3,7 @@
 export const MenuIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6"
+    class="h-6 w-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -20,7 +20,7 @@ export const MenuIcon = () => (
 export const LeftIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6"
+    class="h-6 w-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -53,7 +53,7 @@ export const RightIcon = () => (
 export const PlayIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6"
+    class="h-6 w-6"
     viewBox="0 0 20 20"
     fill="currentColor"
   >

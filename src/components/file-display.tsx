@@ -5,8 +5,8 @@ import { Subtitle } from './subtitle';
 export const FileDisplay = () => {
   return (
     <>
-      <div className="h-full flex flex-col justify-center text-center pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
-        <div className="px-2">
+      <div class="flex h-full flex-col justify-center pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)] text-center">
+        <div class="px-2">
           <For each={getActiveNodes(getFile(), getTimeElapsed())}>
             {(node) => <Subtitle node={node} />}
           </For>

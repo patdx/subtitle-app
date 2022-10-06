@@ -12,7 +12,7 @@ import { addFileToDatabase, initAndGetDb } from '../utils';
 const LoadingIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5 animate-spin"
+    class="h-5 w-5 animate-spin"
     viewBox="0 0 20 20"
     fill="currentColor"
   >
@@ -37,9 +37,9 @@ const EditFilesPage = () => {
 
   return (
     <>
-      <div className="relative min-h-full overflow-hidden bg-white">
+      <div class="relative min-h-full overflow-hidden bg-white">
         {/* padding */}
-        <div className="h-[env(safe-area-inset-top,0)]"></div>
+        <div class="h-[env(safe-area-inset-top,0)]"></div>
         <input
           id={`${id}-file-upload`}
           class="hidden"
@@ -104,13 +104,13 @@ const EditFilesPage = () => {
                   href={`/play?id=${file.id}`}
                   class="flex flex-col gap-2 outline-offset-8"
                 >
-                  <div className="break-all text-xl font-semibold text-gray-800 watch:text-sm">
+                  <div class="break-all text-xl font-semibold text-gray-800 watch:text-sm">
                     {file.name}
                   </div>
 
                   {/* badges */}
                   {metadata.season || metadata.episode?.length ? (
-                    <div className="flex gap-2">
+                    <div class="flex gap-2">
                       {metadata.season ? (
                         <BadgeRed>Season {metadata.season}</BadgeRed>
                       ) : null}
@@ -161,4 +161,4 @@ const EditFilesPage = () => {
   );
 };
 
-export default EditFilesPage;
+export { EditFilesPage as Page };
