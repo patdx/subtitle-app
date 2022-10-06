@@ -7,7 +7,7 @@ export const NumberInput = (props: {
   onChange?: (value: number) => unknown;
   suffix?: string;
   padWidth?: number;
-  widthClassName?: string;
+  widthClass?: string;
 }) => {
   const [mode, setMode] = createSignal('view');
   const [ref, setRef] = createSignal<HTMLInputElement>();
@@ -27,7 +27,7 @@ export const NumberInput = (props: {
     }
   });
 
-  const widthClassName = () => props.widthClassName ?? 'w-10';
+  const widthClass = () => props.widthClass ?? 'w-10';
 
   return (
     <Switch>
@@ -39,7 +39,7 @@ export const NumberInput = (props: {
           inputMode="numeric"
           class={clsx(
             `form-input h-10 px-0 py-1 text-center tabular-nums`,
-            widthClassName()
+            widthClass()
           )}
           onKeyDown={(event) => {
             console.log('keyup', event.key);
@@ -70,10 +70,10 @@ export const NumberInput = (props: {
         <button
           class={clsx(
             'h-10 px-0 py-1 text-center tabular-nums text-gray-200 hover:text-white active:text-white',
-            widthClassName()
+            widthClass()
           )}
           // classList={{
-          //   [widthClassName]: true,
+          //   [widthClass]: true,
           // }}
           onClick={() => setMode('edit')}
         >

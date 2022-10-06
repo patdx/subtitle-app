@@ -158,7 +158,7 @@ export const Controls = () => {
               />
 
               <NumberInput
-                widthclass="w-20"
+                widthClass="w-20"
                 padWidth={3}
                 value={getTimeElapsedAsDuration().milliseconds}
                 suffix="ms"
