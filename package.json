@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
-    "@zip.js/zip.js": "2.6.43",
+    "@zip.js/zip.js": "2.6.46",
     "clsx": "1.2.1",
     "cuid": "2.1.8",
     "dirname-filename-esm": "1.1.1",
