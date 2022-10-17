@@ -14,7 +14,7 @@
   "devDependencies": {
     "@tailwindcss/forms": "0.5.3",
     "@types/lodash-es": "4.17.6",
-    "@types/luxon": "3.0.1",
+    "@types/luxon": "3.0.2",
     "@types/node": "16.11.66",
     "@types/serve-static": "1.15.0",
     "autoprefixer": "10.4.12",
