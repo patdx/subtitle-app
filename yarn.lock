@@ -566,10 +566,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zip.js/zip.js@npm:2.6.48":
-  version: 2.6.48
-  resolution: "@zip.js/zip.js@npm:2.6.48::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.48.tgz"
-  checksum: ac11a51877025e223811a69f6e0f1167c6719ba7c941f1bfc345b99983af9277676510d2e774d59fa7d34d3f827a27eef2980018c896a03870142d50aa89dbe1
+"@zip.js/zip.js@npm:2.6.50":
+  version: 2.6.50
+  resolution: "@zip.js/zip.js@npm:2.6.50::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.50.tgz"
+  checksum: af0cc8c15e6397bce1b0332423a4cf5ae3fb60c15ae57065a8547c571c95603fdf771a83bd424dc6bb9ce50d221ca2d9cc500f4b23ce4ef5556b3dca25427248
   languageName: node
   linkType: hard
 
@@ -2935,7 +2935,7 @@ fsevents@~2.3.2:
     "@types/luxon": 3.0.2
     "@types/node": 16.11.68
     "@types/serve-static": 1.15.0
-    "@zip.js/zip.js": 2.6.48
+    "@zip.js/zip.js": 2.6.50
     autoprefixer: 10.4.12
     clsx: 1.2.1
     cuid: 2.1.8
