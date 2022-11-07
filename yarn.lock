@@ -528,10 +528,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@types/luxon@npm:3.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fluxon%2F-%2Fluxon-3.0.2.tgz"
-  checksum: e47e199c5d70ce16e4eff54b21fdf385065f1134774109b40c36dba8b5fd29a732b763125e93863d6070dd22ba6a3f18dbdd368cf3748aae9f24bb335c5c210d
+"@types/luxon@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@types/luxon@npm:3.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fluxon%2F-%2Fluxon-3.1.0.tgz"
+  checksum: 04768029342ad76fc2a9339436c143ea64797b35cf9b03ddded787c13eae30f0ca1246e51c2c5365ed912f98068e13a967a3931b137eb4585248a0ad7ec3fa86
   languageName: node
   linkType: hard
 
@@ -1868,10 +1868,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.0.4":
-  version: 3.0.4
-  resolution: "luxon@npm:3.0.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fluxon%2F-%2Fluxon-3.0.4.tgz"
-  checksum: d0908c3951da2a10ccf23040210ead23b0da5366a9d0954e7d5db3560189a7bd703d8af1e00084f197effc9cd7158d1bddf32886d98a70d59ce9bc3fe88bbce0
+"luxon@npm:3.1.0":
+  version: 3.1.0
+  resolution: "luxon@npm:3.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fluxon%2F-%2Fluxon-3.1.0.tgz"
+  checksum: f8a850b759ba7a2e009d904c522ed7bc264bf4add57578f8948e52a0ed96b627b025b5aad8032295b570ae19fac41f0ffab91bdb128715fb0cc020798a7ba886
   languageName: node
   linkType: hard
 
@@ -2969,7 +2969,7 @@ fsevents@~2.3.2:
     "@plussub/srt-vtt-parser": 1.1.0
     "@tailwindcss/forms": 0.5.3
     "@types/lodash-es": 4.17.6
-    "@types/luxon": 3.0.2
+    "@types/luxon": 3.1.0
     "@types/node": 18.11.9
     "@types/serve-static": 1.15.0
     "@zip.js/zip.js": 2.6.52
@@ -2980,7 +2980,7 @@ fsevents@~2.3.2:
     h3: 0.8.6
     idb: 7.1.1
     lodash-es: 4.17.21
-    luxon: 3.0.4
+    luxon: 3.1.0
     nosleep.js: 0.12.0
     postcss: 8.4.18
     prettier: 2.7.1
