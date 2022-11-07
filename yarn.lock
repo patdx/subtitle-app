@@ -353,10 +353,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/json-serializer@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@brillout/json-serializer@npm:0.5.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-serializer%2F-%2Fjson-serializer-0.5.1.tgz"
-  checksum: be9c65898df97b328c619a80338721bcd64d9d3f9f4822e62f6efaa33533652543d6b89632693a3351a337dae416b3dcd77c1c2e0ed79db32f1128f8a299a442
+"@brillout/json-serializer@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "@brillout/json-serializer@npm:0.5.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fjson-serializer%2F-%2Fjson-serializer-0.5.3.tgz"
+  checksum: fecd31a517736dcbeefbc471f2a278d32b5e71a47f9f4f2675cc41374bcf43c282399d28950fe815d886efb7860d5d97a10ead8e416cd1cf2aeb74f336cd3ce2
   languageName: node
   linkType: hard
 
@@ -2938,11 +2938,11 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.43":
-  version: 0.4.43
-  resolution: "vite-plugin-ssr@npm:0.4.43::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.43.tgz"
+"vite-plugin-ssr@npm:0.4.46":
+  version: 0.4.46
+  resolution: "vite-plugin-ssr@npm:0.4.46::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.46.tgz"
   dependencies:
-    "@brillout/json-serializer": ^0.5.1
+    "@brillout/json-serializer": ^0.5.3
     "@brillout/vite-plugin-import-build": ^0.1.0
     cac: ^6.7.12
     es-module-lexer: ^0.10.5
@@ -2958,7 +2958,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: a3440c7ba0c68031989fd0ada0ec82baf982daf6bea0709ed38e0432a8e4be7fed7acd6561018509444ed4cab3c941130c2dd0ae47ca85e9708c864462d0af68
+  checksum: e61a07c88de5ad597c256a2fea33cca8907e9d33fe90c8aa9e6c13199f79841b81a70ebc948fc6f2dae69151c3c2673f7105b607b9f4a1552e184b934084805e
   languageName: node
   linkType: hard
 
@@ -2993,7 +2993,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 3.2.2
     vite-plugin-solid: 2.4.0
-    vite-plugin-ssr: 0.4.43
+    vite-plugin-ssr: 0.4.46
   languageName: unknown
   linkType: soft
 
