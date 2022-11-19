@@ -43,5 +43,5 @@
     "srt-parser-2": "1.1.8",
     "video-name-parser": "1.4.6"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.3.0"
 }
