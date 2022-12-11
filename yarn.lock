@@ -501,6 +501,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polka/url@npm:^1.0.0-next.20":
+  version: 1.0.0-next.21
+  resolution: "@polka/url@npm:1.0.0-next.21::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40polka%2Furl%2F-%2Furl-1.0.0-next.21.tgz"
+  checksum: c7654046d38984257dd639eab3dc770d1b0340916097b2fac03ce5d23506ada684e05574a69b255c32ea6a144a957c8cd84264159b545fca031c772289d88788
+  languageName: node
+  linkType: hard
+
 "@tailwindcss/forms@npm:0.5.3":
   version: 0.5.3
   resolution: "@tailwindcss/forms@npm:0.5.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40tailwindcss%2Fforms%2F-%2Fforms-0.5.3.tgz"
@@ -577,15 +584,6 @@ __metadata:
   version: 2.6.60
   resolution: "@zip.js/zip.js@npm:2.6.60::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.60.tgz"
   checksum: ad595397d8a0d469e75ad988690b2c5ca5627fe8ff5c5acc6ed80d117061aaeed348082a334180421909ed5070084a98421de60b2becd1a23500b072c3577e09
-  languageName: node
-  linkType: hard
-
-"@zkochan/rimraf@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@zkochan/rimraf@npm:2.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zkochan%2Frimraf%2F-%2Frimraf-2.1.2.tgz"
-  dependencies:
-    rimraf: ^3.0.2
-  checksum: 4f7fbfe837b7957bd33b12ce3d41639c737be115122fcad9ce3a96cf02c47da6f4b9be06f9efef2c7f5d94a401a96d593fe07be1d9f181b70437e844f2f211c3
   languageName: node
   linkType: hard
 
@@ -757,15 +755,6 @@ __metadata:
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
   checksum: 9706c088a283058a8a99e0bf91b0a2f75497f185980d9ffa8b304de1d9e58ebda7c72c07ebf01dadedaac5b2907b2c6f566f660d62bd336c3468e960403b9d65
-  languageName: node
-  linkType: hard
-
-"better-path-resolve@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "better-path-resolve@npm:1.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbetter-path-resolve%2F-%2Fbetter-path-resolve-1.0.0.tgz"
-  dependencies:
-    is-windows: ^1.0.0
-  checksum: 5392dbe04e7fe68b944eb37961d9dfa147aaac3ee9ee3f6e13d42e2c9fbe949e68d16e896c14ee9016fa5f8e6e53ec7fd8b5f01b50a32067a7d94ac9cfb9a050
   languageName: node
   linkType: hard
 
@@ -1806,13 +1795,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"is-windows@npm:^1.0.0":
-  version: 1.0.2
-  resolution: "is-windows@npm:1.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fis-windows%2F-%2Fis-windows-1.0.2.tgz"
-  checksum: 438b7e52656fe3b9b293b180defb4e448088e7023a523ec21a91a80b9ff8cdb3377ddb5b6e60f7c7de4fa8b63ab56e121b6705fe081b3cf1b828b0a380009ad7
-  languageName: node
-  linkType: hard
-
 "isarray@npm:~1.0.0":
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
@@ -2053,6 +2035,13 @@ fsevents@~2.3.2:
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
+  languageName: node
+  linkType: hard
+
+"mrmime@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "mrmime@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fmrmime%2F-%2Fmrmime-1.0.1.tgz"
+  checksum: cc979da44bbbffebaa8eaf7a45117e851f2d4cb46a3ada6ceb78130466a04c15a0de9a9ce1c8b8ba6f6e1b8618866b1352992bf1757d241c0ddca558b9f28a77
   languageName: node
   linkType: hard
 
@@ -2456,16 +2445,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rename-overwrite@npm:^4.0.0":
-  version: 4.0.2
-  resolution: "rename-overwrite@npm:4.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Frename-overwrite%2F-%2Frename-overwrite-4.0.2.tgz"
-  dependencies:
-    "@zkochan/rimraf": ^2.1.2
-  checksum: 9a6466a1b6c24b6452757c3295d7223183c561706b46e6a2b02908c2b4404158de57971ce8ad6ca6d5301ef69cac99b60750d1c01d86f60b94e2eef3682b718a
-  languageName: node
-  linkType: hard
-
-"resolve@npm:^1.1.7, resolve@npm:^1.22.0, resolve@npm:^1.22.1":
+"resolve@npm:^1.1.7, resolve@npm:^1.22.1":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fresolve%2F-%2Fresolve-1.22.1.tgz"
   dependencies:
@@ -2478,7 +2458,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1%3A%3A__archiveUrl=https%253A%252F%252Fregistry.npmjs.org%252Fresolve%252F-%252Fresolve-1.22.1.tgz#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
   dependencies:
@@ -2624,6 +2604,17 @@ fsevents@~2.3.2:
   version: 3.0.5
   resolution: "signal-exit@npm:3.0.5"
   checksum: a1d3d0d63f581bd298b30ed8f6de21b73a0fe5a0c0f123b2e8ed7168bbff8f4c1a45e681de12a1966a89bb725d8eb727816be1c436e136951f31953e4a201587
+  languageName: node
+  linkType: hard
+
+"sirv@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "sirv@npm:2.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsirv%2F-%2Fsirv-2.0.2.tgz"
+  dependencies:
+    "@polka/url": ^1.0.0-next.20
+    mrmime: ^1.0.0
+    totalist: ^3.0.0
+  checksum: 6982f8ecee9392d246d7eeea8144e50334fe1b46a4fa942995a844ea88c2d518b17cce781bb09926c9a5692a7002a207d18dfd67af2aa538a15e733dc2042298
   languageName: node
   linkType: hard
 
@@ -2774,18 +2765,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"symlink-dir@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "symlink-dir@npm:5.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsymlink-dir%2F-%2Fsymlink-dir-5.0.1.tgz"
-  dependencies:
-    better-path-resolve: ^1.0.0
-    rename-overwrite: ^4.0.0
-  bin:
-    symlink-dir: dist/cli.js
-  checksum: 73694291cb357c07eb60241d509c6faa2350a4bccfa5b5278101d3d7b7bfa9ad7a3884ada5d11920aece59a1af4e43ba99c4c1bad845c2901f7bcf0a0bea9e32
-  languageName: node
-  linkType: hard
-
 "tailwindcss@npm:3.2.4":
   version: 3.2.4
   resolution: "tailwindcss@npm:3.2.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftailwindcss%2F-%2Ftailwindcss-3.2.4.tgz"
@@ -2856,6 +2835,13 @@ fsevents@~2.3.2:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftoidentifier%2F-%2Ftoidentifier-1.0.1.tgz"
   checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
+"totalist@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "totalist@npm:3.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ftotalist%2F-%2Ftotalist-3.0.0.tgz"
+  checksum: ec499bddfc73d5b6c73f8ff68afd7bed286705797f928a11177fee5d1ee80e9052ffcb434638437702e16864bd5490f437a54f79bfea9564e875d34ed3254bca
   languageName: node
   linkType: hard
 
@@ -2956,9 +2942,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.54":
-  version: 0.4.54
-  resolution: "vite-plugin-ssr@npm:0.4.54::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.54.tgz"
+"vite-plugin-ssr@npm:0.4.57":
+  version: 0.4.57
+  resolution: "vite-plugin-ssr@npm:0.4.57::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.57.tgz"
   dependencies:
     "@brillout/import": ^0.2.1
     "@brillout/json-serializer": ^0.5.3
@@ -2967,8 +2953,7 @@ fsevents@~2.3.2:
     es-module-lexer: ^0.10.5
     fast-glob: ^3.2.11
     picocolors: ^1.0.0
-    resolve: ^1.22.0
-    symlink-dir: ^5.0.1
+    sirv: ^2.0.2
   peerDependencies:
     react-streaming: ">=0.3.5"
     vite: ">=3.0.0"
@@ -2977,7 +2962,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 2a010e9743dd30752ccbdcb61a78575860333cd8a54200361e2c7c73cf37e36f0335ae62d10f88f94208b768fa85fffc3f3698d90b0547ed03f73eaf8bc6f163
+  checksum: fd8894a636e78c46a259ac65fd5fa7d987dbb741b447fb25518cd0539bcd51b850d28d87d93bb19cbe101dc7260a4087dcc3a111ee805570025616d2d414c73d
   languageName: node
   linkType: hard
 
@@ -3012,7 +2997,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 3.2.4
     vite-plugin-solid: 2.4.0
-    vite-plugin-ssr: 0.4.54
+    vite-plugin-ssr: 0.4.57
   languageName: unknown
   linkType: soft
 
