@@ -1282,10 +1282,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"destr@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "destr@npm:1.2.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fdestr%2F-%2Fdestr-1.2.1.tgz"
-  checksum: 9fe9054d14faadff509493e8d056ad933159cf690dad9167e88918bef9e2fcc167cd447bacb608d9ce7ecd4b11d8e4c447740da54748e4949f620aa421eafca9
+"destr@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "destr@npm:1.2.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fdestr%2F-%2Fdestr-1.2.2.tgz"
+  checksum: 3906b49513a64d8442dacb8b798c59d66257ded4ccd2ef1d99b58644d4aa6b30ca61f9a9823d3dcbc78b4db812596e53e85e499f39a498b3b165a045b5228b2b
   languageName: node
   linkType: hard
 
@@ -1662,15 +1662,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:1.0.1":
-  version: 1.0.1
-  resolution: "h3@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.0.1.tgz"
+"h3@npm:1.0.2":
+  version: 1.0.2
+  resolution: "h3@npm:1.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.0.2.tgz"
   dependencies:
     cookie-es: ^0.5.0
-    destr: ^1.2.1
+    destr: ^1.2.2
     radix3: ^1.0.0
-    ufo: ^1.0.0
-  checksum: 5eb0b4436279c447d3b2770c03929699c3f0add49f6c9811b3615e50a5173bc10422e10016379bf5770c9b01d2ffadb8accefc35dd3dcdcf7ec9ef33473234ec
+    ufo: ^1.0.1
+  checksum: be1db8c94a8d8d79f93df8ea49e28d6ab850db7868e9af4c12a9c79704ce09106402de265b12327d15e5784f4a0973c034b3d99dd3b3fbb5453a5c6095f78248
   languageName: node
   linkType: hard
 
@@ -2955,10 +2955,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"ufo@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "ufo@npm:1.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-1.0.0.tgz"
-  checksum: 0ef41654d5b04028cc4778884e324f7fe1309c6dd7b3cbebc77e7eebd8df0776824c404ae958706667a7dce882510a3af31ec8dcef0ea1ec9f98cca84303407c
+"ufo@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "ufo@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-1.0.1.tgz"
+  checksum: 63024876f21b7cc44267255a8043062046d3215e09212bd682787a13ccf1e0c5d23f7686a7f1bc7ac9f34c7e8a88100af234f42b509db50f17ce638af6ac87cc
   languageName: node
   linkType: hard
 
@@ -3064,7 +3064,7 @@ fsevents@~2.3.2:
     clsx: 1.2.1
     cuid: 2.1.8
     dirname-filename-esm: 1.1.1
-    h3: 1.0.1
+    h3: 1.0.2
     idb: 7.1.1
     lodash-es: 4.17.21
     luxon: 3.1.1
