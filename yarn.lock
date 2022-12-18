@@ -2410,7 +2410,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.4.20, postcss@npm:^8.4.19":
+"postcss@npm:8.4.20, postcss@npm:^8.4.20":
   version: 8.4.20
   resolution: "postcss@npm:8.4.20::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.20.tgz"
   dependencies:
@@ -3080,19 +3080,19 @@ fsevents@~2.3.2:
     tailwindcss: 3.2.4
     typescript: 4.9.4
     video-name-parser: 1.4.6
-    vite: 4.0.0
+    vite: 4.0.2
     vite-plugin-solid: 2.5.0
     vite-plugin-ssr: 0.4.57
   languageName: unknown
   linkType: soft
 
-"vite@npm:4.0.0":
-  version: 4.0.0
-  resolution: "vite@npm:4.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-4.0.0.tgz"
+"vite@npm:4.0.2":
+  version: 4.0.2
+  resolution: "vite@npm:4.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-4.0.2.tgz"
   dependencies:
     esbuild: ^0.16.3
     fsevents: ~2.3.2
-    postcss: ^8.4.19
+    postcss: ^8.4.20
     resolve: ^1.22.1
     rollup: ^3.7.0
   peerDependencies:
@@ -3120,7 +3120,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 83099d5033fa5580714641df3cda16579ec104b9f3d447c2cf3208105ef2e6f8573267fbe3bdc93c0e51a70830d4d30bc166767c9f8805b1075a405625471930
+  checksum: b259782d83f293289f1cd7802cc525c75691fd45a1ded74e58365b5bff8f93f255daad4480269cda1660bf831f628b7a7224c9f591f039b5c0ccf351a8ee04ee
   languageName: node
   linkType: hard
 
