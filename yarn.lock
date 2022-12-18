@@ -2765,12 +2765,14 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"srt-parser-2@npm:1.1.8":
-  version: 1.1.8
-  resolution: "srt-parser-2@npm:1.1.8::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsrt-parser-2%2F-%2Fsrt-parser-2-1.1.8.tgz"
+"srt-parser-2@npm:1.2.1, srt-parser-2@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "srt-parser-2@npm:1.2.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsrt-parser-2%2F-%2Fsrt-parser-2-1.2.1.tgz"
+  dependencies:
+    srt-parser-2: ^1.2.0
   bin:
     srt-parser-2: bin/index.js
-  checksum: 18ea5fe96efab57da109456f806788f67f3517e3bb302a25c55aa7d5978b2e4ccae40733754f20a8e0c8891a75fd1a053258a42607addf787539aec8850f298a
+  checksum: 42e0b5695e868c2dc501d630a2f36ddba0cc262fc75c08df3963b8926ac03e170c399e2ad582de8d7c86aca612dd6baa2c05d12287c15acfb2cabba6368cb497
   languageName: node
   linkType: hard
 
@@ -3074,7 +3076,7 @@ fsevents@~2.3.2:
     prettier-plugin-tailwindcss: 0.2.1
     serve-static: 1.15.0
     solid-js: 1.6.5
-    srt-parser-2: 1.1.8
+    srt-parser-2: 1.2.1
     tailwindcss: 3.2.4
     typescript: 4.9.4
     video-name-parser: 1.4.6
