@@ -2736,12 +2736,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.6.5":
-  version: 1.6.5
-  resolution: "solid-js@npm:1.6.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.6.5.tgz"
+"solid-js@npm:1.6.6":
+  version: 1.6.6
+  resolution: "solid-js@npm:1.6.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsolid-js%2F-%2Fsolid-js-1.6.6.tgz"
   dependencies:
     csstype: ^3.1.0
-  checksum: c05b44ec19ac87d58130c86f2271b01dc453ec873fdd657d8796c3a39d6a07dfd4d0d76b8fd428d74326f4a866cb373d8431b10b849d6a00274d33ae58736af8
+  checksum: 7b206d30936b3616d7382594fe34e82fec6f448346a44b7ccd9621bde11868ffb6eb7b50669fafa783398b9f79eb238467665ea42ebd5673774d427cdca79dc2
   languageName: node
   linkType: hard
 
@@ -3075,7 +3075,7 @@ fsevents@~2.3.2:
     prettier: 2.8.1
     prettier-plugin-tailwindcss: 0.2.1
     serve-static: 1.15.0
-    solid-js: 1.6.5
+    solid-js: 1.6.6
     srt-parser-2: 1.2.1
     tailwindcss: 3.2.4
     typescript: 4.9.4
