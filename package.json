@@ -40,7 +40,7 @@
     "nosleep.js": "0.12.0",
     "serve-static": "1.15.0",
     "solid-js": "1.6.9",
-    "srt-parser-2": "1.2.1",
+    "srt-parser-2": "1.2.2",
     "video-name-parser": "1.4.6"
   },
   "packageManager": "yarn@3.3.1"
