@@ -1226,10 +1226,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cuid@npm:2.1.8":
-  version: 2.1.8
-  resolution: "cuid@npm:2.1.8"
-  checksum: 12b85b3f5150a6f0b9e4f345c8d98299d74647419151751fa1132f6702fe2b5388ceceb1c9b49bad7cab1b3ac033c7cedea8ffc034930f90005b8a4345025288
+"cuid@npm:3.0.0":
+  version: 3.0.0
+  resolution: "cuid@npm:3.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcuid%2F-%2Fcuid-3.0.0.tgz"
+  checksum: f9a344bd90e26b62f75a86b616ad717bad88b20b02df25c6e4008dd2c0948b081bd72ad8075b25ae644dce7fc367a43c622954e88aed972b72b1f132416faa4e
   languageName: node
   linkType: hard
 
@@ -3116,7 +3116,7 @@ fsevents@~2.3.2:
     "@zip.js/zip.js": 2.6.62
     autoprefixer: 10.4.13
     clsx: 1.2.1
-    cuid: 2.1.8
+    cuid: 3.0.0
     dirname-filename-esm: 1.1.1
     h3: 1.1.0
     idb: 7.1.1
