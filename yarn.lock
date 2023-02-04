@@ -458,10 +458,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/vite-plugin-import-build@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@brillout/vite-plugin-import-build@npm:0.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.1.0.tgz"
-  checksum: 26094e724eef65aa1947fb2d3ab86bfb29f7f138a9093770d75176625a67244d54587c1f7950f123bfa9e0e9fb82353b2f8cae50c71115ec2fa3e270b1ffb19c
+"@brillout/vite-plugin-import-build@npm:^0.1.3":
+  version: 0.1.4
+  resolution: "@brillout/vite-plugin-import-build@npm:0.1.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.1.4.tgz"
+  checksum: 3044692ed30fdf3b14b02726ba65ff5690696c34287f963ff957559bbe8c533f07e8ddd56f61bae2b93aa3fd92744eab17c51ecc57a811442adcbebcacf3b440
   languageName: node
   linkType: hard
 
@@ -3079,13 +3079,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.71":
-  version: 0.4.71
-  resolution: "vite-plugin-ssr@npm:0.4.71::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.71.tgz"
+"vite-plugin-ssr@npm:0.4.75":
+  version: 0.4.75
+  resolution: "vite-plugin-ssr@npm:0.4.75::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.75.tgz"
   dependencies:
     "@brillout/import": ^0.2.1
     "@brillout/json-serializer": ^0.5.3
-    "@brillout/vite-plugin-import-build": ^0.1.0
+    "@brillout/vite-plugin-import-build": ^0.1.3
     cac: ^6.7.12
     es-module-lexer: ^0.10.5
     fast-glob: ^3.2.11
@@ -3099,7 +3099,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: e142358f8e1bce400e13a40669ffab7410488bed9ef3dfd3016950b23cd5df9a6a91aad0028095ff866a6138b865287be0bec5e07a6ddc8640a8215b5f87f946
+  checksum: 833c18bf88cede9307886db606c067c67417ceb52be62d4ecbc272fdb48c7e28a8b6a48912627e75c613ac0f1d8e5f0ef6ff78546aba234e152386c8c472a069
   languageName: node
   linkType: hard
 
@@ -3134,7 +3134,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 4.0.4
     vite-plugin-solid: 2.5.0
-    vite-plugin-ssr: 0.4.71
+    vite-plugin-ssr: 0.4.75
   languageName: unknown
   linkType: soft
 
