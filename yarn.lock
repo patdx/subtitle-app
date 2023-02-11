@@ -1671,15 +1671,17 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:1.1.0":
-  version: 1.1.0
-  resolution: "h3@npm:1.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.1.0.tgz"
+"h3@npm:1.4.0":
+  version: 1.4.0
+  resolution: "h3@npm:1.4.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.4.0.tgz"
   dependencies:
     cookie-es: ^0.5.0
     destr: ^1.2.2
+    iron-webcrypto: ^0.4.0
     radix3: ^1.0.0
     ufo: ^1.0.1
-  checksum: aa3be7d031d10758f3d2b7c8c81187d4b87629334be4a28a3fd31bf51e0986323f592bfc39086c2e397e9e164dfbc25fb497db04eaf8ef076f0d1453590e8710
+    uncrypto: ^0.1.2
+  checksum: 6e6f1f63166c022e55565dbe73a2a9df0fed7b9575eff378d9989c0fdae24e6adf0b9c6c043c9ffcb3186f4c2c881b5f6109586dfb8dee1c70e8d55f0595ecdb
   languageName: node
   linkType: hard
 
@@ -1821,6 +1823,13 @@ fsevents@~2.3.2:
   version: 1.1.5
   resolution: "ip@npm:1.1.5"
   checksum: 30133981f082a060a32644f6a7746e9ba7ac9e2bc07ecc8bbdda3ee8ca9bec1190724c390e45a1ee7695e7edfd2a8f7dda2c104ec5f7ac5068c00648504c7e5a
+  languageName: node
+  linkType: hard
+
+"iron-webcrypto@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "iron-webcrypto@npm:0.4.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Firon-webcrypto%2F-%2Firon-webcrypto-0.4.0.tgz"
+  checksum: 6bf4c3e3bd9a1664bbe54a206889e3daef297c5032b96b648d54928741c3b8c728523386cfd94dd5e6e67a91580c8f6bcf13fe4abc531cbbaa9bd97fb8859f8f
   languageName: node
   linkType: hard
 
@@ -3013,6 +3022,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"uncrypto@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "uncrypto@npm:0.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Funcrypto%2F-%2Funcrypto-0.1.2.tgz"
+  checksum: a3095725a0f7ffbfada5a7df40716913aa2aba8c9924feab64ee66b45696bdaa2df4718451577bc243bef65fa9fe7a8744dec3a02c5598795a0f261f8c46adc8
+  languageName: node
+  linkType: hard
+
 "unique-filename@npm:^1.1.1":
   version: 1.1.1
   resolution: "unique-filename@npm:1.1.1"
@@ -3115,7 +3131,7 @@ fsevents@~2.3.2:
     clsx: 1.2.1
     cuid: 3.0.0
     dirname-filename-esm: 1.1.1
-    h3: 1.1.0
+    h3: 1.4.0
     idb: 7.1.1
     lodash-es: 4.17.21
     luxon: 3.2.1
