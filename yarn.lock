@@ -1270,6 +1270,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"defu@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "defu@npm:6.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fdefu%2F-%2Fdefu-6.1.2.tgz"
+  checksum: 2ec0ff8414d5a1ab2b8c7e9a79bbad6d97d23ea7ebf5dcf80c3c7ffd9715c30f84a3cc47b917379ea756b3db0dc4701ce6400e493a1ae1688dffcd0f884233b2
+  languageName: node
+  linkType: hard
+
 "delegates@npm:^1.0.0":
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
@@ -1671,17 +1678,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:1.4.0":
-  version: 1.4.0
-  resolution: "h3@npm:1.4.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.4.0.tgz"
+"h3@npm:1.5.0":
+  version: 1.5.0
+  resolution: "h3@npm:1.5.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.5.0.tgz"
   dependencies:
     cookie-es: ^0.5.0
+    defu: ^6.1.2
     destr: ^1.2.2
-    iron-webcrypto: ^0.4.0
+    iron-webcrypto: ^0.5.0
     radix3: ^1.0.0
-    ufo: ^1.0.1
+    ufo: ^1.1.0
     uncrypto: ^0.1.2
-  checksum: 6e6f1f63166c022e55565dbe73a2a9df0fed7b9575eff378d9989c0fdae24e6adf0b9c6c043c9ffcb3186f4c2c881b5f6109586dfb8dee1c70e8d55f0595ecdb
+  checksum: afdc37528ee1688b328c2f0098161129ee5ece90f83bb786645194fe0fbe64c0f4ec8ec6b25b0920c29d25d6b50fe97e0b5ccfac53fe4884df03b01c1ff8e0b8
   languageName: node
   linkType: hard
 
@@ -1826,10 +1834,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"iron-webcrypto@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "iron-webcrypto@npm:0.4.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Firon-webcrypto%2F-%2Firon-webcrypto-0.4.0.tgz"
-  checksum: 6bf4c3e3bd9a1664bbe54a206889e3daef297c5032b96b648d54928741c3b8c728523386cfd94dd5e6e67a91580c8f6bcf13fe4abc531cbbaa9bd97fb8859f8f
+"iron-webcrypto@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "iron-webcrypto@npm:0.5.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Firon-webcrypto%2F-%2Firon-webcrypto-0.5.0.tgz"
+  checksum: 8e806c9fdafee83d7d328a60d5bb3c3529840e9de8085cebc93461879cf581a57812a5591b22d90699d9f9808bf8ce709baaeba36a1c8221cafcd4952ca77d8f
   languageName: node
   linkType: hard
 
@@ -3018,10 +3026,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"ufo@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "ufo@npm:1.0.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-1.0.1.tgz"
-  checksum: 63024876f21b7cc44267255a8043062046d3215e09212bd682787a13ccf1e0c5d23f7686a7f1bc7ac9f34c7e8a88100af234f42b509db50f17ce638af6ac87cc
+"ufo@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "ufo@npm:1.1.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fufo%2F-%2Fufo-1.1.0.tgz"
+  checksum: f4098df457526be8bb1a466f05a2f72075b91580519215e0c219a4ff7dca4327b59964a053012f8547da77501b61cdebffbf8e16ef4d0509a7561efffe8e74ea
   languageName: node
   linkType: hard
 
@@ -3134,7 +3142,7 @@ fsevents@~2.3.2:
     clsx: 1.2.1
     cuid: 3.0.0
     dirname-filename-esm: 1.1.1
-    h3: 1.4.0
+    h3: 1.5.0
     idb: 7.1.1
     lodash-es: 4.17.21
     luxon: 3.2.1
