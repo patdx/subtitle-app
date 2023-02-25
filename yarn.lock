@@ -810,13 +810,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serve-static@npm:1.15.0":
-  version: 1.15.0
-  resolution: "@types/serve-static@npm:1.15.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fserve-static%2F-%2Fserve-static-1.15.0.tgz"
+"@types/serve-static@npm:1.15.1":
+  version: 1.15.1
+  resolution: "@types/serve-static@npm:1.15.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fserve-static%2F-%2Fserve-static-1.15.1.tgz"
   dependencies:
     "@types/mime": "*"
     "@types/node": "*"
-  checksum: b6ac93d471fb0f53ddcac1f9b67572a09cd62806f7db5855244b28f6f421139626f24799392566e97d1ffc61b12f9de7f30380c39fcae3c8a161fe161d44edf2
+  checksum: 2e078bdc1e458c7dfe69e9faa83cc69194b8896cce57cb745016580543c7ab5af07fdaa8ac1765eb79524208c81017546f66056f44d1204f812d72810613de36
   languageName: node
   linkType: hard
 
@@ -3136,7 +3136,7 @@ fsevents@~2.3.2:
     "@types/lodash-es": 4.17.6
     "@types/luxon": 3.2.0
     "@types/node": 18.14.1
-    "@types/serve-static": 1.15.0
+    "@types/serve-static": 1.15.1
     "@zip.js/zip.js": 2.6.65
     autoprefixer: 10.4.13
     clsx: 1.2.1
