@@ -481,9 +481,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/android-arm64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-arm64%2F-%2Fandroid-arm64-0.17.10.tgz"
+"@esbuild/android-arm64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/android-arm64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-arm64%2F-%2Fandroid-arm64-0.17.11.tgz"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
@@ -495,9 +495,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/android-arm@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-arm%2F-%2Fandroid-arm-0.17.10.tgz"
+"@esbuild/android-arm@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/android-arm@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-arm%2F-%2Fandroid-arm-0.17.11.tgz"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
@@ -509,9 +509,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/android-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-x64%2F-%2Fandroid-x64-0.17.10.tgz"
+"@esbuild/android-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/android-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fandroid-x64%2F-%2Fandroid-x64-0.17.11.tgz"
   conditions: os=android & cpu=x64
   languageName: node
   linkType: hard
@@ -523,9 +523,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-arm64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/darwin-arm64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fdarwin-arm64%2F-%2Fdarwin-arm64-0.17.10.tgz"
+"@esbuild/darwin-arm64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/darwin-arm64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fdarwin-arm64%2F-%2Fdarwin-arm64-0.17.11.tgz"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -537,9 +537,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/darwin-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fdarwin-x64%2F-%2Fdarwin-x64-0.17.10.tgz"
+"@esbuild/darwin-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/darwin-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fdarwin-x64%2F-%2Fdarwin-x64-0.17.11.tgz"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -551,9 +551,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-arm64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/freebsd-arm64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Ffreebsd-arm64%2F-%2Ffreebsd-arm64-0.17.10.tgz"
+"@esbuild/freebsd-arm64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/freebsd-arm64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Ffreebsd-arm64%2F-%2Ffreebsd-arm64-0.17.11.tgz"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -565,9 +565,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/freebsd-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Ffreebsd-x64%2F-%2Ffreebsd-x64-0.17.10.tgz"
+"@esbuild/freebsd-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/freebsd-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Ffreebsd-x64%2F-%2Ffreebsd-x64-0.17.11.tgz"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
@@ -579,9 +579,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-arm64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-arm64%2F-%2Flinux-arm64-0.17.10.tgz"
+"@esbuild/linux-arm64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-arm64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-arm64%2F-%2Flinux-arm64-0.17.11.tgz"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
@@ -593,9 +593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-arm@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-arm%2F-%2Flinux-arm-0.17.10.tgz"
+"@esbuild/linux-arm@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-arm@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-arm%2F-%2Flinux-arm-0.17.11.tgz"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
@@ -607,9 +607,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ia32@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-ia32@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-ia32%2F-%2Flinux-ia32-0.17.10.tgz"
+"@esbuild/linux-ia32@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-ia32@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-ia32%2F-%2Flinux-ia32-0.17.11.tgz"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
@@ -621,9 +621,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-loong64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-loong64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-loong64%2F-%2Flinux-loong64-0.17.10.tgz"
+"@esbuild/linux-loong64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-loong64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-loong64%2F-%2Flinux-loong64-0.17.11.tgz"
   conditions: os=linux & cpu=loong64
   languageName: node
   linkType: hard
@@ -635,9 +635,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-mips64el@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-mips64el@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-mips64el%2F-%2Flinux-mips64el-0.17.10.tgz"
+"@esbuild/linux-mips64el@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-mips64el@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-mips64el%2F-%2Flinux-mips64el-0.17.11.tgz"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
@@ -649,9 +649,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ppc64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-ppc64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-ppc64%2F-%2Flinux-ppc64-0.17.10.tgz"
+"@esbuild/linux-ppc64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-ppc64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-ppc64%2F-%2Flinux-ppc64-0.17.11.tgz"
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
@@ -663,9 +663,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-riscv64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-riscv64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-riscv64%2F-%2Flinux-riscv64-0.17.10.tgz"
+"@esbuild/linux-riscv64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-riscv64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-riscv64%2F-%2Flinux-riscv64-0.17.11.tgz"
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
@@ -677,9 +677,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-s390x@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-s390x@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-s390x%2F-%2Flinux-s390x-0.17.10.tgz"
+"@esbuild/linux-s390x@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-s390x@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-s390x%2F-%2Flinux-s390x-0.17.11.tgz"
   conditions: os=linux & cpu=s390x
   languageName: node
   linkType: hard
@@ -691,9 +691,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/linux-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-x64%2F-%2Flinux-x64-0.17.10.tgz"
+"@esbuild/linux-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/linux-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Flinux-x64%2F-%2Flinux-x64-0.17.11.tgz"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -705,9 +705,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/netbsd-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fnetbsd-x64%2F-%2Fnetbsd-x64-0.17.10.tgz"
+"@esbuild/netbsd-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/netbsd-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fnetbsd-x64%2F-%2Fnetbsd-x64-0.17.11.tgz"
   conditions: os=netbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -719,9 +719,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openbsd-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/openbsd-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fopenbsd-x64%2F-%2Fopenbsd-x64-0.17.10.tgz"
+"@esbuild/openbsd-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/openbsd-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fopenbsd-x64%2F-%2Fopenbsd-x64-0.17.11.tgz"
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -733,9 +733,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/sunos-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/sunos-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fsunos-x64%2F-%2Fsunos-x64-0.17.10.tgz"
+"@esbuild/sunos-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/sunos-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fsunos-x64%2F-%2Fsunos-x64-0.17.11.tgz"
   conditions: os=sunos & cpu=x64
   languageName: node
   linkType: hard
@@ -747,9 +747,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-arm64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/win32-arm64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-arm64%2F-%2Fwin32-arm64-0.17.10.tgz"
+"@esbuild/win32-arm64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/win32-arm64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-arm64%2F-%2Fwin32-arm64-0.17.11.tgz"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -761,9 +761,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-ia32@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/win32-ia32@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-ia32%2F-%2Fwin32-ia32-0.17.10.tgz"
+"@esbuild/win32-ia32@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/win32-ia32@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-ia32%2F-%2Fwin32-ia32-0.17.11.tgz"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
@@ -775,9 +775,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.17.10":
-  version: 0.17.10
-  resolution: "@esbuild/win32-x64@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-x64%2F-%2Fwin32-x64-0.17.10.tgz"
+"@esbuild/win32-x64@npm:0.17.11":
+  version: 0.17.11
+  resolution: "@esbuild/win32-x64@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40esbuild%2Fwin32-x64%2F-%2Fwin32-x64-0.17.11.tgz"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1201,10 +1201,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cac@npm:^6.7.12":
-  version: 6.7.12
-  resolution: "cac@npm:6.7.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcac%2F-%2Fcac-6.7.12.tgz"
-  checksum: c0d4129eb30fc43449e9078ac37bb3b837aab6261236a6642a6fb9d839bb6a41e191e1f2776f87569535db07dcbf4937680419126215b4c17c9dba4351d1bd5e
+"cac@npm:^6.0.0":
+  version: 6.7.14
+  resolution: "cac@npm:6.7.14::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcac%2F-%2Fcac-6.7.14.tgz"
+  checksum: 45a2496a9443abbe7f52a49b22fbe51b1905eff46e03fd5e6c98e3f85077be3f8949685a1849b1a9cd2bc3e5567dfebcf64f01ce01847baf918f1b37c839791a
   languageName: node
   linkType: hard
 
@@ -1551,7 +1551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^0.10.5":
+"es-module-lexer@npm:^0.10.0":
   version: 0.10.5
   resolution: "es-module-lexer@npm:0.10.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fes-module-lexer%2F-%2Fes-module-lexer-0.10.5.tgz"
   checksum: d2f9debd9d913323322095934653e0558bb8220177645eb76d316b4afd911e8d83ffee0b748b0faa9f3ce1560db3eee4a0ac68d6c2f750c11f4250adce84cf02
@@ -1635,32 +1635,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.17.10":
-  version: 0.17.10
-  resolution: "esbuild@npm:0.17.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild%2F-%2Fesbuild-0.17.10.tgz"
+"esbuild@npm:^0.17.0":
+  version: 0.17.11
+  resolution: "esbuild@npm:0.17.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fesbuild%2F-%2Fesbuild-0.17.11.tgz"
   dependencies:
-    "@esbuild/android-arm": 0.17.10
-    "@esbuild/android-arm64": 0.17.10
-    "@esbuild/android-x64": 0.17.10
-    "@esbuild/darwin-arm64": 0.17.10
-    "@esbuild/darwin-x64": 0.17.10
-    "@esbuild/freebsd-arm64": 0.17.10
-    "@esbuild/freebsd-x64": 0.17.10
-    "@esbuild/linux-arm": 0.17.10
-    "@esbuild/linux-arm64": 0.17.10
-    "@esbuild/linux-ia32": 0.17.10
-    "@esbuild/linux-loong64": 0.17.10
-    "@esbuild/linux-mips64el": 0.17.10
-    "@esbuild/linux-ppc64": 0.17.10
-    "@esbuild/linux-riscv64": 0.17.10
-    "@esbuild/linux-s390x": 0.17.10
-    "@esbuild/linux-x64": 0.17.10
-    "@esbuild/netbsd-x64": 0.17.10
-    "@esbuild/openbsd-x64": 0.17.10
-    "@esbuild/sunos-x64": 0.17.10
-    "@esbuild/win32-arm64": 0.17.10
-    "@esbuild/win32-ia32": 0.17.10
-    "@esbuild/win32-x64": 0.17.10
+    "@esbuild/android-arm": 0.17.11
+    "@esbuild/android-arm64": 0.17.11
+    "@esbuild/android-x64": 0.17.11
+    "@esbuild/darwin-arm64": 0.17.11
+    "@esbuild/darwin-x64": 0.17.11
+    "@esbuild/freebsd-arm64": 0.17.11
+    "@esbuild/freebsd-x64": 0.17.11
+    "@esbuild/linux-arm": 0.17.11
+    "@esbuild/linux-arm64": 0.17.11
+    "@esbuild/linux-ia32": 0.17.11
+    "@esbuild/linux-loong64": 0.17.11
+    "@esbuild/linux-mips64el": 0.17.11
+    "@esbuild/linux-ppc64": 0.17.11
+    "@esbuild/linux-riscv64": 0.17.11
+    "@esbuild/linux-s390x": 0.17.11
+    "@esbuild/linux-x64": 0.17.11
+    "@esbuild/netbsd-x64": 0.17.11
+    "@esbuild/openbsd-x64": 0.17.11
+    "@esbuild/sunos-x64": 0.17.11
+    "@esbuild/win32-arm64": 0.17.11
+    "@esbuild/win32-ia32": 0.17.11
+    "@esbuild/win32-x64": 0.17.11
   dependenciesMeta:
     "@esbuild/android-arm":
       optional: true
@@ -1708,7 +1708,7 @@ __metadata:
       optional: true
   bin:
     esbuild: bin/esbuild
-  checksum: 803de327036528c140b3d1d8e148604fd1446062b63d2b5a49cd8fe5fa607dc41be915f28dec1242be77164378e3ca27a2ed2968692a73cc833896c7bebc0e12
+  checksum: febf218155513bb9c9c970508c03ec58e0aacfdc23394f425836a09f1da0dae0afa12949274adfd382782eef097f86b2d6b3032293062291f2f471de204f77ec
   languageName: node
   linkType: hard
 
@@ -1740,20 +1740,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11":
-  version: 3.2.11
-  resolution: "fast-glob@npm:3.2.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ffast-glob%2F-%2Ffast-glob-3.2.11.tgz"
-  dependencies:
-    "@nodelib/fs.stat": ^2.0.2
-    "@nodelib/fs.walk": ^1.2.3
-    glob-parent: ^5.1.2
-    merge2: ^1.3.0
-    micromatch: ^4.0.4
-  checksum: f473105324a7780a20c06de842e15ddbb41d3cb7e71d1e4fe6e8373204f22245d54f5ab9e2061e6a1c613047345954d29b022e0e76f5c28b1df9858179a0e6d7
-  languageName: node
-  linkType: hard
-
-"fast-glob@npm:^3.2.12":
+"fast-glob@npm:^3.0.0, fast-glob@npm:^3.2.12":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Ffast-glob%2F-%2Ffast-glob-3.2.12.tgz"
   dependencies:
@@ -2999,7 +2986,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"sirv@npm:^2.0.2":
+"sirv@npm:^2.0.0":
   version: 2.0.2
   resolution: "sirv@npm:2.0.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fsirv%2F-%2Fsirv-2.0.2.tgz"
   dependencies:
@@ -3334,19 +3321,19 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.89":
-  version: 0.4.89
-  resolution: "vite-plugin-ssr@npm:0.4.89::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.89.tgz"
+"vite-plugin-ssr@npm:0.4.90":
+  version: 0.4.90
+  resolution: "vite-plugin-ssr@npm:0.4.90::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.90.tgz"
   dependencies:
     "@brillout/import": ^0.2.1
     "@brillout/json-serializer": ^0.5.3
     "@brillout/vite-plugin-import-build": ^0.2.11
-    cac: ^6.7.12
-    es-module-lexer: ^0.10.5
-    esbuild: ^0.17.10
-    fast-glob: ^3.2.11
+    cac: ^6.0.0
+    es-module-lexer: ^0.10.0
+    esbuild: ^0.17.0
+    fast-glob: ^3.0.0
     picocolors: ^1.0.0
-    sirv: ^2.0.2
+    sirv: ^2.0.0
   peerDependencies:
     react-streaming: ">=0.3.5"
     vite: ">=3.0.0"
@@ -3355,7 +3342,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: f0afa463999387b64edefa759cda7c5944be9998fd4e0cf71c482f73f848f201835c0c1af5823340fcad32424bce734762d606d5996ed63c9960f084101006d5
+  checksum: ba66a6fa98d0f751682da14f8abec77a918c0f55c61bf58f68692a4efcf3b67f6b4299cb221bdfc6b5e0efe185f08174c81180a8ae6960bedb79c8d550835ae9
   languageName: node
   linkType: hard
 
@@ -3390,7 +3377,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 4.1.4
     vite-plugin-solid: 2.5.0
-    vite-plugin-ssr: 0.4.89
+    vite-plugin-ssr: 0.4.90
   languageName: unknown
   linkType: soft
 
