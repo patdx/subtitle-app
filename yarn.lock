@@ -3433,9 +3433,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.91":
-  version: 0.4.91
-  resolution: "vite-plugin-ssr@npm:0.4.91::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.91.tgz"
+"vite-plugin-ssr@npm:0.4.93":
+  version: 0.4.93
+  resolution: "vite-plugin-ssr@npm:0.4.93::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.93.tgz"
   dependencies:
     "@brillout/import": ^0.2.1
     "@brillout/json-serializer": ^0.5.3
@@ -3454,7 +3454,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: 9c7d40d9ac63a069717d67b8c1034a0d6d2990f6b02502ac2922aa0a929bbc0ee97691c2514f3f1016a02a704048963455b8a76cba328415ac14b81c4c1b8958
+  checksum: f5819612b2b17ce21140b5ba10ecc02b2e93087a15293d81e1c38a836484688ceb7c506aa0d6fa77b39bff648362224193aa7004e22fb8531718e9d1f0f3e387
   languageName: node
   linkType: hard
 
@@ -3489,7 +3489,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 4.1.4
     vite-plugin-solid: 2.6.1
-    vite-plugin-ssr: 0.4.91
+    vite-plugin-ssr: 0.4.93
   languageName: unknown
   linkType: soft
 
