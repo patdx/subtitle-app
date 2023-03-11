@@ -1185,12 +1185,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.4.13":
-  version: 10.4.13
-  resolution: "autoprefixer@npm:10.4.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fautoprefixer%2F-%2Fautoprefixer-10.4.13.tgz"
+"autoprefixer@npm:10.4.14":
+  version: 10.4.14
+  resolution: "autoprefixer@npm:10.4.14::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fautoprefixer%2F-%2Fautoprefixer-10.4.14.tgz"
   dependencies:
-    browserslist: ^4.21.4
-    caniuse-lite: ^1.0.30001426
+    browserslist: ^4.21.5
+    caniuse-lite: ^1.0.30001464
     fraction.js: ^4.2.0
     normalize-range: ^0.1.2
     picocolors: ^1.0.0
@@ -1199,7 +1199,7 @@ __metadata:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: dcb1cb7ae96a3363d65d82e52f9a0a7d8c982256f6fd032d7e1ec311f099c23acfebfd517ff8e96bf93f716a66c4ea2b80c60aa19efd2f474ce434bd75ef7b79
+  checksum: e9f18e664a4e4a54a8f4ec5f6b49ed228ec45afaa76efcae361c93721795dc5ab644f36d2fdfc0dea446b02a8067b9372f91542ea431994399e972781ed46d95
   languageName: node
   linkType: hard
 
@@ -1270,7 +1270,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.21.3, browserslist@npm:^4.21.4":
+"browserslist@npm:^4.21.3":
   version: 4.21.4
   resolution: "browserslist@npm:4.21.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbrowserslist%2F-%2Fbrowserslist-4.21.4.tgz"
   dependencies:
@@ -1281,6 +1281,20 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 4af3793704dbb4615bcd29059ab472344dc7961c8680aa6c4bb84f05340e14038d06a5aead58724eae69455b8fade8b8c69f1638016e87e5578969d74c078b79
+  languageName: node
+  linkType: hard
+
+"browserslist@npm:^4.21.5":
+  version: 4.21.5
+  resolution: "browserslist@npm:4.21.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbrowserslist%2F-%2Fbrowserslist-4.21.5.tgz"
+  dependencies:
+    caniuse-lite: ^1.0.30001449
+    electron-to-chromium: ^1.4.284
+    node-releases: ^2.0.8
+    update-browserslist-db: ^1.0.10
+  bin:
+    browserslist: cli.js
+  checksum: 9755986b22e73a6a1497fd8797aedd88e04270be33ce66ed5d85a1c8a798292a65e222b0f251bafa1c2522261e237d73b08b58689d4920a607e5a53d56dc4706
   languageName: node
   linkType: hard
 
@@ -1331,10 +1345,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001426":
-  version: 1.0.30001426
-  resolution: "caniuse-lite@npm:1.0.30001426::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcaniuse-lite%2F-%2Fcaniuse-lite-1.0.30001426.tgz"
-  checksum: e8b9c14ee33410d95b27da619f50648f373a7be712748970643f25d95fa80687b4755ba365f34a7a1cea00f9137193943aa6e742eedf0a4d7857f83809f49435
+"caniuse-lite@npm:^1.0.30001449, caniuse-lite@npm:^1.0.30001464":
+  version: 1.0.30001464
+  resolution: "caniuse-lite@npm:1.0.30001464::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcaniuse-lite%2F-%2Fcaniuse-lite-1.0.30001464.tgz"
+  checksum: 67cdee102c1660d62d7b9dbd4740bb7af096236618f2509fd2e0039d50db5f02fb87c21d90b6d573fdcf50deaf3c84503d009e871502b5c221d0ba1dec18ba11
   languageName: node
   linkType: hard
 
@@ -1594,6 +1608,13 @@ __metadata:
   version: 1.4.273
   resolution: "electron-to-chromium@npm:1.4.273::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Felectron-to-chromium%2F-%2Felectron-to-chromium-1.4.273.tgz"
   checksum: a7d38bcea2a9909697cb51325287eb9190445d6bd347b29f2af33bc83a89cb8f14fcff81c5d1908c9b694787d0e6493c1baa4764e8425999b5b304cd853f76b9
+  languageName: node
+  linkType: hard
+
+"electron-to-chromium@npm:^1.4.284":
+  version: 1.4.328
+  resolution: "electron-to-chromium@npm:1.4.328::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Felectron-to-chromium%2F-%2Felectron-to-chromium-1.4.328.tgz"
+  checksum: 82c1617a77e40ac4ca5011749318a2fee8f8c75f8b517fcff7602219c85fd97a9fab2d5a1353ea10fb7f9c7d18acb90c9ed58c2292256f81e2ffa42ee66c4b0b
   languageName: node
   linkType: hard
 
@@ -2526,6 +2547,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"node-releases@npm:^2.0.8":
+  version: 2.0.10
+  resolution: "node-releases@npm:2.0.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fnode-releases%2F-%2Fnode-releases-2.0.10.tgz"
+  checksum: d784ecde25696a15d449c4433077f5cce620ed30a1656c4abf31282bfc691a70d9618bae6868d247a67914d1be5cc4fde22f65a05f4398cdfb92e0fc83cadfbc
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^5.0.0":
   version: 5.0.0
   resolution: "nopt@npm:5.0.0"
@@ -3359,7 +3387,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.0.9":
+"update-browserslist-db@npm:^1.0.10, update-browserslist-db@npm:^1.0.9":
   version: 1.0.10
   resolution: "update-browserslist-db@npm:1.0.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fupdate-browserslist-db%2F-%2Fupdate-browserslist-db-1.0.10.tgz"
   dependencies:
@@ -3441,7 +3469,7 @@ fsevents@~2.3.2:
     "@types/node": 18.14.6
     "@types/serve-static": 1.15.1
     "@zip.js/zip.js": 2.6.78
-    autoprefixer: 10.4.13
+    autoprefixer: 10.4.14
     clsx: 1.2.1
     cuid: 3.0.0
     dirname-filename-esm: 1.1.1
