@@ -497,12 +497,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/vite-plugin-import-build@npm:^0.2.12":
-  version: 0.2.12
-  resolution: "@brillout/vite-plugin-import-build@npm:0.2.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.2.12.tgz"
+"@brillout/vite-plugin-import-build@npm:^0.2.13":
+  version: 0.2.13
+  resolution: "@brillout/vite-plugin-import-build@npm:0.2.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.2.13.tgz"
   dependencies:
     "@brillout/import": ^0.2.2
-  checksum: 6b49dadc0c4920c7f4db3b740b7b692e62200b2d6177af2812c393625d32ee46ffebee5b0aafe018923eac8964794be8fd21066b1117fec22b9e0e0b96516827
+  checksum: d8c4a1c53df9764c053f3bed7436e716be10ae54b9739d16885791febd396d77b3ef3f1861557bcba14fdac741610d6eac9958689d69300a78ef6a1e1f4179c1
   languageName: node
   linkType: hard
 
@@ -1003,12 +1003,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:4.17.6":
-  version: 4.17.6
-  resolution: "@types/lodash-es@npm:4.17.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Flodash-es%2F-%2Flodash-es-4.17.6.tgz"
+"@types/lodash-es@npm:4.17.7":
+  version: 4.17.7
+  resolution: "@types/lodash-es@npm:4.17.7::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Flodash-es%2F-%2Flodash-es-4.17.7.tgz"
   dependencies:
     "@types/lodash": "*"
-  checksum: 9bd239dd525086e278821949ce12fbdd4f100a060fed9323fc7ad5661113e1641f28a7ebab617230ed3474680d8f4de705c1928b48252bb684be6ec9eed715db
+  checksum: 4b1f39fd1d921311c37a846c0e0df9d1fa23e27448a6ad1efd7574e703abd2b2fa5e8f3b5037146000f167ba231d0d01e52747d902654151b4ceeff9f2a9b380
   languageName: node
   linkType: hard
 
@@ -3433,13 +3433,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.93":
-  version: 0.4.93
-  resolution: "vite-plugin-ssr@npm:0.4.93::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.93.tgz"
+"vite-plugin-ssr@npm:0.4.94":
+  version: 0.4.94
+  resolution: "vite-plugin-ssr@npm:0.4.94::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.94.tgz"
   dependencies:
     "@brillout/import": ^0.2.1
     "@brillout/json-serializer": ^0.5.3
-    "@brillout/vite-plugin-import-build": ^0.2.12
+    "@brillout/vite-plugin-import-build": ^0.2.13
     cac: ^6.0.0
     es-module-lexer: ^0.10.0
     esbuild: ^0.17.0
@@ -3454,7 +3454,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/bin/vite-plugin-ssr.js
-  checksum: f5819612b2b17ce21140b5ba10ecc02b2e93087a15293d81e1c38a836484688ceb7c506aa0d6fa77b39bff648362224193aa7004e22fb8531718e9d1f0f3e387
+  checksum: 2b1a8117869295fbc922a2a9f18e64c0dddfe9e63468348c3588108fe8d5027eedd92f4489820d563f261b12609bee9eff0f6fdf62ca81a45ac1058b65c1c4fd
   languageName: node
   linkType: hard
 
@@ -3464,7 +3464,7 @@ fsevents@~2.3.2:
   dependencies:
     "@plussub/srt-vtt-parser": 1.1.0
     "@tailwindcss/forms": 0.5.3
-    "@types/lodash-es": 4.17.6
+    "@types/lodash-es": 4.17.7
     "@types/luxon": 3.2.0
     "@types/node": 18.15.3
     "@types/serve-static": 1.15.1
@@ -3489,7 +3489,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 4.1.4
     vite-plugin-solid: 2.6.1
-    vite-plugin-ssr: 0.4.93
+    vite-plugin-ssr: 0.4.94
   languageName: unknown
   linkType: soft
 
