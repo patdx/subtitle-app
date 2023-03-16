@@ -39,7 +39,7 @@
     "luxon": "3.3.0",
     "nosleep.js": "0.12.0",
     "serve-static": "1.15.0",
-    "solid-js": "1.6.14",
+    "solid-js": "1.6.15",
     "srt-parser-2": "1.2.2",
     "video-name-parser": "1.4.6"
   },
