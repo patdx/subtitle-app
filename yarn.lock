@@ -1057,10 +1057,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zip.js/zip.js@npm:2.6.78":
-  version: 2.6.78
-  resolution: "@zip.js/zip.js@npm:2.6.78::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.78.tgz"
-  checksum: 58b91d9c220dd6e420d6bc4c07f354906412cd6fe780581529f9ef15b8aa5f7d46c884dc777b72f4eef2eb2ca0398329761c6a366c10cb04514d21216efd1193
+"@zip.js/zip.js@npm:2.6.79":
+  version: 2.6.79
+  resolution: "@zip.js/zip.js@npm:2.6.79::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.6.79.tgz"
+  checksum: 4078fdabfa8740e733b5438447d321581217e7e2b2b177056c7c1de8195f21bc53f1968649cf00045c393dfef1ace334159b8dd733c4cba0a890ef728bedd083
   languageName: node
   linkType: hard
 
@@ -2000,9 +2000,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"h3@npm:1.6.1":
-  version: 1.6.1
-  resolution: "h3@npm:1.6.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.6.1.tgz"
+"h3@npm:1.6.2":
+  version: 1.6.2
+  resolution: "h3@npm:1.6.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fh3%2F-%2Fh3-1.6.2.tgz"
   dependencies:
     cookie-es: ^0.5.0
     defu: ^6.1.2
@@ -2011,7 +2011,7 @@ fsevents@~2.3.2:
     radix3: ^1.0.0
     ufo: ^1.1.1
     uncrypto: ^0.1.2
-  checksum: 894a10814faf89ad820fc9de76e16577e6e92a1791c25513c26b273de7993ac95d0d30293a702ad60c4ecc0d76ecd98897e596bcb0479f988631122e5850dae1
+  checksum: 3a876f414d6790908b4953684cf2237db1a4e1dd17b46fafd38787f0b1b81ce64d9850342ce0d2ff6b40e8601b07429d666c96a6bd119d9de937ccec7f6ce010
   languageName: node
   linkType: hard
 
@@ -3468,12 +3468,12 @@ fsevents@~2.3.2:
     "@types/luxon": 3.2.0
     "@types/node": 18.15.3
     "@types/serve-static": 1.15.1
-    "@zip.js/zip.js": 2.6.78
+    "@zip.js/zip.js": 2.6.79
     autoprefixer: 10.4.14
     clsx: 1.2.1
     cuid: 3.0.0
     dirname-filename-esm: 1.1.1
-    h3: 1.6.1
+    h3: 1.6.2
     idb: 7.1.1
     lodash-es: 4.17.21
     luxon: 3.3.0
