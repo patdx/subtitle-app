@@ -894,10 +894,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zip.js/zip.js@npm:2.7.1":
-  version: 2.7.1
-  resolution: "@zip.js/zip.js@npm:2.7.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.7.1.tgz"
-  checksum: a6f9991ab95339f7e228a12768f88f99a2658fa217aeb3dae38182d2d3cce8be322e6118c9a6d3a6d9dce533a49ebb16dbb005f14158a41fa1a066223835222a
+"@zip.js/zip.js@npm:2.7.5":
+  version: 2.7.5
+  resolution: "@zip.js/zip.js@npm:2.7.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.7.5.tgz"
+  checksum: d2dc489af55be65ca72823e5c59846d8722c9cd3acdd491cc5438653a172dbde3aa99e7a7c374e0d26715eb7d3762f362fad49121a3d68d1be40945f35655c70
   languageName: node
   linkType: hard
 
@@ -3276,9 +3276,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.112":
-  version: 0.4.112
-  resolution: "vite-plugin-ssr@npm:0.4.112::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.112.tgz"
+"vite-plugin-ssr@npm:0.4.113":
+  version: 0.4.113
+  resolution: "vite-plugin-ssr@npm:0.4.113::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.113.tgz"
   dependencies:
     "@brillout/import": 0.2.3
     "@brillout/json-serializer": ^0.5.3
@@ -3298,7 +3298,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/cli/bin-entry.js
-  checksum: 5eb647e2650acfb057128bd4cad5de3a776bb025a6fc5109bdeddfa7124e1d7f5bf3452d9c158e810b20883693144356fe94451573d3a2d128385b7fe03e7561
+  checksum: 2dda50d8cb5f320f1957a19fa6157f0b13a974a7a1c65d73c56c0e075d90c5f8463e0a841e63579633643a80f2735ea359d49f69af35d6649d30b35d8cc77791
   languageName: node
   linkType: hard
 
@@ -3312,7 +3312,7 @@ fsevents@~2.3.2:
     "@types/luxon": 3.3.0
     "@types/node": 18.15.11
     "@types/serve-static": 1.15.1
-    "@zip.js/zip.js": 2.7.1
+    "@zip.js/zip.js": 2.7.5
     autoprefixer: 10.4.14
     clsx: 1.2.1
     cuid: 3.0.0
@@ -3333,7 +3333,7 @@ fsevents@~2.3.2:
     video-name-parser: 1.4.6
     vite: 4.2.1
     vite-plugin-solid: 2.7.0
-    vite-plugin-ssr: 0.4.112
+    vite-plugin-ssr: 0.4.113
   languageName: unknown
   linkType: soft
 
