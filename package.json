@@ -25,11 +25,11 @@
     "typescript": "5.0.4",
     "vite": "4.2.1",
     "vite-plugin-solid": "2.7.0",
-    "vite-plugin-ssr": "0.4.112"
+    "vite-plugin-ssr": "0.4.113"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
-    "@zip.js/zip.js": "2.7.1",
+    "@zip.js/zip.js": "2.7.5",
     "clsx": "1.2.1",
     "cuid": "3.0.0",
     "dirname-filename-esm": "1.1.1",
