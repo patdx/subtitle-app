@@ -488,12 +488,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brillout/vite-plugin-import-build@npm:^0.2.14":
-  version: 0.2.14
-  resolution: "@brillout/vite-plugin-import-build@npm:0.2.14::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.2.14.tgz"
+"@brillout/vite-plugin-import-build@npm:^0.2.16":
+  version: 0.2.16
+  resolution: "@brillout/vite-plugin-import-build@npm:0.2.16::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40brillout%2Fvite-plugin-import-build%2F-%2Fvite-plugin-import-build-0.2.16.tgz"
   dependencies:
     "@brillout/import": ^0.2.3
-  checksum: f0a9192c04864a1c6a3448986a975767151fcc0a471dd4be2914039a3a602e80c506f4cdb5410afda1a11a5eb935520f22c325f18246b858c9f69f6a585933e1
+  checksum: 0d55908a3e507404434553414c16b5438f28bc283ec35be14a6aef2e5681f3992d94177f5d44102f3a4ad188d18eec6b9237e40b3b08dc7c4b746e04526bf8f6
   languageName: node
   linkType: hard
 
@@ -877,10 +877,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:18.15.11":
-  version: 18.15.11
-  resolution: "@types/node@npm:18.15.11::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fnode%2F-%2Fnode-18.15.11.tgz"
-  checksum: 977b4ad04708897ff0eb049ecf82246d210939c82461922d20f7d2dcfd81bbc661582ba3af28869210f7e8b1934529dcd46bff7d448551400f9d48b9d3bddec3
+"@types/node@npm:18.15.12":
+  version: 18.15.12
+  resolution: "@types/node@npm:18.15.12::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40types%2Fnode%2F-%2Fnode-18.15.12.tgz"
+  checksum: dff7596db8d0a18bcd8da542dc62ed4377cba39546ff53baaa06d106f1482bc3e4e5e03644f5d1e3cef0904ffbe8ebbc244b2b0851f8025ab2a3959ee0ace58f
   languageName: node
   linkType: hard
 
@@ -894,10 +894,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zip.js/zip.js@npm:2.7.5":
-  version: 2.7.5
-  resolution: "@zip.js/zip.js@npm:2.7.5::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.7.5.tgz"
-  checksum: d2dc489af55be65ca72823e5c59846d8722c9cd3acdd491cc5438653a172dbde3aa99e7a7c374e0d26715eb7d3762f362fad49121a3d68d1be40945f35655c70
+"@zip.js/zip.js@npm:2.7.6":
+  version: 2.7.6
+  resolution: "@zip.js/zip.js@npm:2.7.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40zip.js%2Fzip.js%2F-%2Fzip.js-2.7.6.tgz"
+  checksum: 8671348ae0fec8c26dfe3768051eb7e697486618e2726cf4f377e44438d01b01979984715b6c0f351e5f21675f9ccb07d66016d4b9d6e14db21c9d8c7e95f247
   languageName: node
   linkType: hard
 
@@ -2569,14 +2569,14 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.4.22":
-  version: 8.4.22
-  resolution: "postcss@npm:8.4.22::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.22.tgz"
+"postcss@npm:8.4.23":
+  version: 8.4.23
+  resolution: "postcss@npm:8.4.23::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fpostcss%2F-%2Fpostcss-8.4.23.tgz"
   dependencies:
     nanoid: ^3.3.6
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
-  checksum: 7473dfb7ac5b4cb03576c39d687d7fc02c826ab08af97df15b5d3970662532d44a18a0994f392a9c3658ee17c292e7a55990e586b90ca0afcc9f36df13e07029
+  checksum: 8bb9d1b2ea6e694f8987d4f18c94617971b2b8d141602725fedcc2222fdc413b776a6e1b969a25d627d7b2681ca5aabb56f59e727ef94072e1b6ac8412105a2f
   languageName: node
   linkType: hard
 
@@ -2791,9 +2791,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rollup@npm:^3.18.0":
-  version: 3.19.1
-  resolution: "rollup@npm:3.19.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Frollup%2F-%2Frollup-3.19.1.tgz"
+"rollup@npm:^3.20.2":
+  version: 3.20.6
+  resolution: "rollup@npm:3.20.6::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Frollup%2F-%2Frollup-3.20.6.tgz"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -2801,7 +2801,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: f78198c6de224b26650c70b16db156762d1fcceeb375d34fb2c76fc5b23a78f712c3c881d3248e6f277a511589e20d50c247bcf5c7920f1ddc0a43cadf9f0140
+  checksum: fa30f1e1d214b8c62e631d3c181a75d61bc9c20fca38220d6f938bb3bf734a874e407cd641c90f550dc2b127df5029dfb3108be08934a654f1f40b50f368b0c2
   languageName: node
   linkType: hard
 
@@ -3296,13 +3296,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"vite-plugin-ssr@npm:0.4.113":
-  version: 0.4.113
-  resolution: "vite-plugin-ssr@npm:0.4.113::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.113.tgz"
+"vite-plugin-ssr@npm:0.4.114":
+  version: 0.4.114
+  resolution: "vite-plugin-ssr@npm:0.4.114::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite-plugin-ssr%2F-%2Fvite-plugin-ssr-0.4.114.tgz"
   dependencies:
     "@brillout/import": 0.2.3
     "@brillout/json-serializer": ^0.5.3
-    "@brillout/vite-plugin-import-build": ^0.2.14
+    "@brillout/vite-plugin-import-build": ^0.2.16
     acorn: ^8.0.0
     cac: ^6.0.0
     es-module-lexer: ^0.10.0
@@ -3318,7 +3318,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite-plugin-ssr: node/cli/bin-entry.js
-  checksum: 2dda50d8cb5f320f1957a19fa6157f0b13a974a7a1c65d73c56c0e075d90c5f8463e0a841e63579633643a80f2735ea359d49f69af35d6649d30b35d8cc77791
+  checksum: 7db9eed7d6241a7b9ea31d2af3bc4c0266efb1e6a963c38637fef98cf08dd09a36ac9e91c7174f86854dd1b29706102e0a092fa470b2d5799918c5a8c35db989
   languageName: node
   linkType: hard
 
@@ -3330,9 +3330,9 @@ fsevents@~2.3.2:
     "@tailwindcss/forms": 0.5.3
     "@types/lodash-es": 4.17.7
     "@types/luxon": 3.3.0
-    "@types/node": 18.15.11
+    "@types/node": 18.15.12
     "@types/serve-static": 1.15.1
-    "@zip.js/zip.js": 2.7.5
+    "@zip.js/zip.js": 2.7.6
     autoprefixer: 10.4.14
     clsx: 1.2.1
     cuid: 3.0.0
@@ -3342,7 +3342,7 @@ fsevents@~2.3.2:
     lodash-es: 4.17.21
     luxon: 3.3.0
     nosleep.js: 0.12.0
-    postcss: 8.4.22
+    postcss: 8.4.23
     prettier: 2.8.7
     prettier-plugin-tailwindcss: 0.2.7
     serve-static: 1.15.0
@@ -3351,21 +3351,20 @@ fsevents@~2.3.2:
     tailwindcss: 3.3.1
     typescript: 5.0.4
     video-name-parser: 1.4.6
-    vite: 4.2.1
+    vite: 4.3.0
     vite-plugin-solid: 2.7.0
-    vite-plugin-ssr: 0.4.113
+    vite-plugin-ssr: 0.4.114
   languageName: unknown
   linkType: soft
 
-"vite@npm:4.2.1":
-  version: 4.2.1
-  resolution: "vite@npm:4.2.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-4.2.1.tgz"
+"vite@npm:4.3.0":
+  version: 4.3.0
+  resolution: "vite@npm:4.3.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fvite%2F-%2Fvite-4.3.0.tgz"
   dependencies:
     esbuild: ^0.17.5
     fsevents: ~2.3.2
     postcss: ^8.4.21
-    resolve: ^1.22.1
-    rollup: ^3.18.0
+    rollup: ^3.20.2
   peerDependencies:
     "@types/node": ">= 14"
     less: "*"
@@ -3391,7 +3390,7 @@ fsevents@~2.3.2:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 70eb162ffc299017a3c310e3adc95e9661def6b17aafd1f8e5e02e516766060435590dbe3df1e4e95acc3583c728a76e91f07c546221d1e701f1b2b021293f45
+  checksum: 9b6084c92e234e74c47514d864477abb7ad40cf53aa904f84b0a87c1b1238d64ea13ecc7595cf06df4aab1649bda8fa86671f40731a8fc00f4bca3b2c6d76f93
   languageName: node
   linkType: hard
 

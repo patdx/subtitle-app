@@ -1,5 +1,5 @@
 import { HydrationScript, renderToString } from 'solid-js/web';
-import { dangerouslySkipEscape, escapeInject } from 'vite-plugin-ssr';
+import { dangerouslySkipEscape, escapeInject } from 'vite-plugin-ssr/server';
 import 'tailwindcss/tailwind.css';
 import { PageContext } from './types';
 

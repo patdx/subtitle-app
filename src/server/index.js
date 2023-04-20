@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { createApp, assertMethod } from 'h3';
-import { createPageRenderer } from 'vite-plugin-ssr';
+import { renderPage } from 'vite-plugin-ssr/server';
 import { dirname } from 'dirname-filename-esm';
 import serveStatic from 'serve-static';
 
@@ -26,7 +26,6 @@ async function startServer() {
     app.use(viteDevServer.middlewares);
   }
 
-  const renderPage = createPageRenderer({ viteDevServer, isProduction, root });
   app.use(async (req, res, next) => {
     assertMethod(req, 'GET', true);
     const url = req.originalUrl;
