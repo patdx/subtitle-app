@@ -8,6 +8,7 @@ import {
 import parseVideo from 'video-name-parser';
 import { BadgeBlue, BadgeRed } from '../components/badge';
 import { addFileToDatabase, initAndGetDb } from '../utils';
+import sampleSrtUrl from '../assets/sample.srt?url';
 
 const LoadingIcon = () => (
   <svg
@@ -26,7 +27,7 @@ const LoadingIcon = () => (
 
 const EditFilesPage = () => {
   const id = createUniqueId();
-  const [mode, setMode] = createSignal<undefined | 'upload'>();
+
   const [isProcessing, setProcessing] = createSignal(false);
 
   const [data, handler] = createResource(async () => {
@@ -35,9 +36,42 @@ const EditFilesPage = () => {
     return files;
   });
 
+  const handleFile = async (file: File) => {
+    try {
+      setProcessing(true);
+
+      console.log(file.name, file.type);
+
+      if (/.zip$/i.test(file.name) || file.type === 'application/zip') {
+        const zip = await import('@zip.js/zip.js');
+        const reader = new zip.ZipReader(new zip.BlobReader(file));
+        const entries = await reader.getEntries();
+        console.log(entries);
+        for (const entry of entries) {
+          if (/.srt$/i.test(entry.filename) && entry.getData) {
+            try {
+              const text = await entry.getData(new zip.TextWriter());
+              await addFileToDatabase(text, entry.filename);
+            } catch (err) {
+              console.log(
+                `The following error occurred while processing ${entry.filename}`
+              );
+              console.error(err);
+            }
+          }
+        }
+      } else {
+        await addFileToDatabase(await file.text(), file.name);
+      }
+      handler.refetch();
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <>
-      <div class="relative min-h-full overflow-hidden bg-white">
+      <div class="relative min-h-full overflow-hidden bg-white px-2">
         {/* padding */}
         <div class="h-[env(safe-area-inset-top,0)]"></div>
         <input
@@ -46,47 +80,18 @@ const EditFilesPage = () => {
           type="file"
           accept=".zip,.srt,application/zip"
           onChange={async (event) => {
-            try {
-              setProcessing(true);
-              const target = event.target as HTMLInputElement;
-              const file = target.files?.[0];
-              target.value = '';
-              if (!file) return;
-
-              console.log(file.name, file.type);
-
-              if (/.zip$/i.test(file.name) || file.type === 'application/zip') {
-                const zip = await import('@zip.js/zip.js');
-                const reader = new zip.ZipReader(new zip.BlobReader(file));
-                const entries = await reader.getEntries();
-                console.log(entries);
-                for (const entry of entries) {
-                  if (/.srt$/i.test(entry.filename) && entry.getData) {
-                    try {
-                      const text = await entry.getData(new zip.TextWriter());
-                      await addFileToDatabase(text, entry.filename);
-                    } catch (err) {
-                      console.log(
-                        `The following error occurred while processing ${entry.filename}`
-                      );
-                      console.error(err);
-                    }
-                  }
-                }
-              } else {
-                await addFileToDatabase(await file.text(), file.name);
-              }
-              handler.refetch();
-            } finally {
-              setProcessing(false);
-            }
+            const target = event.target as HTMLInputElement;
+            const file = target.files?.[0];
+            target.value = '';
+            if (!file) return;
+            await handleFile(file);
           }}
         />
 
         <label
           tabIndex={0}
-          htmlFor={`${id}-file-upload`}
-          class="mx-auto my-20 flex max-w-md cursor-pointer items-center justify-between gap-2 rounded-lg bg-blue-300 py-4 px-8 text-3xl font-semibold text-gray-800 shadow-lg hover:bg-blue-400 active:bg-blue-500 watch:my-0 watch:p-2 watch:text-sm"
+          for={`${id}-file-upload`}
+          class="mx-auto mt-20 mb-2 flex max-w-md cursor-pointer items-center justify-between gap-2 rounded-lg bg-blue-300 py-4 px-8 text-3xl font-semibold text-gray-800 shadow-lg hover:bg-blue-400 active:bg-blue-500 watch:my-0 watch:p-2 watch:text-sm"
         >
           Add SRT or ZIP...
           <Show when={isProcessing()}>
@@ -94,9 +99,33 @@ const EditFilesPage = () => {
           </Show>
         </label>
 
+        <button
+          type="button"
+          class="mx-auto mt-2 mb-20 block underline"
+          onClick={async () => {
+            console.log(sampleSrtUrl);
+
+            const blob = await fetch(sampleSrtUrl).then((result) =>
+              result.blob()
+            );
+
+            const file = new File([blob], 'sample.srt');
+
+            await handleFile(file);
+          }}
+        >
+          or add a sample file
+        </button>
+
         <For each={data()}>
           {(file) => {
-            const metadata = parseVideo(file.name);
+            let metadata;
+
+            try {
+              metadata = parseVideo(file.name);
+            } catch (err) {
+              console.warn(err);
+            }
 
             return (
               <div class="group mx-auto my-4 max-w-md rounded bg-white py-4 px-4 shadow-lg hover:bg-gray-100 active:bg-gray-200 watch:m-0 watch:p-2">
@@ -109,16 +138,18 @@ const EditFilesPage = () => {
                   </div>
 
                   {/* badges */}
-                  {metadata.season || metadata.episode?.length ? (
+                  {metadata?.season || metadata?.episode?.length ? (
                     <div class="flex gap-2">
-                      {metadata.season ? (
+                      {metadata?.season ? (
                         <BadgeRed>Season {metadata.season}</BadgeRed>
                       ) : null}
                       {metadata.episode?.map((item) => (
                         <BadgeBlue>Episode {item}</BadgeBlue>
                       ))}
                     </div>
-                  ) : null}
+                  ) : (
+                    file.name
+                  )}
                 </a>
 
                 <div class="mt-4 flex justify-end">
