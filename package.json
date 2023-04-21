@@ -42,5 +42,9 @@
     "solid-js": "1.7.3",
     "srt-parser-2": "1.2.2",
     "video-name-parser": "1.4.6"
+  },
+  "packageManager": "pnpm@8.3.1",
+  "pnpm": {
+    "onlyBuiltDependencies": []
   }
 }
