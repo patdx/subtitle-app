@@ -57,8 +57,8 @@ devDependencies:
     specifier: 3.3.0
     version: 3.3.0
   '@types/node':
-    specifier: 18.15.13
-    version: 18.15.13
+    specifier: 18.16.0
+    version: 18.16.0
   '@types/serve-static':
     specifier: 1.15.1
     version: 1.15.1
@@ -69,11 +69,11 @@ devDependencies:
     specifier: 8.4.23
     version: 8.4.23
   prettier:
-    specifier: 2.8.7
-    version: 2.8.7
+    specifier: 2.8.8
+    version: 2.8.8
   prettier-plugin-tailwindcss:
     specifier: 0.2.7
-    version: 0.2.7(prettier@2.8.7)
+    version: 0.2.7(prettier@2.8.8)
   tailwindcss:
     specifier: 3.3.1
     version: 3.3.1(postcss@8.4.23)
@@ -82,7 +82,7 @@ devDependencies:
     version: 5.0.4
   vite:
     specifier: 4.3.1
-    version: 4.3.1(@types/node@18.15.13)
+    version: 4.3.1(@types/node@18.16.0)
   vite-plugin-solid:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.3)(vite@4.3.1)
@@ -742,15 +742,15 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.15.13:
-    resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
+  /@types/node@18.16.0:
+    resolution: {integrity: sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==}
     dev: true
 
   /@types/serve-static@1.15.1:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.15.13
+      '@types/node': 18.16.0
     dev: true
 
   /@zip.js/zip.js@2.7.6:
@@ -1497,7 +1497,7 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /prettier-plugin-tailwindcss@0.2.7(prettier@2.8.7):
+  /prettier-plugin-tailwindcss@0.2.7(prettier@2.8.8):
     resolution: {integrity: sha512-jQopIOgjLpX+y8HeD56XZw7onupRTC0cw7eKKUimI7vhjkPF5/1ltW5LyqaPtSyc8HvEpvNZsvvsGFa2qpa59w==}
     engines: {node: '>=12.17.0'}
     peerDependencies:
@@ -1549,11 +1549,11 @@ packages:
       prettier-plugin-twig-melody:
         optional: true
     dependencies:
-      prettier: 2.8.7
+      prettier: 2.8.8
     dev: true
 
-  /prettier@2.8.7:
-    resolution: {integrity: sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==}
+  /prettier@2.8.8:
+    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -1854,7 +1854,7 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.3
       solid-refresh: 0.5.2(solid-js@1.7.3)
-      vite: 4.3.1(@types/node@18.15.13)
+      vite: 4.3.1(@types/node@18.16.0)
       vitefu: 0.2.4(vite@4.3.1)
     transitivePeerDependencies:
       - supports-color
@@ -1881,10 +1881,10 @@ packages:
       fast-glob: 3.2.12
       picocolors: 1.0.0
       sirv: 2.0.2
-      vite: 4.3.1(@types/node@18.15.13)
+      vite: 4.3.1(@types/node@18.16.0)
     dev: true
 
-  /vite@4.3.1(@types/node@18.15.13):
+  /vite@4.3.1(@types/node@18.16.0):
     resolution: {integrity: sha512-EPmfPLAI79Z/RofuMvkIS0Yr091T2ReUoXQqc5ppBX/sjFRhHKiPPF/R46cTdoci/XgeQpB23diiJxq5w30vdg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1909,7 +1909,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.15.13
+      '@types/node': 18.16.0
       esbuild: 0.17.17
       postcss: 8.4.23
       rollup: 3.20.7
@@ -1925,7 +1925,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.1(@types/node@18.15.13)
+      vite: 4.3.1(@types/node@18.16.0)
     dev: true
 
   /wrappy@1.0.2:
