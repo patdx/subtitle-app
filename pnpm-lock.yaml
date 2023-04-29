@@ -57,8 +57,8 @@ devDependencies:
     specifier: 3.3.0
     version: 3.3.0
   '@types/node':
-    specifier: 18.16.2
-    version: 18.16.2
+    specifier: 18.16.3
+    version: 18.16.3
   '@types/serve-static':
     specifier: 1.15.1
     version: 1.15.1
@@ -82,13 +82,13 @@ devDependencies:
     version: 5.0.4
   vite:
     specifier: 4.3.3
-    version: 4.3.3(@types/node@18.16.2)
+    version: 4.3.3(@types/node@18.16.3)
   vite-plugin-solid:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.3)(vite@4.3.3)
   vite-plugin-ssr:
-    specifier: 0.4.118
-    version: 0.4.118(vite@4.3.3)
+    specifier: 0.4.119
+    version: 0.4.119(vite@4.3.3)
 
 packages:
 
@@ -446,6 +446,10 @@ packages:
     resolution: {integrity: sha512-IxlOMD5gOM0WfFGdeR98jHKiC82Ad1tUnSjvLS5jnRkfMEKBI+YzHA32Umw8W3Ccp5N4fNEX229BW6RaRpxRWQ==}
     dev: true
 
+  /@brillout/picocolors@1.0.4:
+    resolution: {integrity: sha512-rhZBVyrRCb53T9xIGoEjZQ6O4Um3XQWcQ1z2VL2eBQBtJYCsABUUNE/isqbnts3XD1sAkisDF2L3OjJeIgrznQ==}
+    dev: true
+
   /@brillout/vite-plugin-import-build@0.2.16:
     resolution: {integrity: sha512-3rbNIgOUIPf8JrV3lozG3lpIe+xnujUANpMaf9aPVGnZV5SVKOSrvLk83+2Y8/nhHgLYTBplNZTW3DTD6J29ag==}
     dependencies:
@@ -747,15 +751,15 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.16.2:
-    resolution: {integrity: sha512-GQW/JL/5Fz/0I8RpeBG9lKp0+aNcXEaVL71c0D2Q0QHDTFvlYKT7an0onCUXj85anv7b4/WesqdfchLc0jtsCg==}
+  /@types/node@18.16.3:
+    resolution: {integrity: sha512-OPs5WnnT1xkCBiuQrZA4+YAV4HEJejmHneyraIaxsbev5yCEr6KMwINNFP9wQeFIw8FWcoTqF3vQsa5CDaI+8Q==}
     dev: true
 
   /@types/serve-static@1.15.1:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.16.2
+      '@types/node': 18.16.3
     dev: true
 
   /@zip.js/zip.js@2.7.6:
@@ -1844,14 +1848,14 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.3
       solid-refresh: 0.5.2(solid-js@1.7.3)
-      vite: 4.3.3(@types/node@18.16.2)
+      vite: 4.3.3(@types/node@18.16.3)
       vitefu: 0.2.4(vite@4.3.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite-plugin-ssr@0.4.118(vite@4.3.3):
-    resolution: {integrity: sha512-L1t/4eGraa9wBfkt/EHvTm1l89CVCS1So9XfR7XfufA27WNxpRDD/EkYbd1pOIYMrE3aONNAQEZakVVzu0Xd1g==}
+  /vite-plugin-ssr@0.4.119(vite@4.3.3):
+    resolution: {integrity: sha512-YAStY1PEdF+tw1h5qYjvngJaHkNy+vLT89po9wEHuBbJGgd7WieDZdZJIb3TbVPiyAyxB+3z2nkpVKPDPUCZtg==}
     engines: {node: '>=12.19.0'}
     hasBin: true
     peerDependencies:
@@ -1863,18 +1867,18 @@ packages:
     dependencies:
       '@brillout/import': 0.2.3
       '@brillout/json-serializer': 0.5.3
+      '@brillout/picocolors': 1.0.4
       '@brillout/vite-plugin-import-build': 0.2.16
       acorn: 8.8.2
       cac: 6.7.14
       es-module-lexer: 0.10.5
       esbuild: 0.17.17
       fast-glob: 3.2.12
-      picocolors: 1.0.0
       sirv: 2.0.2
-      vite: 4.3.3(@types/node@18.16.2)
+      vite: 4.3.3(@types/node@18.16.3)
     dev: true
 
-  /vite@4.3.3(@types/node@18.16.2):
+  /vite@4.3.3(@types/node@18.16.3):
     resolution: {integrity: sha512-MwFlLBO4udZXd+VBcezo3u8mC77YQk+ik+fbc0GZWGgzfbPP+8Kf0fldhARqvSYmtIWoAJ5BXPClUbMTlqFxrA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1899,7 +1903,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.16.2
+      '@types/node': 18.16.3
       esbuild: 0.17.17
       postcss: 8.4.23
       rollup: 3.21.0
@@ -1915,7 +1919,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.3(@types/node@18.16.2)
+      vite: 4.3.3(@types/node@18.16.3)
     dev: true
 
   /wrappy@1.0.2:
