@@ -15,17 +15,17 @@
     "@tailwindcss/forms": "0.5.3",
     "@types/lodash-es": "4.17.7",
     "@types/luxon": "3.3.0",
-    "@types/node": "18.16.0",
+    "@types/node": "18.16.2",
     "@types/serve-static": "1.15.1",
     "autoprefixer": "10.4.14",
     "postcss": "8.4.23",
     "prettier": "2.8.8",
-    "prettier-plugin-tailwindcss": "0.2.7",
-    "tailwindcss": "3.3.1",
+    "prettier-plugin-tailwindcss": "0.2.8",
+    "tailwindcss": "3.3.2",
     "typescript": "5.0.4",
-    "vite": "4.3.1",
+    "vite": "4.3.3",
     "vite-plugin-solid": "2.7.0",
-    "vite-plugin-ssr": "0.4.115"
+    "vite-plugin-ssr": "0.4.118"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
