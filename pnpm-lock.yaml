@@ -87,8 +87,8 @@ devDependencies:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.3)(vite@4.3.3)
   vite-plugin-ssr:
-    specifier: 0.4.119
-    version: 0.4.119(vite@4.3.3)
+    specifier: 0.4.120
+    version: 0.4.120(vite@4.3.3)
 
 packages:
 
@@ -1854,8 +1854,8 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-ssr@0.4.119(vite@4.3.3):
-    resolution: {integrity: sha512-YAStY1PEdF+tw1h5qYjvngJaHkNy+vLT89po9wEHuBbJGgd7WieDZdZJIb3TbVPiyAyxB+3z2nkpVKPDPUCZtg==}
+  /vite-plugin-ssr@0.4.120(vite@4.3.3):
+    resolution: {integrity: sha512-crttExXYt98bEVeLJgqlJ6peaMgzN7YrL0TNIAWEjabWHaXgpQUO+pRXOf0MIyI/xcNh13e6kvalSPo9UEpPxQ==}
     engines: {node: '>=12.19.0'}
     hasBin: true
     peerDependencies:
