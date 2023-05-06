@@ -19,8 +19,8 @@ dependencies:
     specifier: 1.1.1
     version: 1.1.1
   h3:
-    specifier: 1.6.4
-    version: 1.6.4
+    specifier: 1.6.5
+    version: 1.6.5
   idb:
     specifier: 7.1.1
     version: 7.1.1
@@ -57,8 +57,8 @@ devDependencies:
     specifier: 3.3.0
     version: 3.3.0
   '@types/node':
-    specifier: 18.16.3
-    version: 18.16.3
+    specifier: 18.16.5
+    version: 18.16.5
   '@types/serve-static':
     specifier: 1.15.1
     version: 1.15.1
@@ -81,14 +81,14 @@ devDependencies:
     specifier: 5.0.4
     version: 5.0.4
   vite:
-    specifier: 4.3.3
-    version: 4.3.3(@types/node@18.16.3)
+    specifier: 4.3.5
+    version: 4.3.5(@types/node@18.16.5)
   vite-plugin-solid:
     specifier: 2.7.0
-    version: 2.7.0(solid-js@1.7.3)(vite@4.3.3)
+    version: 2.7.0(solid-js@1.7.3)(vite@4.3.5)
   vite-plugin-ssr:
-    specifier: 0.4.120
-    version: 0.4.120(vite@4.3.3)
+    specifier: 0.4.123
+    version: 0.4.123(vite@4.3.5)
 
 packages:
 
@@ -751,15 +751,15 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.16.3:
-    resolution: {integrity: sha512-OPs5WnnT1xkCBiuQrZA4+YAV4HEJejmHneyraIaxsbev5yCEr6KMwINNFP9wQeFIw8FWcoTqF3vQsa5CDaI+8Q==}
+  /@types/node@18.16.5:
+    resolution: {integrity: sha512-seOA34WMo9KB+UA78qaJoCO20RJzZGVXQ5Sh6FWu0g/hfT44nKXnej3/tCQl7FL97idFpBhisLYCTB50S0EirA==}
     dev: true
 
   /@types/serve-static@1.15.1:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.16.3
+      '@types/node': 18.16.5
     dev: true
 
   /@zip.js/zip.js@2.7.6:
@@ -934,8 +934,8 @@ packages:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
     dev: true
 
-  /cookie-es@0.5.0:
-    resolution: {integrity: sha512-RyZrFi6PNpBFbIaQjXDlFIhFVqV42QeKSZX1yQIl6ihImq6vcHNGMtqQ/QzY3RMPuYSkvsRwtnt5M9NeYxKt0g==}
+  /cookie-es@1.0.0:
+    resolution: {integrity: sha512-mWYvfOLrfEc996hlKcdABeIiPHUPC6DM2QYZdGGOvhOTbA3tjm2eBwqlJpoFdjC89NI4Qt6h0Pu06Mp+1Pj5OQ==}
     dev: false
 
   /cssesc@3.0.0:
@@ -1153,15 +1153,15 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /h3@1.6.4:
-    resolution: {integrity: sha512-uoDNeaoeDRwWBtwwi4siZ6l5sBmDJpnpcBssuAbvsaPBonl8vP7Ym4tFPe+tAvGM0GbUoC24wYcloCG+J9hqmA==}
+  /h3@1.6.5:
+    resolution: {integrity: sha512-A0r2LCDzeavSfcAbJpMwHXLcSN0H3FpEZtYigbz4IYun0fOE8r6vy3galwubAnmc6gXVob4261zXQsu3sZayzg==}
     dependencies:
-      cookie-es: 0.5.0
+      cookie-es: 1.0.0
       defu: 6.1.2
       destr: 1.2.2
-      iron-webcrypto: 0.6.0
+      iron-webcrypto: 0.7.0
       radix3: 1.0.1
-      ufo: 1.1.1
+      ufo: 1.1.2
       uncrypto: 0.1.2
     dev: false
 
@@ -1206,8 +1206,8 @@ packages:
   /inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
-  /iron-webcrypto@0.6.0:
-    resolution: {integrity: sha512-WYgEQttulX/+JTv1BTJFYY3OsAb+ZnCuA53IjppZMyiRsVdGeEuZ/k4fJrg77Rzn0pp9/PgWtXUF+5HndDA5SQ==}
+  /iron-webcrypto@0.7.0:
+    resolution: {integrity: sha512-WkX32iTcwd79ZsWRPP5wq1Jq6XXfPwO783ZiUBY8uMw4/AByx5WvBmxvYGnpVt6AOVJ0F41Qo420r8lIneT9Wg==}
     dev: false
 
   /is-binary-path@2.1.0:
@@ -1804,8 +1804,8 @@ packages:
     hasBin: true
     dev: true
 
-  /ufo@1.1.1:
-    resolution: {integrity: sha512-MvlCc4GHrmZdAllBc0iUDowff36Q9Ndw/UzqmEKyrfSzokTd9ZCy1i+IIk5hrYKkjoYVQyNbrw7/F8XJ2rEwTg==}
+  /ufo@1.1.2:
+    resolution: {integrity: sha512-TrY6DsjTQQgyS3E3dBaOXf0TpPD8u9FVrVYmKVegJuFw51n/YB9XPt+U6ydzFG5ZIN7+DIjPbNmXoBj9esYhgQ==}
     dev: false
 
   /uncrypto@0.1.2:
@@ -1835,7 +1835,7 @@ packages:
     resolution: {integrity: sha512-ZdeYjh8X4ms1EzjY/UoiTZ6JWbi8SYyOPGY0jESSLq2BAmdc5sZHi+F8J19Qz0y7H1WSpaltojsCkO1p2dH4YA==}
     dev: false
 
-  /vite-plugin-solid@2.7.0(solid-js@1.7.3)(vite@4.3.3):
+  /vite-plugin-solid@2.7.0(solid-js@1.7.3)(vite@4.3.5):
     resolution: {integrity: sha512-avp/Jl5zOp/Itfo67xtDB2O61U7idviaIp4mLsjhCa13PjKNasz+IID0jYTyqUp9SFx6/PmBr6v4KgDppqompg==}
     peerDependencies:
       solid-js: ^1.7.2
@@ -1848,14 +1848,14 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.3
       solid-refresh: 0.5.2(solid-js@1.7.3)
-      vite: 4.3.3(@types/node@18.16.3)
-      vitefu: 0.2.4(vite@4.3.3)
+      vite: 4.3.5(@types/node@18.16.5)
+      vitefu: 0.2.4(vite@4.3.5)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite-plugin-ssr@0.4.120(vite@4.3.3):
-    resolution: {integrity: sha512-crttExXYt98bEVeLJgqlJ6peaMgzN7YrL0TNIAWEjabWHaXgpQUO+pRXOf0MIyI/xcNh13e6kvalSPo9UEpPxQ==}
+  /vite-plugin-ssr@0.4.123(vite@4.3.5):
+    resolution: {integrity: sha512-lIHmvsS7xINxk8AiMn9O9q6dTeLDay0q3iRCMZd4MlzhyMcEUUuEYyx/vWevXIO7+CTt5cOVcTsojeAU+eUMNw==}
     engines: {node: '>=12.19.0'}
     hasBin: true
     peerDependencies:
@@ -1875,11 +1875,11 @@ packages:
       esbuild: 0.17.17
       fast-glob: 3.2.12
       sirv: 2.0.2
-      vite: 4.3.3(@types/node@18.16.3)
+      vite: 4.3.5(@types/node@18.16.5)
     dev: true
 
-  /vite@4.3.3(@types/node@18.16.3):
-    resolution: {integrity: sha512-MwFlLBO4udZXd+VBcezo3u8mC77YQk+ik+fbc0GZWGgzfbPP+8Kf0fldhARqvSYmtIWoAJ5BXPClUbMTlqFxrA==}
+  /vite@4.3.5(@types/node@18.16.5):
+    resolution: {integrity: sha512-0gEnL9wiRFxgz40o/i/eTBwm+NEbpUeTWhzKrZDSdKm6nplj+z4lKz8ANDgildxHm47Vg8EUia0aicKbawUVVA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -1903,7 +1903,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.16.3
+      '@types/node': 18.16.5
       esbuild: 0.17.17
       postcss: 8.4.23
       rollup: 3.21.0
@@ -1911,7 +1911,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitefu@0.2.4(vite@4.3.3):
+  /vitefu@0.2.4(vite@4.3.5):
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0
@@ -1919,7 +1919,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.3(@types/node@18.16.3)
+      vite: 4.3.5(@types/node@18.16.5)
     dev: true
 
   /wrappy@1.0.2:
