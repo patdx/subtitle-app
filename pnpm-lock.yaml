@@ -7,8 +7,8 @@ dependencies:
     specifier: 1.1.0
     version: 1.1.0
   '@zip.js/zip.js':
-    specifier: 2.7.6
-    version: 2.7.6
+    specifier: 2.7.12
+    version: 2.7.12
   clsx:
     specifier: 1.2.1
     version: 1.2.1
@@ -57,8 +57,8 @@ devDependencies:
     specifier: 3.3.0
     version: 3.3.0
   '@types/node':
-    specifier: 18.16.5
-    version: 18.16.5
+    specifier: 18.16.8
+    version: 18.16.8
   '@types/serve-static':
     specifier: 1.15.1
     version: 1.15.1
@@ -82,7 +82,7 @@ devDependencies:
     version: 5.0.4
   vite:
     specifier: 4.3.5
-    version: 4.3.5(@types/node@18.16.5)
+    version: 4.3.5(@types/node@18.16.8)
   vite-plugin-solid:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.5)(vite@4.3.5)
@@ -751,19 +751,19 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.16.5:
-    resolution: {integrity: sha512-seOA34WMo9KB+UA78qaJoCO20RJzZGVXQ5Sh6FWu0g/hfT44nKXnej3/tCQl7FL97idFpBhisLYCTB50S0EirA==}
+  /@types/node@18.16.8:
+    resolution: {integrity: sha512-p0iAXcfWCOTCBbsExHIDFCfwsqFwBTgETJveKMT+Ci3LY9YqQCI91F5S+TB20+aRCXpcWfvx5Qr5EccnwCm2NA==}
     dev: true
 
   /@types/serve-static@1.15.1:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.16.5
+      '@types/node': 18.16.8
     dev: true
 
-  /@zip.js/zip.js@2.7.6:
-    resolution: {integrity: sha512-j9gaYG84Qd3tI3X7BiOpL5bckbbAetpxtpilKnSyW5rMTnrXwH6GtXkL8rEBxnPk100exbfxNlORwFagX7fMfg==}
+  /@zip.js/zip.js@2.7.12:
+    resolution: {integrity: sha512-c1Cqww64Z8NqsdIrVTc0Atl+Qud6poNU5jH4JjvHbn1SuwQYdgPA0WJewUMstfupsSszWSnBISg0OSors+n0Mw==}
     engines: {deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
@@ -1848,7 +1848,7 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.5
       solid-refresh: 0.5.2(solid-js@1.7.5)
-      vite: 4.3.5(@types/node@18.16.5)
+      vite: 4.3.5(@types/node@18.16.8)
       vitefu: 0.2.4(vite@4.3.5)
     transitivePeerDependencies:
       - supports-color
@@ -1875,10 +1875,10 @@ packages:
       esbuild: 0.17.17
       fast-glob: 3.2.12
       sirv: 2.0.2
-      vite: 4.3.5(@types/node@18.16.5)
+      vite: 4.3.5(@types/node@18.16.8)
     dev: true
 
-  /vite@4.3.5(@types/node@18.16.5):
+  /vite@4.3.5(@types/node@18.16.8):
     resolution: {integrity: sha512-0gEnL9wiRFxgz40o/i/eTBwm+NEbpUeTWhzKrZDSdKm6nplj+z4lKz8ANDgildxHm47Vg8EUia0aicKbawUVVA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1903,7 +1903,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.16.5
+      '@types/node': 18.16.8
       esbuild: 0.17.17
       postcss: 8.4.23
       rollup: 3.21.0
@@ -1919,7 +1919,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.5(@types/node@18.16.5)
+      vite: 4.3.5(@types/node@18.16.8)
     dev: true
 
   /wrappy@1.0.2:
