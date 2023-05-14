@@ -7,8 +7,8 @@ dependencies:
     specifier: 1.1.0
     version: 1.1.0
   '@zip.js/zip.js':
-    specifier: 2.7.12
-    version: 2.7.12
+    specifier: 2.7.13
+    version: 2.7.13
   clsx:
     specifier: 1.2.1
     version: 1.2.1
@@ -762,8 +762,8 @@ packages:
       '@types/node': 18.16.9
     dev: true
 
-  /@zip.js/zip.js@2.7.12:
-    resolution: {integrity: sha512-c1Cqww64Z8NqsdIrVTc0Atl+Qud6poNU5jH4JjvHbn1SuwQYdgPA0WJewUMstfupsSszWSnBISg0OSors+n0Mw==}
+  /@zip.js/zip.js@2.7.13:
+    resolution: {integrity: sha512-gsScij5xlJkwf/33JJtUVha7UJN+HetJvY8lu2uOz5eBvQzxejwlOXOMlOQKsNNMulCOKxHPgOz9lpbyVYCfKQ==}
     engines: {deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
