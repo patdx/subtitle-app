@@ -40,8 +40,8 @@ dependencies:
     specifier: 1.7.5
     version: 1.7.5
   srt-parser-2:
-    specifier: 1.2.2
-    version: 1.2.2
+    specifier: 1.2.3
+    version: 1.2.3
   video-name-parser:
     specifier: 1.4.6
     version: 1.4.6
@@ -1691,8 +1691,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /srt-parser-2@1.2.2:
-    resolution: {integrity: sha512-SlWIhy9mQGMY8BHv1MkeQbCx6gHUNG0NecZro4QIDxzIpBw3Q0kFjA4EWyE9I+H7VrmdPYBHlvtrKzMLFTKP0g==}
+  /srt-parser-2@1.2.3:
+    resolution: {integrity: sha512-dANP1AyJTI503H0/kXwRza+7QxDB3BqeFvEKTF4MI9lQcBe8JbRUQTKVIGzGABJCwBovEYavZ2Qsdm/s8XKz8A==}
     hasBin: true
     dev: false
 
