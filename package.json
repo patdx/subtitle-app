@@ -18,14 +18,14 @@
     "@types/node": "18.16.19",
     "@types/serve-static": "1.15.2",
     "autoprefixer": "10.4.14",
-    "postcss": "8.4.24",
+    "postcss": "8.4.25",
     "prettier": "2.8.8",
     "prettier-plugin-tailwindcss": "0.3.0",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.6",
-    "vite": "4.3.9",
+    "vite": "4.4.2",
     "vite-plugin-solid": "2.7.0",
-    "vite-plugin-ssr": "0.4.132"
+    "vite-plugin-ssr": "0.4.133"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
@@ -43,7 +43,7 @@
     "srt-parser-2": "1.2.3",
     "video-name-parser": "1.4.6"
   },
-  "packageManager": "pnpm@8.6.5",
+  "packageManager": "pnpm@8.6.6",
   "pnpm": {
     "onlyBuiltDependencies": []
   }
