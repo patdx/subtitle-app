@@ -61,8 +61,8 @@ devDependencies:
     specifier: 3.3.1
     version: 3.3.1
   '@types/node':
-    specifier: 18.16.20
-    version: 18.16.20
+    specifier: 18.17.0
+    version: 18.17.0
   '@types/serve-static':
     specifier: 1.15.2
     version: 1.15.2
@@ -86,7 +86,7 @@ devDependencies:
     version: 5.1.6
   vite:
     specifier: 4.4.6
-    version: 4.4.6(@types/node@18.16.20)
+    version: 4.4.6(@types/node@18.17.0)
   vite-plugin-solid:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.8)(vite@4.4.6)
@@ -935,8 +935,8 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.16.20:
-    resolution: {integrity: sha512-nL54VfDjThdP2UXJXZao5wp76CDiDw4zSRO8d4Tk7UgDqNKGKVEQB0/t3ti63NS+YNNkIQDvwEAF04BO+WYu7Q==}
+  /@types/node@18.17.0:
+    resolution: {integrity: sha512-GXZxEtOxYGFchyUzxvKI14iff9KZ2DI+A6a37o6EQevtg6uO9t+aUZKcaC1Te5Ng1OnLM7K9NVVj+FbecD9cJg==}
     dev: true
 
   /@types/serve-static@1.15.2:
@@ -944,7 +944,7 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 18.16.20
+      '@types/node': 18.17.0
     dev: true
 
   /@zip.js/zip.js@2.7.20:
@@ -2080,7 +2080,7 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.8
       solid-refresh: 0.5.2(solid-js@1.7.8)
-      vite: 4.4.6(@types/node@18.16.20)
+      vite: 4.4.6(@types/node@18.17.0)
       vitefu: 0.2.4(vite@4.4.6)
     transitivePeerDependencies:
       - supports-color
@@ -2108,10 +2108,10 @@ packages:
       fast-glob: 3.2.12
       sirv: 2.0.2
       source-map-support: 0.5.21
-      vite: 4.4.6(@types/node@18.16.20)
+      vite: 4.4.6(@types/node@18.17.0)
     dev: true
 
-  /vite@4.4.6(@types/node@18.16.20):
+  /vite@4.4.6(@types/node@18.17.0):
     resolution: {integrity: sha512-EY6Mm8vJ++S3D4tNAckaZfw3JwG3wa794Vt70M6cNJ6NxT87yhq7EC8Rcap3ahyHdo8AhCmV9PTk+vG1HiYn1A==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -2139,7 +2139,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.16.20
+      '@types/node': 18.17.0
       esbuild: 0.18.11
       postcss: 8.4.27
       rollup: 3.26.2
@@ -2155,7 +2155,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.4.6(@types/node@18.16.20)
+      vite: 4.4.6(@types/node@18.17.0)
     dev: true
 
   /wrappy@1.0.2:
