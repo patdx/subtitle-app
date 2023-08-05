@@ -15,7 +15,7 @@
     "@tailwindcss/forms": "0.5.4",
     "@types/lodash-es": "4.17.8",
     "@types/luxon": "3.3.1",
-    "@types/node": "18.17.2",
+    "@types/node": "18.17.3",
     "@types/serve-static": "1.15.2",
     "autoprefixer": "10.4.14",
     "postcss": "8.4.27",
@@ -25,7 +25,7 @@
     "typescript": "5.1.6",
     "vite": "4.4.8",
     "vite-plugin-solid": "2.7.0",
-    "vite-plugin-ssr": "0.4.134"
+    "vite-plugin-ssr": "0.4.135"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.0",
