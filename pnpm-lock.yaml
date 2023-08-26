@@ -23,8 +23,8 @@ dependencies:
     specifier: 1.1.1
     version: 1.1.1
   h3:
-    specifier: 1.8.0
-    version: 1.8.0
+    specifier: 1.8.1
+    version: 1.8.1
   idb:
     specifier: 7.1.1
     version: 7.1.1
@@ -32,8 +32,8 @@ dependencies:
     specifier: 4.17.21
     version: 4.17.21
   luxon:
-    specifier: 3.4.1
-    version: 3.4.1
+    specifier: 3.4.2
+    version: 3.4.2
   nosleep.js:
     specifier: 0.12.0
     version: 0.12.0
@@ -91,8 +91,8 @@ devDependencies:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.11)(vite@4.4.9)
   vite-plugin-ssr:
-    specifier: 0.4.138
-    version: 0.4.138(vite@4.4.9)
+    specifier: 0.4.139
+    version: 0.4.139(vite@4.4.9)
 
 packages:
 
@@ -1399,17 +1399,17 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /h3@1.8.0:
-    resolution: {integrity: sha512-057VY83X7Tg5n4XU2GV9M3dsCWUU4jtw2Lc/r4GjAcf9Jb6GI1mD5F8TCQHUcvLMEgtx6lbfobOFu7Vdmejihg==}
+  /h3@1.8.1:
+    resolution: {integrity: sha512-m5rFuu+5bpwBBHqqS0zexjK+Q8dhtFRvO9JXQG0RvSPL6QrIT6vv42vuBM22SLOgGMoZYsHk0y7VPidt9s+nkw==}
     dependencies:
       cookie-es: 1.0.0
       defu: 6.1.2
       destr: 2.0.1
       iron-webcrypto: 0.8.0
-      radix3: 1.0.1
-      ufo: 1.2.0
+      radix3: 1.1.0
+      ufo: 1.3.0
       uncrypto: 0.1.3
-      unenv: 1.7.1
+      unenv: 1.7.4
     dev: false
 
   /has-flag@3.0.0:
@@ -1532,8 +1532,8 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /luxon@3.4.1:
-    resolution: {integrity: sha512-2USspxOCXWGIKHwuQ9XElxPPYrDOJHDQ5DQ870CoD+CxJbBnRDIBCfhioUJJjct7BKOy80Ia8cVstIcIMb/0+Q==}
+  /luxon@3.4.2:
+    resolution: {integrity: sha512-uBoAVCVcajsrqy3pv7eo5jEUz1oeLmCcnMv8n4AJpT5hbpN9lUssAXibNElpbLce3Mhm9dyBzwYLs9zctM/0tA==}
     engines: {node: '>=12'}
     dev: false
 
@@ -1611,8 +1611,8 @@ packages:
     hasBin: true
     dev: true
 
-  /node-fetch-native@1.2.0:
-    resolution: {integrity: sha512-5IAMBTl9p6PaAjYCnMv5FmqIF6GcZnawAVnzaCG0rX2aYZJ4CxEkZNtVPuTRug7fL7wyM5BQYTlAzcyMPi6oTQ==}
+  /node-fetch-native@1.4.0:
+    resolution: {integrity: sha512-F5kfEj95kX8tkDhUCYdV8dg3/8Olx/94zB8+ZNthFs6Bz31UpUi8Xh40TN3thLwXgrwXry1pEg9lJ++tLWTcqA==}
     dev: false
 
   /node-releases@2.0.10:
@@ -1832,8 +1832,8 @@ packages:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
     dev: true
 
-  /radix3@1.0.1:
-    resolution: {integrity: sha512-y+AcwZ3HcUIGc9zGsNVf5+BY/LxL+z+4h4J3/pp8jxSmy1STaCocPS3qrj4tA5ehUSzqtqK+0Aygvz/r/8vy4g==}
+  /radix3@1.1.0:
+    resolution: {integrity: sha512-pNsHDxbGORSvuSScqNJ+3Km6QAVqk8CfsCBIEoDgpqLrkD2f3QM4I7d1ozJJ172OmIcoUcerZaNWqtLkRXTV3A==}
     dev: false
 
   /range-parser@1.2.1:
@@ -2083,21 +2083,21 @@ packages:
     hasBin: true
     dev: true
 
-  /ufo@1.2.0:
-    resolution: {integrity: sha512-RsPyTbqORDNDxqAdQPQBpgqhWle1VcTSou/FraClYlHf6TZnQcGslpLcAphNR+sQW4q5lLWLbOsRlh9j24baQg==}
+  /ufo@1.3.0:
+    resolution: {integrity: sha512-bRn3CsoojyNStCZe0BG0Mt4Nr/4KF+rhFlnNXybgqt5pXHNFRlqinSoQaTrGyzE4X8aHplSb+TorH+COin9Yxw==}
     dev: false
 
   /uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
     dev: false
 
-  /unenv@1.7.1:
-    resolution: {integrity: sha512-iINrdDcqoAjGqoIeOW85TIfI13KGgW1VWwqNO/IzcvvZ/JGBApMAQPZhWcKhE5oC/woFSpCSXg5lc7r1UaLPng==}
+  /unenv@1.7.4:
+    resolution: {integrity: sha512-fjYsXYi30It0YCQYqLOcT6fHfMXsBr2hw9XC7ycf8rTG7Xxpe3ZssiqUnD0khrjiZEmkBXWLwm42yCSCH46fMw==}
     dependencies:
       consola: 3.2.3
       defu: 6.1.2
       mime: 3.0.0
-      node-fetch-native: 1.2.0
+      node-fetch-native: 1.4.0
       pathe: 1.1.1
     dev: false
 
@@ -2154,8 +2154,8 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-ssr@0.4.138(vite@4.4.9):
-    resolution: {integrity: sha512-ISaaB9sfKYo0i3bT9hP8ENgJdTFeMk6K68tToX0o/0B8ilklYol5Rekg6JSuMoUhZxPqEjSrudgJegSyhiwNoQ==}
+  /vite-plugin-ssr@0.4.139(vite@4.4.9):
+    resolution: {integrity: sha512-qlPqtIY1mc6j4t44A5bwIGBimzxXBjszzTK8InVnaiIPFQ2WVO4DE5Rved+piL/ZLcgJkeu4kBSAoVrnOLoPkA==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
