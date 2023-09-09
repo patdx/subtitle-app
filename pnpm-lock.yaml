@@ -11,8 +11,8 @@ dependencies:
     specifier: 1.1.0
     version: 1.1.0
   '@zip.js/zip.js':
-    specifier: 2.7.28
-    version: 2.7.28
+    specifier: 2.7.29
+    version: 2.7.29
   clsx:
     specifier: 2.0.0
     version: 2.0.0
@@ -32,8 +32,8 @@ dependencies:
     specifier: 4.17.21
     version: 4.17.21
   luxon:
-    specifier: 3.4.2
-    version: 3.4.2
+    specifier: 3.4.3
+    version: 3.4.3
   nosleep.js:
     specifier: 0.12.0
     version: 0.12.0
@@ -61,8 +61,8 @@ devDependencies:
     specifier: 3.3.2
     version: 3.3.2
   '@types/node':
-    specifier: 18.17.14
-    version: 18.17.14
+    specifier: 18.17.15
+    version: 18.17.15
   '@types/serve-static':
     specifier: 1.15.2
     version: 1.15.2
@@ -86,7 +86,7 @@ devDependencies:
     version: 5.2.2
   vite:
     specifier: 4.4.9
-    version: 4.4.9(@types/node@18.17.14)
+    version: 4.4.9(@types/node@18.17.15)
   vite-plugin-solid:
     specifier: 2.7.0
     version: 2.7.0(solid-js@1.7.11)(vite@4.4.9)
@@ -939,8 +939,8 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@18.17.14:
-    resolution: {integrity: sha512-ZE/5aB73CyGqgQULkLG87N9GnyGe5TcQjv34pwS8tfBs1IkCh0ASM69mydb2znqd6v0eX+9Ytvk6oQRqu8T1Vw==}
+  /@types/node@18.17.15:
+    resolution: {integrity: sha512-2yrWpBk32tvV/JAd3HNHWuZn/VDN1P+72hWirHnvsvTGSqbANi+kSeuQR9yAHnbvaBvHDsoTdXV0Fe+iRtHLKA==}
     dev: true
 
   /@types/serve-static@1.15.2:
@@ -948,11 +948,11 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 18.17.14
+      '@types/node': 18.17.15
     dev: true
 
-  /@zip.js/zip.js@2.7.28:
-    resolution: {integrity: sha512-wCbGWOLNl26dkd9gpjhCidydM9IYvNQvYHujzbVjazj1gSs26Epjf11oX4WgXkoiDc0W+TboiNrtQzL7KyqZJQ==}
+  /@zip.js/zip.js@2.7.29:
+    resolution: {integrity: sha512-KtOa3HY7Vi77ctZAVhx2nsKweDTCP4DVBghZkvg5qyIX6T/Z54QlU6f0q2hFhxu5j+LgUDeMMhiv2xj4ZF6snA==}
     engines: {bun: '>=0.7.0', deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
@@ -1532,8 +1532,8 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /luxon@3.4.2:
-    resolution: {integrity: sha512-uBoAVCVcajsrqy3pv7eo5jEUz1oeLmCcnMv8n4AJpT5hbpN9lUssAXibNElpbLce3Mhm9dyBzwYLs9zctM/0tA==}
+  /luxon@3.4.3:
+    resolution: {integrity: sha512-tFWBiv3h7z+T/tDaoxA8rqTxy1CHV6gHS//QdaH4pulbq/JuBSGgQspQQqcgnwdAx6pNI7cmvz5Sv/addzHmUg==}
     engines: {node: '>=12'}
     dev: false
 
@@ -2148,7 +2148,7 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.7.11
       solid-refresh: 0.5.2(solid-js@1.7.11)
-      vite: 4.4.9(@types/node@18.17.14)
+      vite: 4.4.9(@types/node@18.17.15)
       vitefu: 0.2.4(vite@4.4.9)
     transitivePeerDependencies:
       - supports-color
@@ -2177,10 +2177,10 @@ packages:
       fast-glob: 3.2.12
       sirv: 2.0.2
       source-map-support: 0.5.21
-      vite: 4.4.9(@types/node@18.17.14)
+      vite: 4.4.9(@types/node@18.17.15)
     dev: true
 
-  /vite@4.4.9(@types/node@18.17.14):
+  /vite@4.4.9(@types/node@18.17.15):
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -2208,7 +2208,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.17.14
+      '@types/node': 18.17.15
       esbuild: 0.18.11
       postcss: 8.4.29
       rollup: 3.28.0
@@ -2224,7 +2224,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.4.9(@types/node@18.17.14)
+      vite: 4.4.9(@types/node@18.17.15)
     dev: true
 
   /wrappy@1.0.2:
