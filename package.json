@@ -19,7 +19,7 @@
     "@types/serve-static": "1.15.5",
     "autoprefixer": "10.4.16",
     "postcss": "8.4.31",
-    "prettier": "3.0.3",
+    "prettier": "3.1.0",
     "prettier-plugin-tailwindcss": "0.5.7",
     "tailwindcss": "3.3.5",
     "typescript": "5.2.2",
@@ -36,14 +36,14 @@
     "h3": "1.8.2",
     "idb": "7.1.1",
     "lodash-es": "4.17.21",
-    "luxon": "3.4.3",
+    "luxon": "3.4.4",
     "nosleep.js": "0.12.0",
     "serve-static": "1.15.0",
     "solid-js": "1.8.5",
     "srt-parser-2": "1.2.3",
     "video-name-parser": "1.4.6"
   },
-  "packageManager": "pnpm@8.10.3",
+  "packageManager": "pnpm@8.10.5",
   "pnpm": {
     "onlyBuiltDependencies": []
   }
