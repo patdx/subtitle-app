@@ -11,8 +11,8 @@ dependencies:
     specifier: 1.1.0
     version: 1.1.0
   '@zip.js/zip.js':
-    specifier: 2.7.30
-    version: 2.7.30
+    specifier: 2.7.31
+    version: 2.7.31
   clsx:
     specifier: 2.0.0
     version: 2.0.0
@@ -61,8 +61,8 @@ devDependencies:
     specifier: 3.3.4
     version: 3.3.4
   '@types/node':
-    specifier: 20.9.0
-    version: 20.9.0
+    specifier: 20.9.1
+    version: 20.9.1
   '@types/serve-static':
     specifier: 1.15.5
     version: 1.15.5
@@ -86,7 +86,7 @@ devDependencies:
     version: 5.2.2
   vite:
     specifier: 5.0.0
-    version: 5.0.0(@types/node@20.9.0)
+    version: 5.0.0(@types/node@20.9.1)
   vite-plugin-solid:
     specifier: 2.7.2
     version: 2.7.2(solid-js@1.8.5)(vite@5.0.0)
@@ -1010,8 +1010,8 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
-  /@types/node@20.9.0:
-    resolution: {integrity: sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==}
+  /@types/node@20.9.1:
+    resolution: {integrity: sha512-HhmzZh5LSJNS5O8jQKpJ/3ZcrrlG6L70hpGqMIAoM9YVD0YBRNWYsfwcXq8VnSjlNpCpgLzMXdiPo+dxcvSmiA==}
     dependencies:
       undici-types: 5.26.5
     dev: true
@@ -1021,11 +1021,11 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 20.9.0
+      '@types/node': 20.9.1
     dev: true
 
-  /@zip.js/zip.js@2.7.30:
-    resolution: {integrity: sha512-nhMvQCj+TF1ATBqYzFds7v+yxPBhdDYHh8J341KtC1D2UrVBUIYcYK4Jy1/GiTsxOXEiKOXSUxvPG/XR+7jMqw==}
+  /@zip.js/zip.js@2.7.31:
+    resolution: {integrity: sha512-Q4XWZO0IXLEzHB580LUgca/KpwX9/KdtDTvfhqKqiirYL5hHvOmWjD+gyqRhv+Muk7I+LpVZvx9E+WsPv5G4Sw==}
     engines: {bun: '>=0.7.0', deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
@@ -1169,7 +1169,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /clsx@2.0.0:
@@ -1417,13 +1417,6 @@ packages:
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
     dev: true
-
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-    dev: true
-    optional: true
 
   /fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -2221,7 +2214,7 @@ packages:
       merge-anything: 5.1.7
       solid-js: 1.8.5
       solid-refresh: 0.5.3(solid-js@1.8.5)
-      vite: 5.0.0(@types/node@20.9.0)
+      vite: 5.0.0(@types/node@20.9.1)
       vitefu: 0.2.4(vite@5.0.0)
     transitivePeerDependencies:
       - supports-color
@@ -2250,10 +2243,10 @@ packages:
       fast-glob: 3.2.12
       sirv: 2.0.2
       source-map-support: 0.5.21
-      vite: 5.0.0(@types/node@20.9.0)
+      vite: 5.0.0(@types/node@20.9.1)
     dev: true
 
-  /vite@5.0.0(@types/node@20.9.0):
+  /vite@5.0.0(@types/node@20.9.1):
     resolution: {integrity: sha512-ESJVM59mdyGpsiNAeHQOR/0fqNoOyWPYesFto8FFZugfmhdHx8Fzd8sF3Q/xkVhZsyOxHfdM7ieiVAorI9RjFw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -2281,7 +2274,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.9.0
+      '@types/node': 20.9.1
       esbuild: 0.19.5
       postcss: 8.4.31
       rollup: 4.4.1
@@ -2297,7 +2290,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 5.0.0(@types/node@20.9.0)
+      vite: 5.0.0(@types/node@20.9.1)
     dev: true
 
   /wrappy@1.0.2:
