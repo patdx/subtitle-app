@@ -11,8 +11,8 @@ dependencies:
     specifier: 1.1.0
     version: 1.1.0
   '@zip.js/zip.js':
-    specifier: 2.7.31
-    version: 2.7.31
+    specifier: 2.7.32
+    version: 2.7.32
   clsx:
     specifier: 2.0.0
     version: 2.0.0
@@ -53,13 +53,13 @@ dependencies:
 devDependencies:
   '@tailwindcss/forms':
     specifier: 0.5.7
-    version: 0.5.7(tailwindcss@3.3.5)
+    version: 0.5.7(tailwindcss@3.3.6)
   '@types/lodash-es':
     specifier: 4.17.12
     version: 4.17.12
   '@types/luxon':
-    specifier: 3.3.6
-    version: 3.3.6
+    specifier: 3.3.7
+    version: 3.3.7
   '@types/node':
     specifier: 20.10.3
     version: 20.10.3
@@ -79,8 +79,8 @@ devDependencies:
     specifier: 0.5.7
     version: 0.5.7(prettier@3.1.0)
   tailwindcss:
-    specifier: 3.3.5
-    version: 3.3.5
+    specifier: 3.3.6
+    version: 3.3.6
   typescript:
     specifier: 5.3.2
     version: 5.3.2
@@ -950,13 +950,13 @@ packages:
     dev: true
     optional: true
 
-  /@tailwindcss/forms@0.5.7(tailwindcss@3.3.5):
+  /@tailwindcss/forms@0.5.7(tailwindcss@3.3.6):
     resolution: {integrity: sha512-QE7X69iQI+ZXwldE+rzasvbJiyV/ju1FGHH0Qn2W3FKbuYtqp8LKcy6iSw79fVUT5/Vvf+0XgLCeYVG+UV6hOw==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
     dependencies:
       mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.3.5
+      tailwindcss: 3.3.6
     dev: true
 
   /@types/babel__core@7.20.2:
@@ -1002,8 +1002,8 @@ packages:
     resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
     dev: true
 
-  /@types/luxon@3.3.6:
-    resolution: {integrity: sha512-LblarKeI26YsMLxHDIQ0295wPSLjkl98eNwDcVhz3zbo1H+kfnkzR01H5Ai5LBzSeddX0ZJSpGwKEZihGb5diw==}
+  /@types/luxon@3.3.7:
+    resolution: {integrity: sha512-gKc9P2d4g5uYwmy4s/MO/yOVPmvHyvzka1YH6i5dM03UrFofHSmgc0D0ymbDRStFWHusk6cwwF6nhLm/ckBbbQ==}
     dev: true
 
   /@types/mime@3.0.1:
@@ -1024,8 +1024,8 @@ packages:
       '@types/node': 20.10.3
     dev: true
 
-  /@zip.js/zip.js@2.7.31:
-    resolution: {integrity: sha512-Q4XWZO0IXLEzHB580LUgca/KpwX9/KdtDTvfhqKqiirYL5hHvOmWjD+gyqRhv+Muk7I+LpVZvx9E+WsPv5G4Sw==}
+  /@zip.js/zip.js@2.7.32:
+    resolution: {integrity: sha512-9Ox1meDIvIKE23LLA7Fxd/ewJpKjj2KryH92doHRqx2406LmIzorsiMawL0qIK7dvwN9K+mfk47lauoIE0o1zQ==}
     engines: {bun: '>=0.7.0', deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
@@ -2080,8 +2080,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /tailwindcss@3.3.5:
-    resolution: {integrity: sha512-5SEZU4J7pxZgSkv7FP1zY8i2TIAOooNZ1e/OGtxIEv6GltpoiXUqWvLy89+a10qYTB1N5Ifkuw9lqQkN9sscvA==}
+  /tailwindcss@3.3.6:
+    resolution: {integrity: sha512-AKjF7qbbLvLaPieoKeTjG1+FyNZT6KaJMJPFeQyLfIp7l82ggH1fbHJSsYIvnbTFQOlkh+gBYpyby5GT1LIdLw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
