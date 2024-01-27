@@ -15,7 +15,7 @@
     "@tailwindcss/forms": "0.5.7",
     "@types/lodash-es": "4.17.12",
     "@types/luxon": "3.4.2",
-    "@types/node": "20.11.7",
+    "@types/node": "20.11.8",
     "@types/serve-static": "1.15.5",
     "autoprefixer": "10.4.17",
     "postcss": "8.4.33",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.1",
-    "@zip.js/zip.js": "2.7.32",
+    "@zip.js/zip.js": "2.7.33",
     "clsx": "2.1.0",
     "cuid": "3.0.0",
     "dirname-filename-esm": "1.1.1",
@@ -43,7 +43,7 @@
     "srt-parser-2": "1.2.3",
     "video-name-parser": "1.4.6"
   },
-  "packageManager": "pnpm@8.14.3",
+  "packageManager": "pnpm@8.15.0",
   "pnpm": {
     "onlyBuiltDependencies": []
   }
