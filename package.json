@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "1.1.1",
-    "@zip.js/zip.js": "2.7.34",
+    "@zip.js/zip.js": "2.7.35",
     "clsx": "2.1.0",
     "cuid": "3.0.0",
     "dirname-filename-esm": "1.1.1",
@@ -43,7 +43,7 @@
     "srt-parser-2": "1.2.3",
     "video-name-parser": "1.4.6"
   },
-  "packageManager": "pnpm@8.15.3",
+  "packageManager": "pnpm@8.15.4",
   "pnpm": {
     "onlyBuiltDependencies": []
   }
