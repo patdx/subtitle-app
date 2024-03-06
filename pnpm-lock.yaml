@@ -47,8 +47,8 @@ dependencies:
     specifier: 1.2.3
     version: 1.2.3
   video-name-parser:
-    specifier: 1.4.6
-    version: 1.4.6
+    specifier: 1.4.7
+    version: 1.4.7
 
 devDependencies:
   '@tailwindcss/forms':
@@ -2143,8 +2143,8 @@ packages:
     resolution: {integrity: sha512-T1ab131NkP3BfXB7KUSgV7Rhu81R2id+L6NaJ7NypAAG5iV6gXnPpQE5RK1fvb+3JYsPTL+ihWna5sr5RN9gaQ==}
     dev: true
 
-  /video-name-parser@1.4.6:
-    resolution: {integrity: sha512-ZdeYjh8X4ms1EzjY/UoiTZ6JWbi8SYyOPGY0jESSLq2BAmdc5sZHi+F8J19Qz0y7H1WSpaltojsCkO1p2dH4YA==}
+  /video-name-parser@1.4.7:
+    resolution: {integrity: sha512-PWPVKEwaGlvlQzesm0PKuazJn+OpOa3zCiwrdBETyohG0vZ5F+ppY5GzpWtyUviDzhk+9ZDaHpGgi/7pnMXYgg==}
     dev: false
 
   /vite-plugin-solid@2.10.1(solid-js@1.8.15)(vite@5.1.5):

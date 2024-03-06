@@ -41,7 +41,7 @@
     "serve-static": "1.15.0",
     "solid-js": "1.8.15",
     "srt-parser-2": "1.2.3",
-    "video-name-parser": "1.4.6"
+    "video-name-parser": "1.4.7"
   },
   "packageManager": "pnpm@8.15.4",
   "pnpm": {
