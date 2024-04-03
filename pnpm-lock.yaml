@@ -64,8 +64,8 @@ devDependencies:
     specifier: 20.12.3
     version: 20.12.3
   '@types/serve-static':
-    specifier: 1.15.6
-    version: 1.15.6
+    specifier: 1.15.7
+    version: 1.15.7
   autoprefixer:
     specifier: 10.4.19
     version: 10.4.19(postcss@8.4.38)
@@ -935,8 +935,8 @@ packages:
       '@types/node': 20.12.3
     dev: true
 
-  /@types/serve-static@1.15.6:
-    resolution: {integrity: sha512-xkChxykiNb1X2YBevPIhQhNU9m9M7h9e2gDsmePAP2kNqhOvpKOrZWOCzq2ERQqfNFzlzHG2bdM0u3z5x+gQgg==}
+  /@types/serve-static@1.15.7:
+    resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/node': 20.12.3
