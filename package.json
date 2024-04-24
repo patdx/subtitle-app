@@ -43,7 +43,7 @@
     "srt-parser-2": "1.2.3",
     "video-name-parser": "1.4.7"
   },
-  "packageManager": "pnpm@9.0.5",
+  "packageManager": "pnpm@9.0.6",
   "pnpm": {
     "onlyBuiltDependencies": []
   }
