@@ -61,8 +61,8 @@ importers:
         specifier: 3.4.2
         version: 3.4.2
       '@types/node':
-        specifier: 20.14.0
-        version: 20.14.0
+        specifier: 20.14.1
+        version: 20.14.1
       '@types/serve-static':
         specifier: 1.15.7
         version: 1.15.7
@@ -86,13 +86,13 @@ importers:
         version: 5.4.5
       vite:
         specifier: 5.2.12
-        version: 5.2.12(@types/node@20.14.0)
+        version: 5.2.12(@types/node@20.14.1)
       vite-plugin-solid:
         specifier: 2.10.2
-        version: 2.10.2(solid-js@1.8.17)(vite@5.2.12(@types/node@20.14.0))
+        version: 2.10.2(solid-js@1.8.17)(vite@5.2.12(@types/node@20.14.1))
       vite-plugin-ssr:
         specifier: 0.4.142
-        version: 0.4.142(vite@5.2.12(@types/node@20.14.0))
+        version: 0.4.142(vite@5.2.12(@types/node@20.14.1))
 
 packages:
 
@@ -629,8 +629,8 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
-  '@types/node@20.14.0':
-    resolution: {integrity: sha512-5cHBxFGJx6L4s56Bubp4fglrEpmyJypsqI6RgzMfBHWUJQGWAAi8cWcgetEbZXHYXo9C2Fa4EEds/uSyS4cxmA==}
+  '@types/node@20.14.1':
+    resolution: {integrity: sha512-T2MzSGEu+ysB/FkWfqmhV3PLyQlowdptmmgD20C6QxsS8Fmv5SjpZ1ayXaEC0S21/h5UJ9iA6W/5vSNU5l00OA==}
 
   '@types/send@0.17.4':
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
@@ -1837,19 +1837,19 @@ snapshots:
 
   '@types/mime@1.3.5': {}
 
-  '@types/node@20.14.0':
+  '@types/node@20.14.1':
     dependencies:
       undici-types: 5.26.5
 
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.14.0
+      '@types/node': 20.14.1
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.1
-      '@types/node': 20.14.0
+      '@types/node': 20.14.1
       '@types/send': 0.17.4
 
   '@zip.js/zip.js@2.7.45': {}
@@ -2515,7 +2515,7 @@ snapshots:
 
   video-name-parser@1.4.7: {}
 
-  vite-plugin-solid@2.10.2(solid-js@1.8.17)(vite@5.2.12(@types/node@20.14.0)):
+  vite-plugin-solid@2.10.2(solid-js@1.8.17)(vite@5.2.12(@types/node@20.14.1)):
     dependencies:
       '@babel/core': 7.23.5
       '@types/babel__core': 7.20.5
@@ -2523,12 +2523,12 @@ snapshots:
       merge-anything: 5.1.7
       solid-js: 1.8.17
       solid-refresh: 0.6.3(solid-js@1.8.17)
-      vite: 5.2.12(@types/node@20.14.0)
-      vitefu: 0.2.5(vite@5.2.12(@types/node@20.14.0))
+      vite: 5.2.12(@types/node@20.14.1)
+      vitefu: 0.2.5(vite@5.2.12(@types/node@20.14.1))
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-ssr@0.4.142(vite@5.2.12(@types/node@20.14.0)):
+  vite-plugin-ssr@0.4.142(vite@5.2.12(@types/node@20.14.1)):
     dependencies:
       '@brillout/import': 0.2.3
       '@brillout/json-serializer': 0.5.6
@@ -2542,20 +2542,20 @@ snapshots:
       fast-glob: 3.2.12
       sirv: 2.0.2
       source-map-support: 0.5.21
-      vite: 5.2.12(@types/node@20.14.0)
+      vite: 5.2.12(@types/node@20.14.1)
 
-  vite@5.2.12(@types/node@20.14.0):
+  vite@5.2.12(@types/node@20.14.1):
     dependencies:
       esbuild: 0.20.2
       postcss: 8.4.38
       rollup: 4.13.0
     optionalDependencies:
-      '@types/node': 20.14.0
+      '@types/node': 20.14.1
       fsevents: 2.3.3
 
-  vitefu@0.2.5(vite@5.2.12(@types/node@20.14.0)):
+  vitefu@0.2.5(vite@5.2.12(@types/node@20.14.1)):
     optionalDependencies:
-      vite: 5.2.12(@types/node@20.14.0)
+      vite: 5.2.12(@types/node@20.14.1)
 
   wrappy@1.0.2: {}
 
