@@ -21,8 +21,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       dirname-filename-esm:
-        specifier: 1.1.1
-        version: 1.1.1
+        specifier: 1.1.2
+        version: 1.1.2
       h3:
         specifier: 1.12.0
         version: 1.12.0
@@ -800,8 +800,8 @@ packages:
   didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
 
-  dirname-filename-esm@1.1.1:
-    resolution: {integrity: sha512-BWBkv157Cf/z7Hjod2v2JS7vyC36Dk1QQolAtuLjpl8RBlv7Z92X7+Ufc2cjfR/B3iJUiK0QmGZkgtsmmLz0Tw==}
+  dirname-filename-esm@1.1.2:
+    resolution: {integrity: sha512-mMhH2imzJN95KnX/iDAhC0QDG0VU833c88U3SXCaQzATu7YlO9YTFD/CF9Nn2xhSwFlV9iWEKb/YyGJ4TwCcPg==}
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
@@ -1986,7 +1986,7 @@ snapshots:
 
   didyoumean@1.2.2: {}
 
-  dirname-filename-esm@1.1.1: {}
+  dirname-filename-esm@1.1.2: {}
 
   dlv@1.1.3: {}
 
