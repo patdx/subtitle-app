@@ -12,8 +12,8 @@ importers:
         specifier: 1.1.1
         version: 1.1.1
       '@zip.js/zip.js':
-        specifier: 2.7.46
-        version: 2.7.46
+        specifier: 2.7.47
+        version: 2.7.47
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -638,8 +638,8 @@ packages:
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
 
-  '@zip.js/zip.js@2.7.46':
-    resolution: {integrity: sha512-TIFUzqSAeL+i2vBtDnmjXakZvYVUhPNxbFO3vrtQH94yXzgjefK7v3UzJdJRP1mFO8EoPVp/R+SDYG2fr22edg==}
+  '@zip.js/zip.js@2.7.47':
+    resolution: {integrity: sha512-jmtJMA3/Jl4rMzo/DZ79s6g0CJ1AZcNAO6emTy/vHfIKAB/iiFY7PLs6KmbRTJ+F8GnK2eCLnjQfCCneRxXgzg==}
     engines: {bun: '>=0.7.0', deno: '>=1.0.0', node: '>=16.5.0'}
 
   acorn@8.8.2:
@@ -1855,7 +1855,7 @@ snapshots:
       '@types/node': 20.14.11
       '@types/send': 0.17.4
 
-  '@zip.js/zip.js@2.7.46': {}
+  '@zip.js/zip.js@2.7.47': {}
 
   acorn@8.8.2: {}
 
