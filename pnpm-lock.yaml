@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@plussub/srt-vtt-parser':
-        specifier: 1.1.3
-        version: 1.1.3
+        specifier: 2.0.5
+        version: 2.0.5
       '@zip.js/zip.js':
         specifier: 2.7.47
         version: 2.7.47
@@ -523,8 +523,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@plussub/srt-vtt-parser@1.1.3':
-    resolution: {integrity: sha512-urEzVHBd3+2Yg7dll5HuXAj0XuU6RokgpG9RDAVCyuV/l8v8e7kHSFVatANPLFJtVSuiKmiUqLxzAmLoJV8iFA==}
+  '@plussub/srt-vtt-parser@2.0.5':
+    resolution: {integrity: sha512-cOedEgu7gyea9k+ixkPCQGf8ABBctFWWsBYnVCzzmuoHz45awc9vKtveHzn7VugR36fzFqgkXaLEn2HdZnzFdQ==}
 
   '@polka/url@1.0.0-next.21':
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
@@ -1757,7 +1757,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
 
-  '@plussub/srt-vtt-parser@1.1.3': {}
+  '@plussub/srt-vtt-parser@2.0.5': {}
 
   '@polka/url@1.0.0-next.21': {}
 
