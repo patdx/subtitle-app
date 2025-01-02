@@ -2,11 +2,9 @@ import { hydrate, render as solidRender } from 'solid-js/web'
 import 'tailwindcss/tailwind.css'
 import { PageContext } from './types'
 
-export const clientRouting = true
-
 let dispose: () => void
 
-export function render(pageContext: PageContext) {
+export function onRenderClient(pageContext: PageContext) {
 	console.log(`pageContext`, pageContext)
 	const content = document.getElementById('app')
 	const { Page, pageProps } = pageContext

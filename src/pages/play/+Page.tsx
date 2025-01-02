@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import { Component, onMount } from 'solid-js'
-import { Controls } from '../components/controls'
-import { FileDisplay } from '../components/file-display'
-import { clock, initAndGetDb, setFile, setTimeElapsed } from '../utils'
+import { Controls } from '../../components/controls'
+import { FileDisplay } from '../../components/file-display'
+import { clock, initAndGetDb, setFile, setTimeElapsed } from '../../utils'
 
 const PlayPage: Component = (props) => {
 	console.log(`props`, props)

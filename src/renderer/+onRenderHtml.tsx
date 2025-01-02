@@ -1,15 +1,11 @@
 import { HydrationScript, renderToString } from 'solid-js/web'
 import { dangerouslySkipEscape, escapeInject } from 'vike/server'
-import 'tailwindcss/tailwind.css'
+import './styles.css'
 import { PageContext } from './types'
 
-export { render }
-export { passToClient }
+export { onRenderHtml }
 
-// See https://vike.dev/data-fetching
-const passToClient = ['pageProps', 'documentProps']
-
-function render(pageContext: PageContext) {
+function onRenderHtml(pageContext: PageContext) {
 	const { Page, pageProps } = pageContext
 
 	const pageHtml = renderToString(() => <Page {...pageProps} />)
@@ -21,12 +17,12 @@ function render(pageContext: PageContext) {
 
 	return escapeInject`<!DOCTYPE html>${dangerouslySkipEscape(
 		renderToString(() => (
-			<html lang="en" class="h-full">
+			<html lang="en" class="">
 				<head>
 					<meta charset="UTF-8" />
 					<meta
 						name="viewport"
-						content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+						content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
 					/>
 					<link
 						rel="manifest"
@@ -58,14 +54,16 @@ function render(pageContext: PageContext) {
 					{description && <meta name="description" content={description} />}
 					{/*
             make the site show normally on apple watch -- could add remote control features
-            or 
+            or
             https://erikrunyon.com/2018/06/designing-web-content-for-watchos/
           */}
 					<meta name="disabled-adaptations" content="watch" />
+					<meta name="format-detection" content="telephone=no" />
+					<meta name="msapplication-tap-highlight" content="no" />
 					<HydrationScript />
 				</head>
-				<body class="h-full">
-					<div class="h-full" id="app" innerHTML={pageHtml} />
+				<body class="">
+					<div class="" id="app" innerHTML={pageHtml} />
 				</body>
 			</html>
 		)),

@@ -3,7 +3,6 @@ import { createApp, assertMethod, eventHandler } from 'h3'
 import { renderPage } from 'vike/server'
 import { dirname } from 'dirname-filename-esm'
 import serveStatic from 'serve-static'
-import { createRouter } from 'h3'
 import { send } from 'h3'
 import { setResponseStatus } from 'h3'
 import { fromNodeMiddleware } from 'h3'
@@ -49,6 +48,6 @@ async function startServer() {
 	)
 
 	const port = process.env.PORT || 3000
-	createServer(toNodeListener(app)).listen(port)
+	createServer(toNodeListener(app)).listen(port, '0.0.0.0')
 	console.log(`Server running at http://localhost:${port}`)
 }

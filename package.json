@@ -23,9 +23,9 @@
 		"prettier-plugin-tailwindcss": "0.6.9",
 		"tailwindcss": "3.4.17",
 		"typescript": "5.7.2",
+		"vike": "0.4.211",
 		"vite": "6.0.6",
-		"vite-plugin-solid": "2.11.0",
-		"vike": "0.4.142"
+		"vite-plugin-solid": "2.11.0"
 	},
 	"dependencies": {
 		"@plussub/srt-vtt-parser": "2.0.5",
@@ -41,6 +41,7 @@
 		"serve-static": "1.16.2",
 		"solid-js": "1.9.3",
 		"srt-parser-2": "1.2.3",
+		"tailwindcss-safe-area": "^0.6.0",
 		"video-name-parser": "1.4.7"
 	},
 	"packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321",
