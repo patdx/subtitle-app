@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import ssr from 'vite-plugin-ssr/plugin';
+import ssr from 'vike/plugin';
 import { execSync } from 'child_process';
 
 const gitpodHost = (() => {

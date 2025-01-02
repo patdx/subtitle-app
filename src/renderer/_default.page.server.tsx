@@ -1,12 +1,12 @@
 import { HydrationScript, renderToString } from 'solid-js/web';
-import { dangerouslySkipEscape, escapeInject } from 'vite-plugin-ssr/server';
+import { dangerouslySkipEscape, escapeInject } from 'vike/server';
 import 'tailwindcss/tailwind.css';
 import { PageContext } from './types';
 
 export { render };
 export { passToClient };
 
-// See https://vite-plugin-ssr.com/data-fetching
+// See https://vike.dev/data-fetching
 const passToClient = ['pageProps', 'documentProps'];
 
 function render(pageContext: PageContext) {
@@ -14,7 +14,7 @@ function render(pageContext: PageContext) {
 
   const pageHtml = renderToString(() => <Page {...pageProps} />);
 
-  // See https://vite-plugin-ssr.com/html-head
+  // See https://vike.dev/html-head
   const { documentProps } = pageContext;
   const title = documentProps?.title ?? 'Subtitle App';
   const description = documentProps?.description;

@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { createApp, assertMethod, eventHandler } from 'h3';
-import { renderPage } from 'vite-plugin-ssr/server';
+import { renderPage } from 'vike/server';
 import { dirname } from 'dirname-filename-esm';
 import serveStatic from 'serve-static';
 import { createRouter } from 'h3';
