@@ -1,26 +1,26 @@
-import { hydrate, render as solidRender } from 'solid-js/web';
-import 'tailwindcss/tailwind.css';
-import { PageContext } from './types';
+import { hydrate, render as solidRender } from 'solid-js/web'
+import 'tailwindcss/tailwind.css'
+import { PageContext } from './types'
 
-export const clientRouting = true;
+export const clientRouting = true
 
-let dispose: () => void;
+let dispose: () => void
 
 export function render(pageContext: PageContext) {
-  console.log(`pageContext`, pageContext);
-  const content = document.getElementById('app');
-  const { Page, pageProps } = pageContext;
+	console.log(`pageContext`, pageContext)
+	const content = document.getElementById('app')
+	const { Page, pageProps } = pageContext
 
-  // Dispose to prevent duplicate pages when navigating.
-  if (dispose) dispose();
+	// Dispose to prevent duplicate pages when navigating.
+	if (dispose) dispose()
 
-  // Render the page
-  if (pageContext.isHydration) {
-    // This is the first page rendering; the page has been rendered to HTML
-    // and we now make it interactive.
-    dispose = hydrate(() => <Page {...pageProps} />, content!);
-  } else {
-    // Render new page
-    solidRender(() => <Page {...pageProps} />, content!);
-  }
+	// Render the page
+	if (pageContext.isHydration) {
+		// This is the first page rendering; the page has been rendered to HTML
+		// and we now make it interactive.
+		dispose = hydrate(() => <Page {...pageProps} />, content!)
+	} else {
+		// Render new page
+		solidRender(() => <Page {...pageProps} />, content!)
+	}
 }
