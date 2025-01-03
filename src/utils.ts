@@ -1,11 +1,17 @@
-import { Entry } from '@plussub/srt-vtt-parser/dist/src/types'
 import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { openDB, DBSchema } from 'idb'
+import { openDB, type DBSchema } from 'idb'
 import { findLast, once } from 'lodash-es'
 import { parse } from '@plussub/srt-vtt-parser'
 import cuid from 'cuid'
 import { Duration } from 'luxon'
+
+export interface Entry {
+	id: string;
+	from: number;
+	to: number;
+	text: string;
+}
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
 	return currentTime > node.from && currentTime < node.to
@@ -30,11 +36,7 @@ export const getActiveNodes = (
 ): Entry[] => {
 	const selectedNodes = new Set<Entry>()
 
-	console.log(`nodes:`, nodes)
 
-	// return [];
-
-	// return activeNodes;
 
 	const first = nodes?.[0]
 	if (first && currentTime < first.from) {
@@ -152,7 +154,7 @@ export const initAndGetDb = once(async () => {
 
 	console.log('created db!', db)
 
-	;(window as any).db = db
+		; (window as any).db = db
 
 	return db
 })

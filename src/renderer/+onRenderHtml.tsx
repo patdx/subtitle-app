@@ -1,7 +1,7 @@
 import { HydrationScript, renderToString } from 'solid-js/web'
 import { dangerouslySkipEscape, escapeInject } from 'vike/server'
 import './styles.css'
-import { PageContext } from './types'
+import type { PageContext } from './types'
 
 export { onRenderHtml }
 

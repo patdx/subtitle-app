@@ -1,6 +1,5 @@
-import type { Entry } from '@plussub/srt-vtt-parser/dist/src/types'
 import clsx from 'clsx'
-import { getTextSize, getTimeElapsed, nodeIsActive } from '../utils'
+import { getTextSize, getTimeElapsed, nodeIsActive, type Entry } from '../utils'
 
 export const Subtitle = (props: { node: Entry }) => {
 	return (

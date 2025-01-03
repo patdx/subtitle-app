@@ -3,12 +3,15 @@
 		"strict": true,
 		"target": "ESNext",
 		"module": "ESNext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"jsx": "preserve",
 		"jsxImportSource": "solid-js",
-		"types": ["vite/client", "node"]
+		"verbatimModuleSyntax": true,
+		"types": ["vite/client", "node"],
+		"noEmit": true
 	},
-	"include": ["./src/**/*.ts", "./src/**/*.tsx"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx", "vite.config.ts"]
 }

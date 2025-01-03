@@ -1,8 +1,10 @@
-import { Component } from 'solid-js'
-import type { PageContextBuiltIn } from 'vike/types'
+import type { JSX } from 'solid-js'
+import type {
+	PageContextServer
+} from 'vike/types'
 export type PageProps = {}
-export type PageContext = PageContextBuiltIn & {
-	Page: (pageProps: PageProps) => Component
+export type PageContext = PageContextServer & {
+	Page: (pageProps: PageProps) => JSX.Element
 	pageProps: PageProps
 	documentProps?: {
 		title?: string

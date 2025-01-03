@@ -1,6 +1,6 @@
 import { hydrate, render as solidRender } from 'solid-js/web'
 import 'tailwindcss/tailwind.css'
-import { PageContext } from './types'
+import type { PageContext } from './types'
 
 let dispose: () => void
 
