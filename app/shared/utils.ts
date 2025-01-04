@@ -1,23 +1,24 @@
-import { createSignal } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import * as mobx from 'mobx'
 import { openDB, type DBSchema } from 'idb'
 import { findLast, once } from 'lodash-es'
 import { parse } from '@plussub/srt-vtt-parser'
-import cuid from 'cuid'
+import { nanoid } from 'nanoid'
 import { Duration } from 'luxon'
 
 export interface Entry {
-	id: string;
-	from: number;
-	to: number;
-	text: string;
+	id: string
+	from: number
+	to: number
+	text: string
 }
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
 	return currentTime > node.from && currentTime < node.to
 }
 
-export const [getTimeElapsed, setTimeElapsed] = createSignal(0)
+const elapsed = mobx.observable.box(0)
+export const getTimeElapsed = () => elapsed.get()
+export const setTimeElapsed = mobx.action((value: number) => elapsed.set(value))
 
 export const getTimeElapsedAsDuration = () => {
 	const d = Duration.fromMillis(getTimeElapsed()).shiftTo(
@@ -35,8 +36,6 @@ export const getActiveNodes = (
 	currentTime: number,
 ): Entry[] => {
 	const selectedNodes = new Set<Entry>()
-
-
 
 	const first = nodes?.[0]
 	if (first && currentTime < first.from) {
@@ -86,12 +85,14 @@ export const getActiveNodes = (
 	return [...selectedNodes]
 }
 
-export const [clock, setClock] = createStore({
+export const clock = mobx.observable({
 	lastActionAt: new Date(),
 	lastTimeElapsedMs: 0,
 	playSpeed: 1,
 	isPlaying: false,
 })
+
+export const setClock = (value: Partial<typeof clock>) => mobx.set(clock, value)
 
 export const TEXT_SIZES = [
 	'text-sm',
@@ -101,9 +102,13 @@ export const TEXT_SIZES = [
 ] as const
 type TextSize = (typeof TEXT_SIZES)[number]
 
-export const [getTextSize, setTextSize] = createSignal<TextSize>('text-[32px]')
+const textSize = mobx.observable.box<TextSize>('text-[32px]')
+export const getTextSize = () => textSize.get()
+export const setTextSize = (value: TextSize) => textSize.set(value)
 
-export const [getFile, setFile] = createSignal<DbLine[]>()
+const file = mobx.observable.box<DbLine[]>()
+export const getFile = () => file.get()
+export const setFile = (value: DbLine[]) => file.set(value)
 
 export interface DbLine {
 	id: string
@@ -153,8 +158,7 @@ export const initAndGetDb = once(async () => {
 	})
 
 	console.log('created db!', db)
-
-		; (window as any).db = db
+	;(window as any).db = db
 
 	return db
 })
@@ -166,7 +170,7 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 
 	const db = await initAndGetDb()
 
-	const fileId = cuid()
+	const fileId = nanoid()
 
 	const tx = db.transaction(['files', 'lines'], 'readwrite')
 
@@ -181,7 +185,7 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 		entries.map((entry) => {
 			const { id: originalId, text, ...remaining } = entry
 			return lines.add({
-				id: cuid(),
+				id: nanoid(),
 				fileId,
 				// sometimes originalId and text
 				// have an extra /r at the end,

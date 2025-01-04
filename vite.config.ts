@@ -1,61 +1,22 @@
+import { reactRouter } from '@react-router/dev/vite'
+import autoprefixer from 'autoprefixer'
+import tailwindcss from 'tailwindcss'
 import { defineConfig } from 'vite'
-import solidPlugin from 'vite-plugin-solid'
-import ssr from 'vike/plugin'
-import { execSync } from 'child_process'
+import tsconfigPaths from 'vite-tsconfig-paths'
+import AutoImport from 'unplugin-auto-import/vite'
 
-const gitpodHost = (() => {
-	try {
-		return execSync(`gp url 3001`)
-			.toString('utf8')
-			.replace(/^https:\/\//, '')
-	} catch {
-		return undefined
-	}
-})()
-
-const IS_GITPOD = false
-
-console.log(`gitpodHost: ${gitpodHost}`)
-
-export default defineConfig({
-	// begin config for gitpod
-	server: {
-		port: 3000,
-		hmr: {
-			port: 3001,
-			clientPort: 443,
-			...(IS_GITPOD
-				? {
-						...(gitpodHost
-							? {
-									host: gitpodHost,
-								}
-							: {}),
-					}
-				: {
-						clientPort: 3001,
-					}),
+export default defineConfig(({ isSsrBuild }) => ({
+	css: {
+		postcss: {
+			plugins: [tailwindcss, autoprefixer],
 		},
 	},
-	// end config for gitpod
-
-	define: {
-		// global: 'globalThis',
-		// 'process.env.NODE_DEBUG': 'false',
-		// 'process.browser': 'true',
-	},
 	plugins: [
-		solidPlugin({ ssr: true }),
-
-		ssr({
-			prerender: true,
+		AutoImport({
+			imports: ['react'],
+			dirs: ['./app/shared'],
 		}),
+		reactRouter(),
+		tsconfigPaths(),
 	],
-	build: {
-		target: 'esnext',
-	},
-
-	ssr: {
-		noExternal: ['lodash-es'],
-	},
-})
+}))

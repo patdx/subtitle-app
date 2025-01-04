@@ -1,40 +1,51 @@
-import {
-	createResource,
-	createSignal,
-	createUniqueId,
-	For,
-	Show,
-} from 'solid-js'
-import parseVideo from 'video-name-parser'
-import { BadgeBlue, BadgeRed } from '../components/badge'
-import { addFileToDatabase, initAndGetDb } from '../utils'
+import { Navbar, Page } from 'konsta/react'
+import type { Route } from './+types/_index'
+import { useQuery } from '@tanstack/react-query'
 import sampleSrtUrl from '../assets/sample.srt?url'
+import { Link } from 'react-router'
+import { once } from 'lodash-es'
+import { use } from 'react'
 
-const LoadingIcon = () => (
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		class="h-5 w-5 animate-spin"
-		viewBox="0 0 20 20"
-		fill="currentColor"
-	>
-		<path
-			fill-rule="evenodd"
-			d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-			clip-rule="evenodd"
-		/>
-	</svg>
+const parseVideoPromise = once(() =>
+	import('video-name-parser').then((mod) => mod.default),
 )
 
+export function meta({}: Route.MetaArgs) {
+	return [
+		{ title: 'Subtitle App' },
+		// { name: 'description', content: 'Welcome to React Router!' },
+	]
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+	return (
+		<Page>
+			<Navbar title="Subtitle App" />
+			<EditFilesPage />
+		</Page>
+	)
+}
+
 const EditFilesPage = () => {
-	const id = createUniqueId()
+	const id = useId()
 
-	const [isProcessing, setProcessing] = createSignal(false)
+	const [isProcessing, setProcessing] = useSignal(false)
 
-	const [data, handler] = createResource(async () => {
-		const db = await initAndGetDb()
-		const files = await db.getAll('files')
-		return files
+	const result = useQuery({
+		queryKey: ['files'],
+		queryFn: async () => {
+			const db = await initAndGetDb()
+			const files = await db.getAll('files')
+			return files
+		},
 	})
+
+	// [data, handler]
+
+	const data = () => result.data
+	const handler = {
+		refetch: result.refetch,
+	}
 
 	const handleFile = async (file: File) => {
 		try {
@@ -69,20 +80,22 @@ const EditFilesPage = () => {
 		}
 	}
 
-	return (
-		<div class="min-h-full bg-gray-50">
-			<div class="pt-safe"></div>
+	const parseVideo = use(parseVideoPromise())
 
-			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div class="py-8">
-					<h1 class="text-3xl font-bold text-gray-900">Subtitle App</h1>
-					<p class="mt-2 text-sm text-gray-600">Play your subtitle files</p>
+	return (
+		<div className="min-h-full bg-gray-50">
+			<div className="pt-safe"></div>
+
+			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="py-8">
+					<h1 className="text-3xl font-bold text-gray-900">Subtitle App</h1>
+					<p className="mt-2 text-sm text-gray-600">Play your subtitle files</p>
 				</div>
 
-				<div class="rounded-lg bg-white p-8 shadow-sm">
+				<div className="rounded-lg bg-white p-8 shadow-sm">
 					<input
 						id={`${id}-file-upload`}
-						class="hidden"
+						className="hidden"
 						type="file"
 						accept=".zip,.srt,application/zip"
 						onChange={async (event) => {
@@ -94,21 +107,21 @@ const EditFilesPage = () => {
 						}}
 					/>
 
-					<div class="flex flex-col items-center justify-center">
+					<div className="flex flex-col items-center justify-center">
 						<label
 							tabIndex={0}
-							for={`${id}-file-upload`}
-							class="flex items-center justify-center gap-3 rounded-lg bg-blue-600 px-6 py-3 text-lg font-medium text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-800"
+							htmlFor={`${id}-file-upload`}
+							className="flex items-center justify-center gap-3 rounded-lg bg-blue-600 px-6 py-3 text-lg font-medium text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-800"
 						>
 							Import SRT or ZIP
-							<Show when={isProcessing()}>
+							<Show when={isProcessing}>
 								<LoadingIcon />
 							</Show>
 						</label>
 
 						<button
 							type="button"
-							class="mt-4 text-sm text-gray-600 hover:text-gray-900 hover:underline"
+							className="mt-4 text-sm text-gray-600 hover:text-gray-900 hover:underline"
 							onClick={async () => {
 								const blob = await fetch(sampleSrtUrl).then((result) =>
 									result.blob(),
@@ -121,8 +134,8 @@ const EditFilesPage = () => {
 						</button>
 					</div>
 
-					<div class="mt-8 space-y-4">
-						<For each={data()}>
+					<div className="mt-8 space-y-4">
+						<For each={data}>
 							{(file) => {
 								let metadata
 								try {
@@ -132,14 +145,17 @@ const EditFilesPage = () => {
 								}
 
 								return (
-									<div class="group overflow-hidden rounded-lg border border-gray-200 bg-white transition hover:bg-gray-50">
-										<a href={`/play?id=${file.id}`} class="block p-4">
-											<div class="flex items-center justify-between">
-												<div class="min-w-0 flex-1">
-													<h3 class="truncate text-lg font-medium text-gray-900">
+									<div
+										key={file.id}
+										className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition hover:bg-gray-50"
+									>
+										<Link to={`/play?id=${file.id}`} className="block p-4">
+											<div className="flex items-center justify-between">
+												<div className="min-w-0 flex-1">
+													<h3 className="truncate text-lg font-medium text-gray-900">
 														{file.name}
 													</h3>
-													<div class="mt-2 flex flex-wrap gap-2">
+													<div className="mt-2 flex flex-wrap gap-2">
 														{metadata?.season && (
 															<BadgeRed>Season {metadata.season}</BadgeRed>
 														)}
@@ -149,7 +165,7 @@ const EditFilesPage = () => {
 													</div>
 												</div>
 												<button
-													class="ml-4 flex-shrink-0 text-sm font-medium text-red-600 opacity-0 transition hover:text-red-900 group-hover:opacity-100"
+													className="ml-4 flex-shrink-0 text-sm font-medium text-red-600 opacity-0 transition hover:text-red-900 group-hover:opacity-100"
 													onClick={async (e) => {
 														e.preventDefault()
 														const db = await initAndGetDb()
@@ -175,7 +191,7 @@ const EditFilesPage = () => {
 													Delete
 												</button>
 											</div>
-										</a>
+										</Link>
 									</div>
 								)
 							}}
@@ -184,9 +200,7 @@ const EditFilesPage = () => {
 				</div>
 			</div>
 
-			<div class="pb-safe"></div>
+			<div className="pb-safe"></div>
 		</div>
 	)
 }
-
-export { EditFilesPage as Page }

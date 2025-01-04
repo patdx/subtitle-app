@@ -1,15 +1,80 @@
-# subtitle-app
+# patdx-remix-template
 
-## Access here: https://subtitle-app.vercel.app/
+## Create a new project from this template
 
-This is an open-source application to play a subtitle file as if it were a video.
+This will copy the code in `main` branch to a new directory.
 
-It supports SRT files or ZIP archives with SRT files inside.
+```
+npx degit patdx/patdx-remix-template
+```
 
-It can be useful to enjoy content in a second subtitle language.
+## Summary
 
-There are similar tools for computers such as [Language Reactor](https://www.languagereactor.com/) extension but I could not find any good tool that can be used with your TV.
+This is a template for React Router 7 (Remix) apps with the following features already set up:
 
-With this app, you can play the main content via the regular streaming app on your TV, then open up Subtitle App on any old phone/table, queue up the subtitles file and place it next to the TV.
+- Cloudflare Pages Functions deployment using wrangler.toml
+- React 19
+- Auto import plugin with React imports set up
+- Tailwind CSS
 
-I have used it to watch some K-dramas with my partner as both of us have different preferred languages for watching TV, and neither of us know Korean.
+It is largely based on the [React Router 7 Cloudflare D1 Template](https://github.com/remix-run/react-router-templates/tree/main/cloudflare-d1) but using Cloudflare Pages instead of the new Cloudflare Worker Assets feature, and a different plugin to use Worker Proxy mode instead of the Vite Environments API.
+
+## Adding Node-targeted modules
+
+If you need to use a module that is targeted for Node, try adding `nodejs_compat` to the wrangler.json:
+
+```json
+{
+  "compatibility_flags": ["nodejs_compat"]
+}
+```
+
+And add the module to the SSR externals list in vite.config.ts:
+
+```diff
+    ssr: {
+      external: [
+        'node:async_hooks',
++       'nodemailer',
+      ],
+    },
+```
+
+## Development
+
+Run the dev server:
+
+```sh
+pnpm dev
+```
+
+To run Wrangler:
+
+```sh
+pnpm build
+pnpm start
+```
+
+## Deployment
+
+> [!WARNING]
+> Cloudflare does _not_ use `wrangler.toml` to configure deployment bindings.
+> You **MUST** [configure deployment bindings manually in the Cloudflare dashboard][bindings].
+
+First, build your app for production:
+
+```sh
+pnpm build
+```
+
+Then, deploy your app to Cloudflare Pages:
+
+```sh
+pnpm run deploy
+```
+
+[bindings]: https://developers.cloudflare.com/pages/functions/bindings/
+
+## Styling
+
+This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.

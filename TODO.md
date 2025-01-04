@@ -1,0 +1,25 @@
+- restore favicon, etc
+- syncing between devices
+  - use evolu or one(?) that crsqlite related thing
+- switch to remix?
+- disable unnecessary text highlighting
+  - eg when clicking the next button
+  - and double click triggering highlight instead of another click?
+  - refer to ionic css: https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75
+- better ui for navigating time
+  - like +10s -10s
+  - or a dial
+  - or tapping text in the transcript view
+- fix background for black player page
+- track time for each episode separately
+- remember last time for each episode
+- next episode button
+- transcript view
+- markup support
+- have it fade out after a few seconds
+- only show full screen button on platforms that support it (not iOS)
+- add padding
+- add more options to change the font size
+- auto shrink large text if it does not fit
+- Fix untappable buttons in PwA mode
+- fix theme color/background color

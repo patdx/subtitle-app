@@ -1,12 +1,15 @@
+import { Page } from 'konsta/react'
 import { DateTime } from 'luxon'
-import { type Component, onMount } from 'solid-js'
-import { Controls } from '../../components/controls'
-import { FileDisplay } from '../../components/file-display'
-import { clock, initAndGetDb, setFile, setTimeElapsed } from '../../utils'
 
-const PlayPage: Component = (props) => {
-	console.log(`props`, props)
+export default function PlayPage() {
+	return (
+		<Page>
+			<Play />
+		</Page>
+	)
+}
 
+const Play = () => {
 	const updateElapsedTime = () => {
 		const timeSinceLastAction = clock.isPlaying
 			? Math.abs(DateTime.fromJSDate(clock.lastActionAt).diffNow().toMillis()) *
@@ -16,7 +19,7 @@ const PlayPage: Component = (props) => {
 		requestAnimationFrame(updateElapsedTime)
 	}
 
-	onMount(async () => {
+	async function loadFile() {
 		const fileId = new URL(location.href).searchParams.get('id')
 		if (!fileId) {
 			console.warn(`No id provided, waiting for file id...`)
@@ -26,16 +29,20 @@ const PlayPage: Component = (props) => {
 		const lines = await db.getAllFromIndex('lines', 'by-file-id', fileId)
 		console.log(`loaded ${lines.length} lines`)
 		setFile(lines)
-	})
+	}
 
-	onMount(() => {
+	useEffect(() => {
+		loadFile()
+	}, [])
+
+	useEffect(() => {
 		requestAnimationFrame(updateElapsedTime)
-	})
+	}, [])
 
 	return (
 		<>
-			<div class="relative h-full overflow-hidden bg-black">
-				<div class="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
+			<div className="relative h-full overflow-hidden bg-black">
+				<div className="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
 					<FileDisplay />
 				</div>
 
@@ -44,5 +51,3 @@ const PlayPage: Component = (props) => {
 		</>
 	)
 }
-
-export { PlayPage as Page }

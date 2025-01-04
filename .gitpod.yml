@@ -1,7 +1,0 @@
-ports:
-  - port: 3000-3001
-    visibility: private
-
-tasks:
-  - name: Dev Server
-    init: yarn

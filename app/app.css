@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	user-select: none;
+
+	/* Should we use any of the properties set here? https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
+	/* transform: translateZ(0);
+
+	text-rendering: optimizeLegibility;
+
+	overflow: hidden;
+
+	touch-action: manipulation;
+
+	-webkit-user-drag: none;
+
+	-ms-content-zooming: none;
+
+	word-wrap: break-word;
+
+	overscroll-behavior-y: none;
+	-webkit-text-size-adjust: none;
+
+	text-size-adjust: none; */
+}
