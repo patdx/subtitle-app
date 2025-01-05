@@ -71,7 +71,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					<konsta.App id="app" safeAreas theme="ios">
+					<konsta.App
+						id="app"
+						safeAreas
+						theme="ios"
+						className="min-h-svh max-h-svh h-svh"
+					>
 						{children}
 					</konsta.App>
 				</QueryClientProvider>

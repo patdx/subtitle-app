@@ -22,21 +22,6 @@ export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
 	return currentTime > node.from && currentTime < node.to
 }
 
-const elapsed = mobx.observable.box(0)
-export const getTimeElapsed = () => elapsed.get()
-export const setTimeElapsed = mobx.action((value: number) => elapsed.set(value))
-
-export const getTimeElapsedAsDuration = () => {
-	const d = Duration.fromMillis(getTimeElapsed()).shiftTo(
-		'hours',
-		'minutes',
-		'seconds',
-		'milliseconds',
-	)
-	// console.log(d);
-	return d
-}
-
 export const getActiveNodes = (
 	nodes: Entry[] = [],
 	currentTime: number,
@@ -158,17 +143,22 @@ export class ClockStore {
 	playSpeed = 1
 	isPlaying = false
 
-	updateElapsedTime() {
-		if (!clock.isPlaying) {
-			return
+	/** is calculated based on lastActionAt, playSpeed and lastTimeElapsedMs */
+	actualTimeElapsedMs = 0
+
+	calculateActualTimeElapsedMs() {
+		const timeSinceLastAction = this.isPlaying
+			? Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
+			: 0
+
+		this.actualTimeElapsedMs = timeSinceLastAction + clock.lastTimeElapsedMs
+	}
+
+	tick() {
+		this.calculateActualTimeElapsedMs()
+		if (clock.isPlaying) {
+			requestAnimationFrame(this.tick)
 		}
-
-		const timeSinceLastAction =
-			Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
-
-		setTimeElapsed(timeSinceLastAction + clock.lastTimeElapsedMs)
-
-		requestAnimationFrame(this.updateElapsedTime)
 	}
 
 	toggleIsPlaying(isPlaying: boolean) {
@@ -182,16 +172,33 @@ export class ClockStore {
 				lastTimeElapsedMs: getTimeElapsed(),
 				isPlaying,
 			})
-			this.updateElapsedTime()
+			this.tick()
 		} else {
 			disableNoSleep()
 		}
+	}
+
+	setClock(value: Partial<typeof clock>) {
+		Object.assign(this, value)
+		this.calculateActualTimeElapsedMs()
 	}
 }
 
 export const clock = new ClockStore()
 
-export const setClock = (value: Partial<typeof clock>) => mobx.set(clock, value)
+export const setClock = (value: Partial<typeof clock>) => clock.setClock(value)
+export const getTimeElapsed = () => clock.actualTimeElapsedMs
+
+export const getTimeElapsedAsDuration = () => {
+	const d = Duration.fromMillis(getTimeElapsed()).shiftTo(
+		'hours',
+		'minutes',
+		'seconds',
+		'milliseconds',
+	)
+	// console.log(d);
+	return d
+}
 
 export const TEXT_SIZES = [
 	'text-sm',

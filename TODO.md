@@ -1,4 +1,3 @@
-- fix broken timer buttons
 - syncing between devices
   - use evolu or one(?) that crsqlite related thing
 - disable unnecessary text highlighting

@@ -205,6 +205,7 @@ export const Controls = observer(() => {
 								icon={<LeftIcon />}
 								text={'0.1s'}
 								onClick={() => {
+									console.log('left')
 									setClock({
 										lastActionAt: Date.now(),
 										lastTimeElapsedMs: getTimeElapsed() - 100,
