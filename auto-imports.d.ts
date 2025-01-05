@@ -14,6 +14,7 @@ declare global {
   const For: typeof import('./app/shared/solid-helpers')['For']
   const FullScreenIcon: typeof import('./app/shared/icons')['FullScreenIcon']
   const GoBackIcon: typeof import('./app/shared/icons')['GoBackIcon']
+  const KonstaApp: typeof import('./app/shared/konsta-app')['KonstaApp']
   const LeftIcon: typeof import('./app/shared/icons')['LeftIcon']
   const LoadingIcon: typeof import('./app/shared/icons')['LoadingIcon']
   const MenuIcon: typeof import('./app/shared/icons')['MenuIcon']

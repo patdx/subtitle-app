@@ -7,28 +7,38 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useRouteLoaderData,
 } from 'react-router'
 import type { Route } from './+types/root'
 import stylesheet from './app.css?url'
 
 export const links: Route.LinksFunction = () => [
-	{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-	{
-		rel: 'preconnect',
-		href: 'https://fonts.gstatic.com',
-		crossOrigin: 'anonymous',
-	},
-	{
-		rel: 'stylesheet',
-		href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
-	},
+	// { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+	// {
+	// 	rel: 'preconnect',
+	// 	href: 'https://fonts.gstatic.com',
+	// 	crossOrigin: 'anonymous',
+	// },
+	// {
+	// 	rel: 'stylesheet',
+	// 	href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
+	// },
 	{ rel: 'stylesheet', href: stylesheet },
 ]
 
 // Create a client
 const queryClient = new QueryClient()
 
+export function clientLoader() {
+	const isIos = window.navigator.userAgent.match(/iPhone|iPad|iPod/i)
+	return {
+		isIos,
+	}
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+	const { isIos } = useRouteLoaderData<typeof clientLoader>('root') ?? {}
+
 	return (
 		<html lang="en">
 			<head>
@@ -42,6 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					href="/webmanifest.json"
 					crossOrigin="use-credentials"
 				/>
+				<meta name="apple-mobile-web-app-capable" content="yes" />
 				<meta
 					name="apple-mobile-web-app-status-bar-style"
 					content="black-translucent"
@@ -74,8 +85,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					<konsta.App
 						id="app"
 						safeAreas
-						theme="ios"
-						className="min-h-svh max-h-svh h-svh"
+						theme={isIos ? 'ios' : 'material'}
+						component={AppDiv as any}
 					>
 						{children}
 					</konsta.App>
@@ -84,6 +95,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Scripts />
 			</body>
 		</html>
+	)
+}
+
+// const isIosStandalone = globalThis.navigator
+
+// https://thomashunter.name/posts/2021-12-11-detecting-if-pwa-twa-is-installed
+
+/**
+ * This is a special wrapper for the Konsta App component internal div
+ * so I can override some of the default app classes using my own `cn()`
+ * classname function that includes tailwind-merge support
+ */
+function AppDiv(props: { className?: string; children: React.ReactNode }) {
+	const { className, ...rest } = props
+	return (
+		<div
+			className={cn(
+				className,
+				'min-h-svh max-h-svh h-svh',
+				'pwa:min-h-lvh pwa:max-h-lvh pwa:h-lvh',
+			)}
+			{...rest}
+		/>
 	)
 }
 

@@ -1,18 +1,10 @@
-import {
-	Navbar,
-	Page,
-	Block,
-	BlockTitle,
-	List,
-	ListItem,
-	Button,
-} from 'konsta/react'
-import type { Route } from './+types/_index'
 import { useQuery } from '@tanstack/react-query'
-import sampleSrtUrl from '../assets/sample.srt?url'
-import { Link as RouterLink } from 'react-router'
+import { Block, Button, List, ListItem, Navbar, Page } from 'konsta/react'
 import { once } from 'lodash-es'
 import { use } from 'react'
+import { Link as RouterLink } from 'react-router'
+import sampleSrtUrl from '../assets/sample.srt?url'
+import type { Route } from './+types/_index'
 
 const parseVideoPromise = once(() =>
 	import('video-name-parser').then((mod) => mod.default),
@@ -28,7 +20,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home({ loaderData }: Route.ComponentProps) {
 	return (
 		<Page>
-			<Navbar title="Subtitle App" />
+			<Navbar title="Subtitle App" large transparent centerTitle />
 			<EditFilesPage />
 		</Page>
 	)
@@ -91,7 +83,6 @@ const EditFilesPage = () => {
 
 	return (
 		<>
-			<BlockTitle className="text-2xl px-4">Subtitle Files</BlockTitle>
 			<Block className="px-4">
 				<p className="text-sm text-gray-600">
 					Import and manage your subtitle files
@@ -160,7 +151,7 @@ const EditFilesPage = () => {
 							<ListItem
 								key={file.id}
 								link
-								linkComponent={RouterLink}
+								linkComponent={RouterLink as any}
 								linkProps={{ to: `/play?id=${file.id}` }}
 								title={file.name}
 								after={

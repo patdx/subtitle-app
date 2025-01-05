@@ -102,17 +102,7 @@ class ControlState {
 		this.showTranscript = !this.showTranscript
 	}
 }
-export const controlState = mobx.makeAutoObservable({
-	isOpen: true,
-	showTranscript: false,
-	showFullScreenButton: false,
-	toggle() {
-		this.isOpen = !this.isOpen
-	},
-	toggleTranscript() {
-		this.showTranscript = !this.showTranscript
-	},
-})
+export const controlState = new ControlState()
 
 const getNoSleep = once(async () => {
 	const { default: NoSleep } = await import('nosleep.js')

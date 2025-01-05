@@ -2,17 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+Allow pan but disable zoom to avoid messing up the UI chrome
+I found that I need to set it on all elements (*) to be effective in iOS Safari mode
+I guess I could manually override certain elements that need other gestures later
+*/
+html,
+body,
+#app,
+* {
+	touch-action: pan-x pan-y;
+}
+
+html {
+	overscroll-behavior: none;
+}
+
+/* https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
+/* https://www.heltweg.org/posts/checklist-issues-progressive-web-apps-how-to-fix/ */
+
 body {
 	user-select: none;
-
-	/* Should we use any of the properties set here? https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
-	/* transform: translateZ(0);
-
 	text-rendering: optimizeLegibility;
 
 	overflow: hidden;
 
-	touch-action: manipulation;
+	/* touch-action: manipulation; */
 
 	-webkit-user-drag: none;
 
@@ -23,5 +38,10 @@ body {
 	overscroll-behavior-y: none;
 	-webkit-text-size-adjust: none;
 
-	text-size-adjust: none; */
+	text-size-adjust: none;
+
+	/* Should we use any of the properties set here? https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
+	/* transform: translateZ(0);
+
+ */
 }
