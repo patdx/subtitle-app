@@ -8,6 +8,7 @@ export {}
 declare global {
   const BadgeBlue: typeof import('./app/shared/badge')['BadgeBlue']
   const BadgeRed: typeof import('./app/shared/badge')['BadgeRed']
+  const ClockStore: typeof import('./app/shared/utils')['ClockStore']
   const Controls: typeof import('./app/shared/controls')['Controls']
   const FileDisplay: typeof import('./app/shared/file-display')['FileDisplay']
   const For: typeof import('./app/shared/solid-helpers')['For']
@@ -23,10 +24,14 @@ declare global {
   const Show: typeof import('./app/shared/solid-helpers')['Show']
   const Subtitle: typeof import('./app/shared/subtitle')['Subtitle']
   const TEXT_SIZES: typeof import('./app/shared/utils')['TEXT_SIZES']
+  const TimeDisplay: typeof import('./app/shared/subtitle')['TimeDisplay']
+  const TranscriptDisplay: typeof import('./app/shared/transcript-display')['TranscriptDisplay']
+  const TranscriptIcon: typeof import('./app/shared/icons')['TranscriptIcon']
   const ValueWithPlaceholder: typeof import('./app/shared/text-input')['ValueWithPlaceholder']
   const addFileToDatabase: typeof import('./app/shared/utils')['addFileToDatabase']
   const clock: typeof import('./app/shared/utils')['clock']
   const cn: typeof import('./app/shared/utils')['cn']
+  const controlState: typeof import('./app/shared/utils')['controlState']
   const createRef: typeof import('react')['createRef']
   const forwardRef: typeof import('react')['forwardRef']
   const getActiveNodes: typeof import('./app/shared/utils')['getActiveNodes']
@@ -63,6 +68,6 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Entry, DbLine } from './app/shared/utils'
+  export type { ClockStore, Entry, DbLine } from './app/shared/utils'
   import('./app/shared/utils')
 }

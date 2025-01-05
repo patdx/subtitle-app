@@ -92,7 +92,7 @@ const EditFilesPage = () => {
 					<p className="mt-2 text-sm text-gray-600">Play your subtitle files</p>
 				</div>
 
-				<div className="rounded-lg bg-white p-8 shadow-sm">
+				<div className="rounded-lg bg-white py-8 shadow-sm">
 					<input
 						id={`${id}-file-upload`}
 						className="hidden"

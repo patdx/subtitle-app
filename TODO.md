@@ -1,7 +1,6 @@
-- restore favicon, etc
+- fix broken timer buttons
 - syncing between devices
   - use evolu or one(?) that crsqlite related thing
-- switch to remix?
 - disable unnecessary text highlighting
   - eg when clicking the next button
   - and double click triggering highlight instead of another click?
@@ -14,7 +13,6 @@
 - track time for each episode separately
 - remember last time for each episode
 - next episode button
-- transcript view
 - markup support
 - have it fade out after a few seconds
 - only show full screen button on platforms that support it (not iOS)
@@ -23,3 +21,4 @@
 - auto shrink large text if it does not fit
 - Fix untappable buttons in PwA mode
 - fix theme color/background color
+- show title of program inside details page

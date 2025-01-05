@@ -91,12 +91,105 @@ export const getActiveNodes = (
 	return [...selectedNodes]
 }
 
-export const clock = mobx.observable({
-	lastActionAt: new Date(),
-	lastTimeElapsedMs: 0,
-	playSpeed: 1,
-	isPlaying: false,
+class ControlState {
+	constructor() {
+		mobx.makeAutoObservable(
+			this,
+			{},
+			{
+				autoBind: true,
+			},
+		)
+	}
+
+	isOpen = true
+	toggle() {
+		this.isOpen = !this.isOpen
+	}
+
+	fullScreenEnabled = globalThis.document?.fullscreenEnabled ?? false
+	get showFullScreenButton() {
+		return this.isOpen && this.fullScreenEnabled
+	}
+
+	showTranscript = false
+	toggleTranscript() {
+		this.showTranscript = !this.showTranscript
+	}
+}
+export const controlState = mobx.makeAutoObservable({
+	isOpen: true,
+	showTranscript: false,
+	showFullScreenButton: false,
+	toggle() {
+		this.isOpen = !this.isOpen
+	},
+	toggleTranscript() {
+		this.showTranscript = !this.showTranscript
+	},
 })
+
+const getNoSleep = once(async () => {
+	const { default: NoSleep } = await import('nosleep.js')
+	return new NoSleep()
+})
+
+function enableNoSleep() {
+	getNoSleep().then((ns) => ns.enable())
+}
+
+function disableNoSleep() {
+	getNoSleep().then((ns) => ns.disable())
+}
+
+export class ClockStore {
+	constructor() {
+		mobx.makeAutoObservable(
+			this,
+			{},
+			{
+				autoBind: true,
+			},
+		)
+	}
+
+	lastActionAt = Date.now()
+	lastTimeElapsedMs = 0
+	playSpeed = 1
+	isPlaying = false
+
+	updateElapsedTime() {
+		if (!clock.isPlaying) {
+			return
+		}
+
+		const timeSinceLastAction =
+			Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
+
+		setTimeElapsed(timeSinceLastAction + clock.lastTimeElapsedMs)
+
+		requestAnimationFrame(this.updateElapsedTime)
+	}
+
+	toggleIsPlaying(isPlaying: boolean) {
+		this.isPlaying = isPlaying
+		if (isPlaying) {
+			enableNoSleep()
+			setClock({
+				lastActionAt: Date.now(),
+				// todo: recalculate at time of action
+				// instead of using Signal
+				lastTimeElapsedMs: getTimeElapsed(),
+				isPlaying,
+			})
+			this.updateElapsedTime()
+		} else {
+			disableNoSleep()
+		}
+	}
+}
+
+export const clock = new ClockStore()
 
 export const setClock = (value: Partial<typeof clock>) => mobx.set(clock, value)
 

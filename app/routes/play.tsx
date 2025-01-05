@@ -1,5 +1,9 @@
 import { Page } from 'konsta/react'
-import { DateTime } from 'luxon'
+import { sortBy } from 'lodash-es'
+import { observer } from 'mobx-react-lite'
+import { TranscriptDisplay } from '~/shared/transcript-display'
+
+// TODO: update the whole page bg to black when this page is open
 
 export default function PlayPage() {
 	return (
@@ -9,16 +13,7 @@ export default function PlayPage() {
 	)
 }
 
-const Play = () => {
-	const updateElapsedTime = () => {
-		const timeSinceLastAction = clock.isPlaying
-			? Math.abs(DateTime.fromJSDate(clock.lastActionAt).diffNow().toMillis()) *
-				clock.playSpeed
-			: 0
-		setTimeElapsed(timeSinceLastAction + clock.lastTimeElapsedMs)
-		requestAnimationFrame(updateElapsedTime)
-	}
-
+const Play = observer(() => {
 	async function loadFile() {
 		const fileId = new URL(location.href).searchParams.get('id')
 		if (!fileId) {
@@ -26,8 +21,9 @@ const Play = () => {
 			return
 		}
 		const db = await initAndGetDb()
-		const lines = await db.getAllFromIndex('lines', 'by-file-id', fileId)
+		let lines = await db.getAllFromIndex('lines', 'by-file-id', fileId)
 		console.log(`loaded ${lines.length} lines`)
+		lines = sortBy(lines, (line) => line.from)
 		setFile(lines)
 	}
 
@@ -35,19 +31,13 @@ const Play = () => {
 		loadFile()
 	}, [])
 
-	useEffect(() => {
-		requestAnimationFrame(updateElapsedTime)
-	}, [])
-
 	return (
 		<>
 			<div className="relative h-full overflow-hidden bg-black">
-				<div className="absolute left-0 right-0 top-[-100%] bottom-[-100%]">
-					<FileDisplay />
-				</div>
-
+				<FileDisplay />
+				<TranscriptDisplay />
 				<Controls />
 			</div>
 		</>
 	)
-}
+})

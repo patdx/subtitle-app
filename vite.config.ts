@@ -6,6 +6,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig(({ isSsrBuild }) => ({
+	server: {
+		watch: {},
+	},
 	css: {
 		postcss: {
 			plugins: [tailwindcss, autoprefixer],

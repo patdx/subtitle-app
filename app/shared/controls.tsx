@@ -1,12 +1,5 @@
-import { once } from 'lodash-es'
-import {
-	clock,
-	getTimeElapsed,
-	getTimeElapsedAsDuration,
-	setClock,
-	setTextSize,
-	TEXT_SIZES,
-} from './utils'
+import { observer } from 'mobx-react-lite'
+import { Link } from 'react-router'
 import {
 	FullScreenIcon,
 	GoBackIcon,
@@ -15,23 +8,18 @@ import {
 	PauseIcon,
 	PlayIcon,
 	RightIcon,
+	TranscriptIcon,
 } from './icons'
 import { NumberInput } from './text-input'
-import { Link } from 'react-router'
-import { observer } from 'mobx-react-lite'
-
-const getNoSleep = once(async () => {
-	const { default: NoSleep } = await import('nosleep.js')
-	return new NoSleep()
-})
-
-function enableNoSleep() {
-	getNoSleep().then((ns) => ns.enable())
-}
-
-function disableNoSleep() {
-	getNoSleep().then((ns) => ns.disable())
-}
+import {
+	clock,
+	controlState,
+	getTimeElapsed,
+	getTimeElapsedAsDuration,
+	setClock,
+	setTextSize,
+	TEXT_SIZES,
+} from './utils'
 
 const IconTextButton = ({ icon, text, onClick }: any) => {
 	return (
@@ -60,16 +48,21 @@ const TextButton = ({ children, onClick }: any) => {
 	)
 }
 
-export const Controls = observer(() => {
-	const [isOpen, setIsOpen] = useSignal(true)
+// const controlState = makeAutoObservable({
+// 	isOpen: true,
+// 	toggle() {
+// 		this.isOpen = !this.isOpen
+// 	},
+// })
 
+export const Controls = observer(() => {
 	return (
 		<>
 			<div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
 				{/* padding for iOS */}
 				<div className="h-[env(safe-area-inset-top,0)]"></div>
 				<div className="flex">
-					<Show when={isOpen}>
+					<Show when={() => controlState.isOpen}>
 						{/* go back button */}
 						<Link
 							to="/"
@@ -81,7 +74,17 @@ export const Controls = observer(() => {
 
 					<div className="flex-1"></div>
 
-					<Show when={isOpen}>
+					<Show when={() => controlState.isOpen}>
+						{/* transcript button */}
+						<button
+							onClick={() => controlState.toggleTranscript()}
+							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+						>
+							<TranscriptIcon />
+						</button>
+					</Show>
+
+					<Show when={() => controlState.showFullScreenButton}>
 						{/* full screen button (for Android) */}
 						<button
 							onClick={() => {
@@ -111,7 +114,7 @@ export const Controls = observer(() => {
 
 					{/* toggle menu */}
 					<button
-						onClick={() => setIsOpen((isOpen) => !isOpen)}
+						onClick={controlState.toggle}
 						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 					>
 						<MenuIcon />
@@ -119,7 +122,7 @@ export const Controls = observer(() => {
 				</div>
 			</div>
 
-			<Show when={isOpen}>
+			<Show when={() => controlState.isOpen}>
 				<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
 					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
 						<div className="flex items-center justify-between sm:justify-center">
@@ -133,7 +136,7 @@ export const Controls = observer(() => {
 										hours: value,
 									})
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: duration.toMillis(),
 									})
 								}}
@@ -148,7 +151,7 @@ export const Controls = observer(() => {
 										minutes: value,
 									})
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: duration.toMillis(),
 									})
 								}}
@@ -163,7 +166,7 @@ export const Controls = observer(() => {
 										seconds: value,
 									})
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: duration.toMillis(),
 									})
 								}}
@@ -179,7 +182,7 @@ export const Controls = observer(() => {
 										milliseconds: value,
 									})
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: duration.toMillis(),
 									})
 								}}
@@ -192,7 +195,7 @@ export const Controls = observer(() => {
 								text={'1s'}
 								onClick={() => {
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: getTimeElapsed() - 1000,
 									})
 								}}
@@ -203,7 +206,7 @@ export const Controls = observer(() => {
 								text={'0.1s'}
 								onClick={() => {
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: getTimeElapsed() - 100,
 									})
 								}}
@@ -211,22 +214,9 @@ export const Controls = observer(() => {
 
 							<button
 								className="flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
-								onClick={async () => {
+								onClick={() => {
 									const isPlaying = !clock.isPlaying
-
-									if (isPlaying) {
-										enableNoSleep()
-									} else {
-										disableNoSleep()
-									}
-
-									setClock({
-										lastActionAt: new Date(),
-										// todo: recalculate at time of action
-										// instead of using Signal
-										lastTimeElapsedMs: getTimeElapsed(),
-										isPlaying,
-									})
+									clock.toggleIsPlaying(isPlaying)
 								}}
 							>
 								{clock.isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -237,7 +227,7 @@ export const Controls = observer(() => {
 								text={'0.1s'}
 								onClick={() => {
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: getTimeElapsed() + 100,
 									})
 								}}
@@ -248,7 +238,7 @@ export const Controls = observer(() => {
 								text={'1s'}
 								onClick={() => {
 									setClock({
-										lastActionAt: new Date(),
+										lastActionAt: Date.now(),
 										lastTimeElapsedMs: getTimeElapsed() + 1000,
 									})
 								}}
@@ -267,7 +257,7 @@ export const Controls = observer(() => {
 									if (Number.isFinite(newPlaySpeed)) {
 										setClock({
 											playSpeed: newPlaySpeed,
-											lastActionAt: new Date(),
+											lastActionAt: Date.now(),
 											lastTimeElapsedMs: getTimeElapsed(),
 										})
 									}
