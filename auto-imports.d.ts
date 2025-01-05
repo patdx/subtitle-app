@@ -26,6 +26,7 @@ declare global {
   const ValueWithPlaceholder: typeof import('./app/shared/text-input')['ValueWithPlaceholder']
   const addFileToDatabase: typeof import('./app/shared/utils')['addFileToDatabase']
   const clock: typeof import('./app/shared/utils')['clock']
+  const cn: typeof import('./app/shared/utils')['cn']
   const createRef: typeof import('react')['createRef']
   const forwardRef: typeof import('react')['forwardRef']
   const getActiveNodes: typeof import('./app/shared/utils')['getActiveNodes']

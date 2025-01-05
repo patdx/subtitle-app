@@ -170,7 +170,7 @@ export const Controls = observer(() => {
 							/>
 
 							<NumberInput
-								widthClass="w-20"
+								className="w-20"
 								padWidth={3}
 								value={() => getTimeElapsedAsDuration().milliseconds}
 								suffix="ms"

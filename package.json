@@ -30,6 +30,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "7.1.1",
+    "tailwind-merge": "2.6.0",
     "video-name-parser": "1.4.7"
   },
   "devDependencies": {

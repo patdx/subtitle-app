@@ -4,6 +4,12 @@ import { findLast, once } from 'lodash-es'
 import { parse } from '@plussub/srt-vtt-parser'
 import { nanoid } from 'nanoid'
 import { Duration } from 'luxon'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs))
+}
 
 export interface Entry {
 	id: string

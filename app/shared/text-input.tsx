@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { isNil, times } from 'lodash-es'
 import { observer } from 'mobx-react-lite'
 
@@ -8,7 +7,7 @@ export const NumberInput = observer(
 		onChange?: (value: number) => unknown
 		suffix?: string
 		padWidth?: number
-		widthClass?: string
+		className?: string
 	}) => {
 		const [mode, setMode] = useSignal('view')
 
@@ -20,9 +19,6 @@ export const NumberInput = observer(
 				: typeof resolved === 'number'
 					? String(resolved)
 					: ''
-
-		// TODO: use the tailwind class merger
-		const widthClass = () => props.widthClass ?? 'w-10'
 
 		function commit(el: HTMLInputElement) {
 			// compare the normalized values
@@ -53,9 +49,10 @@ export const NumberInput = observer(
 					defaultValue={value()}
 					type="text"
 					inputMode="numeric"
-					className={clsx(
+					className={cn(
 						`form-input h-10 px-0 py-1 text-center tabular-nums`,
-						widthClass(),
+						'w-10',
+						props.className,
 					)}
 					onKeyDown={(event) => {
 						if (event.key === 'Enter' || event.key === 'Escape') {
@@ -70,9 +67,10 @@ export const NumberInput = observer(
 		} else if (mode() === 'view') {
 			return (
 				<button
-					className={clsx(
+					className={cn(
 						'h-10 px-0 py-1 text-center tabular-nums text-gray-200 hover:text-white active:text-white',
-						widthClass(),
+						'w-10',
+						props.className,
 					)}
 					// classList={{
 					//   [widthClass]: true,
