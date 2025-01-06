@@ -16,3 +16,5 @@
   - like +10s -10s
   - or a dial
   - or tapping text in the transcript view
+- fix darkmode
+  - the number inputs seem to have white text in white bg in dark mode

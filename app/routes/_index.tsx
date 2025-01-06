@@ -195,6 +195,12 @@ const EditFilesPage = () => {
 					}}
 				</For>
 			</List>
+
+			<Block className="px-4 mt-4 text-center">
+				<RouterLink to="/about" className="text-sm text-blue-600">
+					About this app
+				</RouterLink>
+			</Block>
 		</>
 	)
 }
