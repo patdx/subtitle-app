@@ -14,6 +14,13 @@ body,
 	touch-action: pan-x pan-y;
 }
 
+/* https://x.com/morajabi/status/1846583265072660939 */
+* {
+	user-select: none;
+	user-drag: none;
+	app-region: no-drag;
+}
+
 /* https://forums.developer.apple.com/forums/thread/133399 */
 html {
 	-webkit-touch-callout: none; /* Safari Touch */
