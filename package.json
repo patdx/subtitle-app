@@ -23,7 +23,7 @@
     "konsta": "4.0.1",
     "lodash-es": "4.17.21",
     "luxon": "3.5.0",
-    "mobx": "6.13.6",
+    "mobx": "6.13.7",
     "mobx-react-lite": "4.1.0",
     "nanoid": "5.0.9",
     "nosleep.js": "0.12.0",
