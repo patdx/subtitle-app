@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss'
-import konstaConfig from 'konsta/config'
 
-const config = {
+export default {
 	content: ['./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}'],
 	theme: {
 		extend: {
@@ -12,5 +11,3 @@ const config = {
 	},
 	plugins: [],
 } satisfies Config
-
-export default konstaConfig(config)

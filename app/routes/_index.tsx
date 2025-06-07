@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { Block, Button, List, ListItem, Navbar, Page } from 'konsta/react'
 import { once } from 'lodash-es'
 import { use } from 'react'
 import { Link as RouterLink } from 'react-router'
+import { Block, Button, List, ListItem, Navbar, Page } from '~/components'
 import sampleSrtUrl from '../assets/sample.srt?url'
 import type { Route } from './+types/_index'
 
@@ -150,9 +150,6 @@ const EditFilesPage = () => {
 						return (
 							<ListItem
 								key={file.id}
-								link
-								linkComponent={RouterLink as any}
-								linkProps={{ to: `/play?id=${file.id}` }}
 								title={file.name}
 								after={
 									<Button
@@ -190,7 +187,10 @@ const EditFilesPage = () => {
 										))}
 									</div>
 								}
-							/>
+								asChild
+							>
+								<RouterLink to={`/play?id=${file.id}`} />
+							</ListItem>
 						)
 					}}
 				</For>

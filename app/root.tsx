@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import * as konsta from 'konsta/react'
+import * as konsta from '~/components'
 import {
 	isRouteErrorResponse,
 	Links,
@@ -82,12 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					<konsta.App
-						id="app"
-						safeAreas
-						theme={isIos ? 'ios' : 'material'}
-						component={AppDiv as any}
-					>
+					<konsta.App safeAreas theme={isIos ? 'ios' : 'material'}>
 						{children}
 					</konsta.App>
 				</QueryClientProvider>
@@ -101,25 +96,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // const isIosStandalone = globalThis.navigator
 
 // https://thomashunter.name/posts/2021-12-11-detecting-if-pwa-twa-is-installed
-
-/**
- * This is a special wrapper for the Konsta App component internal div
- * so I can override some of the default app classes using my own `cn()`
- * classname function that includes tailwind-merge support
- */
-function AppDiv(props: { className?: string; children: React.ReactNode }) {
-	const { className, ...rest } = props
-	return (
-		<div
-			className={cn(
-				className,
-				'min-h-svh max-h-svh h-svh',
-				'pwa:min-h-lvh pwa:max-h-lvh pwa:h-lvh',
-			)}
-			{...rest}
-		/>
-	)
-}
 
 export default function App() {
 	return <Outlet />

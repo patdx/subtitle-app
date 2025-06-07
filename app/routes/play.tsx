@@ -1,4 +1,4 @@
-import { Page } from 'konsta/react'
+import { Page } from '~/components'
 import { sortBy } from 'lodash-es'
 import { observer } from 'mobx-react-lite'
 import { TranscriptDisplay } from '~/shared/transcript-display'

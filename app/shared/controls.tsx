@@ -58,7 +58,7 @@ const TextButton = ({ children, onClick }: any) => {
 export const Controls = observer(() => {
 	return (
 		<>
-			<div className="absolute left-0 right-0 top-0 bg-gradient-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+			<div className="absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
 				{/* padding for iOS */}
 				<div className="h-[env(safe-area-inset-top,0)]"></div>
 				<div className="flex">
@@ -123,7 +123,7 @@ export const Controls = observer(() => {
 			</div>
 
 			<Show when={() => controlState.isOpen}>
-				<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+				<div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
 					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
 						<div className="flex items-center justify-between sm:justify-center">
 							<NumberInput

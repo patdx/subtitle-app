@@ -5,7 +5,7 @@ import {
 	Page,
 	List,
 	ListItem,
-} from 'konsta/react'
+} from '~/components'
 import type { Route } from './+types/_index'
 import { useNavigate } from 'react-router'
 
