@@ -95,7 +95,7 @@ const EditFilesPage = () => {
 					id={`${id}-file-upload`}
 					className="hidden"
 					type="file"
-					accept=".zip,.srt,application/zip"
+					accept=".srt,.zip,text/plain,text/srt,application/x-subrip,application/zip"
 					onChange={async (event) => {
 						const target = event.target as HTMLInputElement
 						const file = target.files?.[0]
