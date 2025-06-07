@@ -7,7 +7,7 @@ import {
 	ListItem,
 } from '~/components'
 import type { Route } from './+types/_index'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: 'About - Subtitle App' }]
@@ -20,10 +20,9 @@ export default function About({}: Route.ComponentProps) {
 		<Page>
 			<Navbar
 				title="About"
-				large
-				transparent
-				centerTitle
-				left={<NavbarBackLink text="Back" onClick={() => navigate(-1)} />}
+				left={
+					<NavbarBackLink onClick={() => navigate(-1)}>Back</NavbarBackLink>
+				}
 			/>
 			<Block className="px-4">
 				<p className="text-sm text-gray-600">
@@ -35,21 +34,17 @@ export default function About({}: Route.ComponentProps) {
 				</p>
 			</Block>
 
-			<List strongIos outlineIos>
-				<ListItem
-					link
-					title="Visit patdx on GitHub"
-					href="https://github.com/patdx"
-					target="_blank"
-					rel="noreferrer"
-				/>
-				<ListItem
-					link
-					title="View the Subtitle App repository"
-					href="https://github.com/patdx/subtitle-app"
-					target="_blank"
-					rel="noreferrer"
-				/>
+			<List>
+				<ListItem title="Visit patdx on GitHub" asChild>
+					<a href="https://github.com/patdx" target="_blank" rel="noreferrer" />
+				</ListItem>
+				<ListItem title="View the Subtitle App repository" asChild>
+					<a
+						href="https://github.com/patdx/subtitle-app"
+						target="_blank"
+						rel="noreferrer"
+					/>
+				</ListItem>
 			</List>
 		</Page>
 	)

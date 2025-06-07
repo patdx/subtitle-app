@@ -29,16 +29,14 @@ export const links: Route.LinksFunction = () => [
 // Create a client
 const queryClient = new QueryClient()
 
-export function clientLoader() {
-	const isIos = window.navigator.userAgent.match(/iPhone|iPad|iPod/i)
-	return {
-		isIos,
-	}
-}
+// export function clientLoader() {
+// 	const isIos = window.navigator.userAgent.match(/iPhone|iPad|iPod/i)
+// 	return {
+// 		isIos,
+// 	}
+// }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { isIos } = useRouteLoaderData<typeof clientLoader>('root') ?? {}
-
 	return (
 		<html lang="en">
 			<head>
@@ -82,9 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					<konsta.App safeAreas theme={isIos ? 'ios' : 'material'}>
-						{children}
-					</konsta.App>
+					<konsta.App>{children}</konsta.App>
 				</QueryClientProvider>
 				<ScrollRestoration />
 				<Scripts />
