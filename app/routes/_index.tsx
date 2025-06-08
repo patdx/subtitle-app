@@ -50,6 +50,22 @@ const EditFilesPage = () => {
 
 			console.log(file.name, file.type)
 
+			// Check for supported file types
+			const isSupported =
+				/.srt$/i.test(file.name) ||
+				/.zip$/i.test(file.name) ||
+				file.type === 'application/zip' ||
+				file.type === 'text/plain' || // Allow plain text as it might be SRT
+				file.type === 'text/srt' ||
+				file.type === 'application/x-subrip'
+
+			if (!isSupported) {
+				alert(
+					`Unsupported file type: ${file.type}. Please select an SRT or ZIP file.`,
+				)
+				return
+			}
+
 			if (/.zip$/i.test(file.name) || file.type === 'application/zip') {
 				const zip = await import('@zip.js/zip.js')
 				const reader = new zip.ZipReader(new zip.BlobReader(file))
@@ -89,13 +105,13 @@ const EditFilesPage = () => {
 				</p>
 			</Block>
 
-			<Block strong inset className="space-y-4 text-center">
+			<Block strong inset className="gap-4 text-center flex flex-col">
 				<input
 					ref={inputRef}
 					id={`${id}-file-upload`}
 					className="hidden"
 					type="file"
-					accept=".srt,.zip,text/plain,text/srt,application/x-subrip,application/zip"
+					// accept=".srt,.zip,text/plain,text/srt,application/x-subrip,application/zip"
 					onChange={async (event) => {
 						const target = event.target as HTMLInputElement
 						const file = target.files?.[0]
@@ -105,15 +121,13 @@ const EditFilesPage = () => {
 					}}
 				/>
 
-				<div>
+				<div className="flex flex-col justify-center self-center">
 					<Button
 						onClick={() => inputRef.current?.click()}
 						// component="label"
 
 						// htmlFor={`${id}-file-upload`}
-						large
-						rounded
-						raised
+						className="button-large button-rounded button-raised"
 					>
 						Import SRT or ZIP
 						<Show when={isProcessing}>
@@ -122,8 +136,7 @@ const EditFilesPage = () => {
 					</Button>
 
 					<Button
-						clear
-						className="mt-4"
+						className="mt-4 button-clear"
 						onClick={async () => {
 							const blob = await fetch(sampleSrtUrl).then((result) =>
 								result.blob(),
@@ -137,7 +150,7 @@ const EditFilesPage = () => {
 				</div>
 			</Block>
 
-			<List strongIos outlineIos>
+			<List className="list-strong-ios list-outline-ios">
 				<For each={data}>
 					{(file) => {
 						let metadata
@@ -153,8 +166,7 @@ const EditFilesPage = () => {
 								title={file.name}
 								after={
 									<Button
-										clear
-										className="k-color-brand-red"
+										className="k-color-brand-red button-clear"
 										onClick={async (e) => {
 											e.preventDefault()
 											const db = await initAndGetDb()

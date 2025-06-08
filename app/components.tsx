@@ -47,7 +47,7 @@ export function Button({ className, children, ...props }: ButtonProps) {
 	return (
 		<button
 			className={clsx(
-				'px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600',
+				'rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 disabled:opacity-60',
 				className,
 			)}
 			{...props}
@@ -89,7 +89,7 @@ export function ListItem({
 	return (
 		<Comp
 			className={clsx(
-				'py-3 px-4',
+				'block py-3 px-4',
 				link && 'cursor-pointer hover:bg-gray-50',
 				className,
 			)}
