@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
-@config '../tailwind.config.ts';
+/* Custom variant for PWA standalone display mode */
+@custom-variant pwa (@media (display-mode: standalone));
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
