@@ -25,9 +25,7 @@ export const NumberInput = observer(
 			// to see if anything changed
 			const oldValue = value()
 			const newValue = el.value
-			const parsed = isNil(newValue) ? undefined : parseInt(newValue, 10)
-
-			console.log('old', oldValue, 'new', newValue)
+			const parsed = isNil(newValue) ? undefined : parseFloat(newValue)
 
 			if (oldValue !== newValue && Number.isFinite(parsed) && !isNil(parsed)) {
 				props.onChange?.(parsed)
@@ -41,7 +39,6 @@ export const NumberInput = observer(
 				<input
 					ref={(el) => {
 						if (el) {
-							console.log('focusing', el)
 							el.focus()
 							el.select()
 						}

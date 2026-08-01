@@ -69,20 +69,23 @@ const EditFilesPage = () => {
 			if (/.zip$/i.test(file.name) || file.type === 'application/zip') {
 				const zip = await import('@zip.js/zip.js')
 				const reader = new zip.ZipReader(new zip.BlobReader(file))
-				const entries = await reader.getEntries()
-				console.log(entries)
-				for (const entry of entries) {
-					if (/.srt$/i.test(entry.filename) && entry.getData) {
-						try {
-							const text = await entry.getData(new zip.TextWriter())
-							await addFileToDatabase(text, entry.filename)
-						} catch (err) {
-							console.log(
-								`The following error occurred while processing ${entry.filename}`,
-							)
-							console.error(err)
+				try {
+					const entries = await reader.getEntries()
+					for (const entry of entries) {
+						if (/.srt$/i.test(entry.filename) && entry.getData) {
+							try {
+								const text = await entry.getData(new zip.TextWriter())
+								await addFileToDatabase(text, entry.filename)
+							} catch (err) {
+								console.log(
+									`The following error occurred while processing ${entry.filename}`,
+								)
+								console.error(err)
+							}
 						}
 					}
+				} finally {
+					await reader.close()
 				}
 			} else {
 				await addFileToDatabase(await file.text(), file.name)
@@ -167,22 +170,21 @@ const EditFilesPage = () => {
 								after={
 									<Button
 										className="k-color-brand-red button-clear"
-										onClick={async (e) => {
-											e.preventDefault()
-											const db = await initAndGetDb()
-											const tx = db.transaction(['files', 'lines'], 'readwrite')
-											tx.objectStore('files').delete(file.id)
-											let cursor = await tx
-												.objectStore('lines')
-												.index('by-file-id')
-												.openKeyCursor(file.id)
-											while (cursor) {
-												await tx.objectStore('lines').delete(cursor.primaryKey)
-												cursor = await cursor.continue()
-											}
-											tx.commit()
-											handler.refetch()
-										}}
+									onClick={async (e) => {
+										e.preventDefault()
+										const db = await initAndGetDb()
+										const tx = db.transaction(['files', 'lines'], 'readwrite')
+										tx.objectStore('files').delete(file.id)
+										const keys = await tx
+											.objectStore('lines')
+											.index('by-file-id')
+											.getAllKeys(file.id)
+										for (const key of keys) {
+											tx.objectStore('lines').delete(key)
+										}
+										await tx.done
+										handler.refetch()
+									}}
 									>
 										Delete
 									</Button>

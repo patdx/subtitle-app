@@ -248,22 +248,19 @@ export const Controls = observer(() => {
 
 						{/* text size */}
 						<div className="flex items-center justify-between sm:justify-center">
-							<NumberInput
-								value={() => clock.playSpeed}
-								suffix="x"
-								onChange={(value) => {
-									const newPlaySpeed =
-										typeof value === 'string' ? parseFloat(value) : undefined
-
-									if (Number.isFinite(newPlaySpeed)) {
-										setClock({
-											playSpeed: newPlaySpeed,
-											lastActionAt: Date.now(),
-											lastTimeElapsedMs: getTimeElapsed(),
-										})
-									}
-								}}
-							/>
+						<NumberInput
+							value={() => clock.playSpeed}
+							suffix="x"
+							onChange={(value) => {
+								if (Number.isFinite(value) && value > 0) {
+									setClock({
+										playSpeed: value,
+										lastActionAt: Date.now(),
+										lastTimeElapsedMs: getTimeElapsed(),
+									})
+								}
+							}}
+						/>
 							<TextButton onClick={() => setTextSize(TEXT_SIZES[0])}>
 								XS
 							</TextButton>

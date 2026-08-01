@@ -11,6 +11,76 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
+// SRT/VTT files may contain inline HTML (b/i/u/font/br).
+// Render only a safe whitelist and strip all attributes so
+// malicious markup from subtitle files cannot execute.
+const ALLOWED_SUBTITLE_TAGS = new Set([
+	'B',
+	'I',
+	'U',
+	'STRONG',
+	'EM',
+	'FONT',
+	'BR',
+	'SPAN',
+])
+const DROP_SUBTITLE_TAGS = new Set([
+	'SCRIPT',
+	'STYLE',
+	'IFRAME',
+	'OBJECT',
+	'EMBED',
+	'SVG',
+	'MATH',
+	'VIDEO',
+	'AUDIO',
+	'IMG',
+	'LINK',
+	'META',
+	'TEMPLATE',
+	'FORM',
+	'INPUT',
+])
+
+const sanitizeCache = new Map<string, string>()
+
+export function sanitizeSubtitleHtml(html: string): string {
+	const cached = sanitizeCache.get(html)
+	if (cached !== undefined) return cached
+
+	const doc = new DOMParser().parseFromString(html, 'text/html')
+
+	const walk = (el: Element) => {
+		for (const child of [...el.children]) {
+			if (DROP_SUBTITLE_TAGS.has(child.tagName)) {
+				child.remove()
+				continue
+			}
+			if (!ALLOWED_SUBTITLE_TAGS.has(child.tagName)) {
+				while (child.firstChild) {
+					el.insertBefore(child.firstChild, child)
+				}
+				child.remove()
+				continue
+			}
+			for (const attr of [...child.attributes]) {
+				child.removeAttribute(attr.name)
+			}
+			walk(child)
+		}
+	}
+
+	walk(doc.body)
+
+	const result = doc.body.innerHTML
+	sanitizeCache.set(html, result)
+	if (sanitizeCache.size > 200) {
+		const oldest = sanitizeCache.keys().next().value
+		sanitizeCache.delete(oldest)
+	}
+	return result
+}
+
 export interface Entry {
 	id: string
 	from: number
@@ -19,7 +89,7 @@ export interface Entry {
 }
 
 export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
-	return currentTime > node.from && currentTime < node.to
+	return currentTime >= node.from && currentTime < node.to
 }
 
 export const getActiveNodes = (
@@ -51,17 +121,13 @@ export const getActiveNodes = (
 	})
 
 	if (selectedNodes.size === 0) {
-		const last = findLast(nodes, (node) => {
-			node.to < currentTime
-		})
+		const last = findLast(nodes, (node) => node.to < currentTime)
 
 		if (last) {
 			selectedNodes.add(last as any)
 		}
 		// no active nodes, find the next closest node
-		const next = nodes.find((node) => {
-			node.from > currentTime
-		})
+		const next = nodes.find((node) => node.from > currentTime)
 
 		if (next) {
 			selectedNodes.add(next)
@@ -92,7 +158,9 @@ class ControlState {
 		this.isOpen = !this.isOpen
 	}
 
-	fullScreenEnabled = globalThis.document?.fullscreenEnabled ?? false
+	get fullScreenEnabled() {
+		return globalThis.document?.fullscreenEnabled ?? false
+	}
 	get showFullScreenButton() {
 		return this.isOpen && this.fullScreenEnabled
 	}
@@ -132,22 +200,25 @@ export class ClockStore {
 	lastTimeElapsedMs = 0
 	playSpeed = 1
 	isPlaying = false
+	_ticking = false
 
 	/** is calculated based on lastActionAt, playSpeed and lastTimeElapsedMs */
 	actualTimeElapsedMs = 0
 
 	calculateActualTimeElapsedMs() {
 		const timeSinceLastAction = this.isPlaying
-			? Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
+			? Math.abs(Date.now() - this.lastActionAt) * this.playSpeed
 			: 0
 
-		this.actualTimeElapsedMs = timeSinceLastAction + clock.lastTimeElapsedMs
+		this.actualTimeElapsedMs = timeSinceLastAction + this.lastTimeElapsedMs
 	}
 
 	tick() {
 		this.calculateActualTimeElapsedMs()
-		if (clock.isPlaying) {
+		if (this.isPlaying) {
 			requestAnimationFrame(this.tick)
+		} else {
+			this._ticking = false
 		}
 	}
 
@@ -162,7 +233,10 @@ export class ClockStore {
 				lastTimeElapsedMs: getTimeElapsed(),
 				isPlaying,
 			})
-			this.tick()
+			if (!this._ticking) {
+				this._ticking = true
+				this.tick()
+			}
 		} else {
 			disableNoSleep()
 		}
@@ -240,7 +314,6 @@ export const initAndGetDb = once(async () => {
 	const db = await openDB<MyDB>('subtitle-app', 1, {
 		async upgrade(db, oldVersion, newVersion, transaction) {
 			let currentVersion = oldVersion
-			console.log(`Upgrading db from version ${oldVersion} to ${newVersion}`)
 
 			if (currentVersion === 0) {
 				db.createObjectStore('files', {
@@ -252,9 +325,6 @@ export const initAndGetDb = once(async () => {
 			}
 		},
 	})
-
-	console.log('created db!', db)
-	;(window as any).db = db
 
 	return db
 })
@@ -293,7 +363,5 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 		}),
 	)
 
-	tx.commit()
-
-	console.log('done adding')
+	await tx.done
 }

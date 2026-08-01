@@ -1,4 +1,10 @@
-import { getTextSize, getTimeElapsed, nodeIsActive, type Entry } from './utils'
+import {
+	getTextSize,
+	getTimeElapsed,
+	nodeIsActive,
+	sanitizeSubtitleHtml,
+	type Entry,
+} from './utils'
 import { observer } from 'mobx-react-lite'
 
 const formatTime = (ms: number): string => {
@@ -20,7 +26,6 @@ export const TimeDisplay = observer(
 
 export const Subtitle = observer(
 	(props: { node: Entry; showTime?: boolean }) => {
-		props.node.from
 		return (
 			<div className="flex flex-col items-center">
 				{props.showTime && (
@@ -35,7 +40,9 @@ export const Subtitle = observer(
 						getTextSize(),
 						nodeIsActive(props.node, getTimeElapsed()) && 'font-bold',
 					)}
-					dangerouslySetInnerHTML={{ __html: props.node.text }}
+					dangerouslySetInnerHTML={{
+						__html: sanitizeSubtitleHtml(props.node.text),
+					}}
 				/>
 			</div>
 		)

@@ -49,6 +49,7 @@ declare global {
   const lazy: typeof import('react').lazy
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
+  const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
   const setClock: typeof import('./app/shared/utils').setClock
   const setFile: typeof import('./app/shared/utils').setFile
   const setTextSize: typeof import('./app/shared/utils').setTextSize
