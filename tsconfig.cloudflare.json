@@ -3,9 +3,6 @@
   "include": [
     ".react-router/types/**/*",
     "app/**/*",
-    "app/**/.server/**/*",
-    "app/**/.client/**/*",
-    "workers/**/*",
     "auto-imports.d.ts"
   ],
   "compilerOptions": {

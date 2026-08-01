@@ -4,7 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { qrcode } from 'vite-plugin-qrcode'
 
-export default defineConfig(({ isSsrBuild }) => ({
+export default defineConfig(() => ({
 	server: {
 		watch: {},
 	},

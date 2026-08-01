@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { once } from 'lodash-es'
-import { use } from 'react'
 import { Link as RouterLink } from 'react-router'
 import { Block, Button, List, ListItem, Navbar, Page } from '~/components'
 import sampleSrtUrl from '../assets/sample.srt?url'
@@ -11,13 +10,10 @@ const parseVideoPromise = once(() =>
 )
 
 export function meta({}: Route.MetaArgs) {
-	return [
-		{ title: 'Subtitle App' },
-		// { name: 'description', content: 'Welcome to React Router!' },
-	]
+	return [{ title: 'Subtitle App' }]
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function Home() {
 	return (
 		<Page>
 			<Navbar title="Subtitle App" large transparent centerTitle />
@@ -47,8 +43,6 @@ const EditFilesPage = () => {
 	const handleFile = async (file: File) => {
 		try {
 			setProcessing(true)
-
-			console.log(file.name, file.type)
 
 			// Check for supported file types
 			const isSupported =
@@ -114,7 +108,6 @@ const EditFilesPage = () => {
 					id={`${id}-file-upload`}
 					className="hidden"
 					type="file"
-					// accept=".srt,.zip,text/plain,text/srt,application/x-subrip,application/zip"
 					onChange={async (event) => {
 						const target = event.target as HTMLInputElement
 						const file = target.files?.[0]
@@ -127,9 +120,6 @@ const EditFilesPage = () => {
 				<div className="flex flex-col justify-center self-center">
 					<Button
 						onClick={() => inputRef.current?.click()}
-						// component="label"
-
-						// htmlFor={`${id}-file-upload`}
 						className="button-large button-rounded button-raised"
 					>
 						Import SRT or ZIP
@@ -197,7 +187,9 @@ const EditFilesPage = () => {
 											</span>
 										)}
 										{metadata?.episode?.map((item) => (
-											<span className="text-blue-600">Episode {item}</span>
+											<span key={item} className="text-blue-600">
+												Episode {item}
+											</span>
 										))}
 									</div>
 								}

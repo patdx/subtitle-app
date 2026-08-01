@@ -69,9 +69,6 @@ export const NumberInput = observer(
 						'w-10',
 						props.className,
 					)}
-					// classList={{
-					//   [widthClass]: true,
-					// }}
 					onClick={() => setMode('edit')}
 				>
 					<ValueWithPlaceholder padWidth={props.padWidth} value={value()} />

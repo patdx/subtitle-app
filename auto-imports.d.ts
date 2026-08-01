@@ -7,8 +7,6 @@
 export {}
 declare global {
   const Activity: typeof import('react').Activity
-  const BadgeBlue: typeof import('./app/shared/badge').BadgeBlue
-  const BadgeRed: typeof import('./app/shared/badge').BadgeRed
   const ClockStore: typeof import('./app/shared/utils').ClockStore
   const Controls: typeof import('./app/shared/controls').Controls
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay

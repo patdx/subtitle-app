@@ -48,13 +48,6 @@ const TextButton = ({ children, onClick }: any) => {
 	)
 }
 
-// const controlState = makeAutoObservable({
-// 	isOpen: true,
-// 	toggle() {
-// 		this.isOpen = !this.isOpen
-// 	},
-// })
-
 export const Controls = observer(() => {
 	return (
 		<>

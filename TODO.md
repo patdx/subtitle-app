@@ -1,12 +1,8 @@
-- fix speed selector
 - fix background for black player page
 - track time for each episode separately
 - remember last time for each episode
 - next episode button
-- markup support
-- have it fade out after a few seconds
-- add padding
-- add more options to change the font size
+- have controls fade out after a few seconds
 - auto shrink large text if it does not fit
 - fix theme color/background color
 - show title of program inside details page

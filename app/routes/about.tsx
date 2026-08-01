@@ -6,7 +6,7 @@ import {
 	List,
 	ListItem,
 } from '~/components'
-import type { Route } from './+types/_index'
+import type { Route } from './+types/about'
 import { Link, useNavigate } from 'react-router'
 
 export function meta({}: Route.MetaArgs) {

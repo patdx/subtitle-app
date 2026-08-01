@@ -22,7 +22,6 @@ const Play = observer(() => {
 		}
 		const db = await initAndGetDb()
 		let lines = await db.getAllFromIndex('lines', 'by-file-id', fileId)
-		console.log(`loaded ${lines.length} lines`)
 		lines = sortBy(lines, (line) => line.from)
 		setFile(lines)
 	}

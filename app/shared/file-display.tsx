@@ -11,8 +11,6 @@ export const FileDisplay = () => {
 							{(node) => <Subtitle key={node.id} node={node} />}
 						</For>
 					</div>
-					{/* <div>{props.file?.name ?? 'unknown name'}</div> */}
-					{/* <div>{nodes()?.length ? `${nodes()?.length} lines` : 'no file'}</div> */}
 				</div>
 			</div>
 		</Show>
