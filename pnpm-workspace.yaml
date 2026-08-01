@@ -1,0 +1,16 @@
+catalog:
+  esbuild: 0.28.1
+  "@esbuild-plugins/node-globals-polyfill": 0.2.3
+
+overrides:
+  esbuild: "catalog:"
+  "@esbuild-plugins/node-globals-polyfill": "catalog:"
+
+minimumReleaseAge: 0
+
+allowBuilds:
+  esbuild: false
+  sharp: false
+  workerd: false
+
+savePrefix: ""

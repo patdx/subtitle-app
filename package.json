@@ -35,16 +35,16 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260120.0",
-    "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+    "@esbuild-plugins/node-globals-polyfill": "catalog:",
     "@hono/vite-dev-server": "0.26.1",
     "@react-router/dev": "7.18.2",
     "@react-router/fs-routes": "7.18.2",
     "@tailwindcss/vite": "4.3.3",
-    "@types/node": "22.20.1",
+    "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "autoprefixer": "10.5.4",
-    "esbuild": "0.28.1",
+    "esbuild": "catalog:",
     "postcss": "8.5.25",
     "prettier": "3.9.6",
     "tailwindcss": "4.3.3",
@@ -55,12 +55,5 @@
     "vite-tsconfig-paths": "6.1.1",
     "wrangler": "4.59.3"
   },
-  "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
-  "pnpm": {
-    "overrides": {
-      "esbuild": "$esbuild",
-      "@esbuild-plugins/node-globals-polyfill": "$@esbuild-plugins/node-globals-polyfill"
-    },
-    "onlyBuiltDependencies": []
-  }
+  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c"
 }
