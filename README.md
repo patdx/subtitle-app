@@ -2,7 +2,7 @@
 
 A mobile-friendly web app for watching videos with SRT/VTT subtitle files. Import subtitles (as .srt, .vtt, or .zip archives), pick a subtitle file, and use the player page to watch along — with transcript view, playback speed control, a YouTube-style timeline scrubber, and adjustable subtitle text size.
 
-Built as a React Router SPA (client-side rendering with prerendered pages), deployed to Cloudflare Pages.
+Built as a React Router SPA (client-side rendering with prerendered pages), deployed to Cloudflare Workers (static assets plus a Hono API Worker for signaling).
 
 ## Device sync
 
@@ -20,7 +20,7 @@ Connect your own devices to control playback across them — for example, place 
 - MobX 7 + mobx-react-lite 5 for player state
 - Tailwind CSS 4
 - IndexedDB (via `idb`) for subtitle storage
-- Cloudflare Pages via Wrangler 4, Cloudflare Realtime SFU for WebRTC signaling/relay
+- Cloudflare Workers via Wrangler 4, Cloudflare Realtime SFU for WebRTC signaling/relay
 
 ## Development
 
@@ -29,25 +29,25 @@ pnpm install
 pnpm dev
 ```
 
-The Pages Function (sync signaling) does not run under `pnpm dev`. To test the sync feature locally:
+The API Worker (sync signaling) does not run under `pnpm dev`. To test the sync feature locally:
 
 ```sh
 pnpm build
 # create a Realtime SFU app in the Cloudflare dashboard, then:
 #   - set APP_ID in wrangler.json vars
-#   - run: npx wrangler pages secret put APP_TOKEN
+#   - run: npx wrangler secret put APP_TOKEN
 #   - or put both in .dev.vars (local only)
-npx wrangler pages dev ./build/client --port 8788
+npx wrangler dev
 ```
 
-Open `http://localhost:8788` in two browser tabs (or `localhost` and `127.0.0.1` for separate IndexedDB) to test pairing.
+Open `http://localhost:8787` in two browser tabs (or `localhost` and `127.0.0.1` for separate IndexedDB) to test pairing.
 
 ## Build & deploy
 
 ```sh
-pnpm build      # production build to build/client
-pnpm start      # serve the production build locally
-npx wrangler pages deploy ./build/client  # deploy to Cloudflare Pages (functions/ included)
+pnpm build          # production build to build/client
+pnpm start          # serve the production build locally
+npx wrangler deploy # deploy the Worker and static assets
 ```
 
 ## Checks
