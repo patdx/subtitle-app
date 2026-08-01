@@ -79,7 +79,9 @@ export function sanitizeSubtitleHtml(html: string): string {
 	sanitizeCache.set(html, result)
 	if (sanitizeCache.size > 200) {
 		const oldest = sanitizeCache.keys().next().value
-		sanitizeCache.delete(oldest)
+		if (oldest !== undefined) {
+			sanitizeCache.delete(oldest)
+		}
 	}
 	return result
 }

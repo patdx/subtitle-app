@@ -14,8 +14,7 @@ import {
 
 /**
  * Multi-device sync via WebRTC data channels brokered by Cloudflare
- * Realtime SFU (signaling proxied through /api/sync on the Pages
- * Function). Subtitle content never touches the server: it travels
+ * Realtime SFU (signaling proxied through /api/sync on the Worker). Subtitle content never touches the server: it travels
  * only over the data channel, device to device.
  *
  * Device pairing: every device owns a persistent pairing code and can
@@ -127,17 +126,17 @@ class SyncStore {
 	pc: RTCPeerConnection | null = null
 	outboundDc: RTCDataChannel | null = null
 	inboundDcs: Map<string, RTCDataChannel> = new Map()
-	private readonly outboundQueue: string[] = []
-	private pulledPeers = new Set<string>()
-	private discoveryTimer: number | null = null
-	private broadcastTimer: number | null = null
-	private pingTimer: number | null = null
-	private connectTimeout: number | null = null
-	private receiveBuffers = new Map<
+	outboundQueue: string[] = []
+	pulledPeers = new Set<string>()
+	discoveryTimer: number | null = null
+	broadcastTimer: number | null = null
+	pingTimer: number | null = null
+	connectTimeout: number | null = null
+	receiveBuffers = new Map<
 		string,
 		{ fileName: string; total: number; chunks: (string | null)[]; timeout: number }
 	>()
-	private pendingNowPlayingRequests = new Map<string, { name: string }>()
+	pendingNowPlayingRequests = new Map<string, { name: string }>()
 
 	constructor() {
 		this.deviceName = `Device ${Math.floor(Math.random() * 1000)}`
@@ -311,9 +310,9 @@ class SyncStore {
 		this.role = 'follower'
 
 		try {
-			const room = await (
-				await fetch(`${API}?action=lookup-room&code=${encodeURIComponent(code)}`)
-			).json()
+		const room = (await (
+			await fetch(`${API}?action=lookup-room&code=${encodeURIComponent(code)}`)
+		).json()) as { hostSessionId?: string; error?: string }
 			if (!room.hostSessionId) {
 				throw new Error(room.error ?? 'Group not found')
 			}
@@ -964,7 +963,7 @@ const establishTransport = async (
 	sessionId: string,
 	makeOffer: boolean,
 ) => {
-	let sdp: string | null = null
+	let sdp: string | undefined
 	if (makeOffer) {
 		pc.createDataChannel('server-events')
 		sdp = (await pc.createOffer()).sdp
@@ -978,7 +977,7 @@ const establishTransport = async (
 				location: 'remote',
 				dataChannelName: 'server-events',
 			},
-			...(sdp !== null
+			...(sdp !== undefined
 				? { sessionDescription: { type: 'offer', sdp } }
 				: {}),
 		}),

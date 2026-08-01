@@ -17,7 +17,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
 	return (
 		<Page>
-			<Navbar title="Subtitle App" large transparent centerTitle />
+			<Navbar title="Subtitle App" />
 			<EditFilesPage />
 		</Page>
 	)
@@ -67,7 +67,7 @@ const EditFilesPage = () => {
 				try {
 					const entries = await reader.getEntries()
 					for (const entry of entries) {
-						if (/.srt$/i.test(entry.filename) && entry.getData) {
+						if (/.srt$/i.test(entry.filename) && 'getData' in entry) {
 							try {
 								const text = await entry.getData(new zip.TextWriter())
 								await addFileToDatabase(text, entry.filename)
@@ -104,7 +104,7 @@ const EditFilesPage = () => {
 				</p>
 			</Block>
 
-			<Block strong inset className="gap-4 text-center flex flex-col">
+			<Block className="gap-4 text-center flex flex-col">
 				<input
 					ref={inputRef}
 					id={`${id}-file-upload`}
