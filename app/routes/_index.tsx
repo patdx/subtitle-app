@@ -3,6 +3,7 @@ import { once } from 'lodash-es'
 import { Link as RouterLink } from 'react-router'
 import { Block, Button, List, ListItem, Navbar, Page } from '~/components'
 import sampleSrtUrl from '../assets/sample.srt?url'
+import { syncStore } from '~/shared/sync'
 import type { Route } from './+types/_index'
 
 const parseVideoPromise = once(() =>
@@ -85,6 +86,7 @@ const EditFilesPage = () => {
 				await addFileToDatabase(await file.text(), file.name)
 			}
 			handler.refetch()
+			await syncStore.broadcastFileList()
 		} finally {
 			setProcessing(false)
 		}
@@ -174,6 +176,7 @@ const EditFilesPage = () => {
 										}
 										await tx.done
 										handler.refetch()
+										syncStore.sendFileDeleted(file.id, file.name)
 									}}
 									>
 										Delete
@@ -200,6 +203,12 @@ const EditFilesPage = () => {
 						)
 					}}
 				</For>
+			</List>
+
+			<List className="list-strong-ios list-outline-ios">
+				<ListItem title="Sync with another device" asChild>
+					<RouterLink to="/sync" />
+				</ListItem>
 			</List>
 
 			<Block className="px-4 mt-4 text-center">

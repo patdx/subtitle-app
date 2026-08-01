@@ -4,5 +4,8 @@
   "compatibility_date": "2026-07-01",
   "assets": {
     "directory": "./build/client"
+  },
+  "vars": {
+    "APP_ID": "b7b69981a7ce76e1fac5f64e1c5941ea"
   }
 }

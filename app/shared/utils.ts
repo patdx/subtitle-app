@@ -161,8 +161,24 @@ class ControlState {
 		this.isOpen = !this.isOpen
 	}
 
-	get fullScreenEnabled() {
-		return globalThis.document?.fullscreenEnabled ?? false
+	/** controls are auto-hidden after a period of inactivity */
+	faded = false
+	/** bumped on interaction to reset the auto-fade timer */
+	activity = 0
+	poke() {
+		this.activity += 1
+	}
+	unfade() {
+		this.faded = false
+	}
+
+	/**
+	 * fullscreen support is client-only; set after hydration so the
+	 * prerendered HTML matches the client's first render
+	 */
+	fullScreenEnabled = false
+	enableFullScreenButton() {
+		this.fullScreenEnabled = true
 	}
 	get showFullScreenButton() {
 		return this.isOpen && this.fullScreenEnabled
@@ -288,6 +304,12 @@ const file = mobx.observable.box<DbLine[]>()
 export const getFile = () => file.get()
 export const setFile = (value: DbLine[]) => file.set(value)
 
+export const getDuration = (): number => {
+	const lines = getFile()
+	if (!lines || lines.length === 0) return 0
+	return lines[lines.length - 1].to
+}
+
 export interface DbLine {
 	id: string
 	fileId: string
@@ -306,7 +328,7 @@ interface MyDB extends DBSchema {
 			/** length of file (TBD) */
 			length?: any
 			watched?: boolean
-			progress?: string
+			progress?: number
 		}
 	}
 	lines: {
@@ -316,10 +338,14 @@ interface MyDB extends DBSchema {
 			'by-file-id': string
 		}
 	}
+	settings: {
+		key: string
+		value: { key: string; value: unknown }
+	}
 }
 
 export const initAndGetDb = once(async () => {
-	const db = await openDB<MyDB>('subtitle-app', 1, {
+	const db = await openDB<MyDB>('subtitle-app', 2, {
 		async upgrade(db, oldVersion, newVersion, transaction) {
 			let currentVersion = oldVersion
 
@@ -330,12 +356,30 @@ export const initAndGetDb = once(async () => {
 				db.createObjectStore('lines', {
 					keyPath: 'id',
 				}).createIndex('by-file-id', 'fileId')
+				currentVersion = 1
+			}
+
+			if (currentVersion < 2) {
+				db.createObjectStore('settings', {
+					keyPath: 'key',
+				})
 			}
 		},
 	})
 
 	return db
 })
+
+export const getSetting = async <T>(key: string): Promise<T | undefined> => {
+	const db = await initAndGetDb()
+	const entry = await db.get('settings', key)
+	return entry?.value as T | undefined
+}
+
+export const setSetting = async (key: string, value: unknown) => {
+	const db = await initAndGetDb()
+	await db.put('settings', { key, value })
+}
 
 export const addFileToDatabase = async (text: string, fileName: string) => {
 	// console.log(`analyzing text for ${fileName}`, text)
@@ -372,4 +416,6 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 	)
 
 	await tx.done
+
+	return fileId
 }

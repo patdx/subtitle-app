@@ -9,3 +9,6 @@
 # Cloudflare
 .mf
 .wrangler
+
+# Local dev secrets (Cloudflare Realtime APP_ID / APP_TOKEN)
+.dev.vars

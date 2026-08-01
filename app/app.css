@@ -61,6 +61,34 @@ html {
 /* https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
 /* https://www.heltweg.org/posts/checklist-issues-progressive-web-apps-how-to-fix/ */
 
+/* Timeline seek slider (track fill is painted inline via background gradient) */
+.subtitle-timeline {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 4px;
+	border-radius: 9999px;
+	outline: none;
+}
+
+.subtitle-timeline::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 9999px;
+	background: rgb(226 232 240);
+	box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+}
+
+.subtitle-timeline::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border: none;
+	border-radius: 9999px;
+	background: rgb(226 232 240);
+	box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+}
+
 body {
 	user-select: none;
 	text-rendering: optimizeLegibility;

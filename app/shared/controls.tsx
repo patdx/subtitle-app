@@ -8,15 +8,21 @@ import {
 	PauseIcon,
 	PlayIcon,
 	RightIcon,
+	SyncIcon,
 	TranscriptIcon,
 } from './icons'
 import { NumberInput } from './text-input'
 import {
+	seekBy,
+	seekTo,
+	setPlaySpeed,
+	syncStore,
+	togglePlayback,
+} from './sync'
+import {
 	clock,
 	controlState,
-	getTimeElapsed,
 	getTimeElapsedAsDuration,
-	setClock,
 	setTextSize,
 	TEXT_SIZES,
 } from './utils'
@@ -49,9 +55,29 @@ const TextButton = ({ children, onClick }: any) => {
 }
 
 export const Controls = observer(() => {
+	useEffect(() => {
+		if (document.fullscreenEnabled) {
+			controlState.enableFullScreenButton()
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!controlState.isOpen || controlState.faded) return
+		const timer = window.setTimeout(() => {
+			controlState.faded = true
+		}, 5000)
+		return () => window.clearTimeout(timer)
+	}, [controlState.isOpen, controlState.faded, controlState.activity])
+
 	return (
 		<>
-			<div className="absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+			<div
+				className={cn(
+					'absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)] transition-opacity duration-500',
+					controlState.isOpen && controlState.faded && 'pointer-events-none opacity-0',
+				)}
+				onPointerDown={() => controlState.poke()}
+			>
 				{/* padding for iOS */}
 				<div className="h-[env(safe-area-inset-top,0)]"></div>
 				<div className="flex">
@@ -67,15 +93,34 @@ export const Controls = observer(() => {
 
 					<div className="flex-1"></div>
 
-					<Show when={() => controlState.isOpen}>
-						{/* transcript button */}
-						<button
-							onClick={() => controlState.toggleTranscript()}
-							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
-						>
-							<TranscriptIcon />
-						</button>
-					</Show>
+				<Show when={() => controlState.isOpen}>
+					{/* transcript button */}
+					<button
+						onClick={() => controlState.toggleTranscript()}
+						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+					>
+						<TranscriptIcon />
+					</button>
+				</Show>
+
+				<Show when={() => controlState.isOpen}>
+					{/* device sync button */}
+					<Link
+						to="/sync"
+						className="relative flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+					>
+						<SyncIcon />
+						<Show when={() => syncStore.connectionState === 'connected'}>
+							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500" />
+						</Show>
+						<Show when={() => syncStore.connectionState === 'connecting'}>
+							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-yellow-500" />
+						</Show>
+						<Show when={() => syncStore.connectionState === 'error'}>
+							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
+						</Show>
+					</Link>
+				</Show>
 
 					<Show when={() => controlState.showFullScreenButton}>
 						{/* full screen button (for Android) */}
@@ -116,7 +161,13 @@ export const Controls = observer(() => {
 			</div>
 
 			<Show when={() => controlState.isOpen}>
-				<div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)]">
+				<div
+					className={cn(
+						'absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)] transition-opacity duration-500',
+						controlState.faded && 'pointer-events-none opacity-0',
+					)}
+					onPointerDown={() => controlState.poke()}
+				>
 					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
 						<div className="flex items-center justify-between sm:justify-center">
 							<NumberInput
@@ -124,14 +175,10 @@ export const Controls = observer(() => {
 								padWidth={2}
 								suffix="h"
 								onChange={(value) => {
-									console.log('new hours', value)
 									const duration = getTimeElapsedAsDuration().set({
 										hours: value,
 									})
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: duration.toMillis(),
-									})
+									seekTo(duration.toMillis())
 								}}
 							/>
 
@@ -143,10 +190,7 @@ export const Controls = observer(() => {
 									const duration = getTimeElapsedAsDuration().set({
 										minutes: value,
 									})
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: duration.toMillis(),
-									})
+									seekTo(duration.toMillis())
 								}}
 							/>
 
@@ -158,10 +202,7 @@ export const Controls = observer(() => {
 									const duration = getTimeElapsedAsDuration().set({
 										seconds: value,
 									})
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: duration.toMillis(),
-									})
+									seekTo(duration.toMillis())
 								}}
 							/>
 
@@ -174,44 +215,37 @@ export const Controls = observer(() => {
 									const duration = getTimeElapsedAsDuration().set({
 										milliseconds: value,
 									})
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: duration.toMillis(),
-									})
+									seekTo(duration.toMillis())
 								}}
 							/>
+						</div>
+
+						<div className="w-full">
+							<Timeline />
 						</div>
 
 						<div className="flex items-center justify-between sm:justify-center">
 							<IconTextButton
 								icon={<LeftIcon />}
+								text={'10s'}
+								onClick={() => seekBy(-10000)}
+							/>
+
+							<IconTextButton
+								icon={<LeftIcon />}
 								text={'1s'}
-								onClick={() => {
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: getTimeElapsed() - 1000,
-									})
-								}}
+								onClick={() => seekBy(-1000)}
 							/>
 
 							<IconTextButton
 								icon={<LeftIcon />}
 								text={'0.1s'}
-								onClick={() => {
-									console.log('left')
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: getTimeElapsed() - 100,
-									})
-								}}
+								onClick={() => seekBy(-100)}
 							/>
 
 							<button
 								className="flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
-								onClick={() => {
-									const isPlaying = !clock.isPlaying
-									clock.toggleIsPlaying(isPlaying)
-								}}
+								onClick={togglePlayback}
 							>
 								{clock.isPlaying ? <PauseIcon /> : <PlayIcon />}
 							</button>
@@ -219,23 +253,19 @@ export const Controls = observer(() => {
 							<IconTextButton
 								icon={<RightIcon />}
 								text={'0.1s'}
-								onClick={() => {
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: getTimeElapsed() + 100,
-									})
-								}}
+								onClick={() => seekBy(100)}
 							/>
 
 							<IconTextButton
 								icon={<RightIcon />}
 								text={'1s'}
-								onClick={() => {
-									setClock({
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: getTimeElapsed() + 1000,
-									})
-								}}
+								onClick={() => seekBy(1000)}
+							/>
+
+							<IconTextButton
+								icon={<RightIcon />}
+								text={'10s'}
+								onClick={() => seekBy(10000)}
 							/>
 						</div>
 
@@ -246,11 +276,7 @@ export const Controls = observer(() => {
 							suffix="x"
 							onChange={(value) => {
 								if (Number.isFinite(value) && value > 0) {
-									setClock({
-										playSpeed: value,
-										lastActionAt: Date.now(),
-										lastTimeElapsedMs: getTimeElapsed(),
-									})
+									setPlaySpeed(value)
 								}
 							}}
 						/>

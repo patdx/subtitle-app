@@ -20,12 +20,16 @@ declare global {
   const NumberInput: typeof import('./app/shared/text-input').NumberInput
   const PauseIcon: typeof import('./app/shared/icons').PauseIcon
   const PlayIcon: typeof import('./app/shared/icons').PlayIcon
+  const QrCode: typeof import('./app/shared/qr').QrCode
+  const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
   const RightIcon: typeof import('./app/shared/icons').RightIcon
   const Show: typeof import('./app/shared/solid-helpers').Show
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
+  const SyncIcon: typeof import('./app/shared/icons').SyncIcon
   const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
   const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
+  const Timeline: typeof import('./app/shared/timeline').Timeline
   const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
   const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
   const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
@@ -39,19 +43,28 @@ declare global {
   const createRef: typeof import('react').createRef
   const forwardRef: typeof import('react').forwardRef
   const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
+  const getDuration: typeof import('./app/shared/utils').getDuration
   const getFile: typeof import('./app/shared/utils').getFile
+  const getSetting: typeof import('./app/shared/utils').getSetting
   const getTextSize: typeof import('./app/shared/utils').getTextSize
   const getTimeElapsed: typeof import('./app/shared/utils').getTimeElapsed
   const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
   const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
   const lazy: typeof import('react').lazy
+  const linesToSrtText: typeof import('./app/shared/sync').linesToSrtText
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
   const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
+  const seekBy: typeof import('./app/shared/sync').seekBy
+  const seekTo: typeof import('./app/shared/sync').seekTo
   const setClock: typeof import('./app/shared/utils').setClock
   const setFile: typeof import('./app/shared/utils').setFile
+  const setPlaySpeed: typeof import('./app/shared/sync').setPlaySpeed
+  const setSetting: typeof import('./app/shared/utils').setSetting
   const setTextSize: typeof import('./app/shared/utils').setTextSize
   const startTransition: typeof import('react').startTransition
+  const syncStore: typeof import('./app/shared/sync').syncStore
+  const togglePlayback: typeof import('./app/shared/sync').togglePlayback
   const use: typeof import('react').use
   const useActionState: typeof import('react').useActionState
   const useCallback: typeof import('react').useCallback
@@ -75,6 +88,9 @@ declare global {
 }
 // for type re-export
 declare global {
+  // @ts-ignore
+  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, SyncMessage } from './app/shared/sync'
+  import('./app/shared/sync')
   // @ts-ignore
   export type { ClockStore, Entry, DbLine } from './app/shared/utils'
   import('./app/shared/utils')
