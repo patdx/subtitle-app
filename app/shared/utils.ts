@@ -56,6 +56,10 @@ export function sanitizeSubtitleHtml(html: string): string {
 				child.remove()
 				continue
 			}
+			// sanitize descendants before moving them up, otherwise
+			// malicious markup nested inside an unknown wrapper tag
+			// would survive the unwrap untouched
+			walk(child)
 			if (!ALLOWED_SUBTITLE_TAGS.has(child.tagName)) {
 				while (child.firstChild) {
 					el.insertBefore(child.firstChild, child)
@@ -66,7 +70,6 @@ export function sanitizeSubtitleHtml(html: string): string {
 			for (const attr of [...child.attributes]) {
 				child.removeAttribute(attr.name)
 			}
-			walk(child)
 		}
 	}
 
@@ -239,6 +242,11 @@ export class ClockStore {
 			}
 		} else {
 			disableNoSleep()
+			setClock({
+				lastActionAt: Date.now(),
+				lastTimeElapsedMs: getTimeElapsed(),
+				isPlaying,
+			})
 		}
 	}
 
