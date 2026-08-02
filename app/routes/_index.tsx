@@ -107,8 +107,7 @@ const EditFilesPage = () => {
 		}
 
 		setProcessing(true)
-		const isZip =
-			/.zip$/i.test(file.name) || file.type === 'application/zip'
+		const isZip = /.zip$/i.test(file.name) || file.type === 'application/zip'
 		try {
 			if (isZip) {
 				await importZipArchive(file)
@@ -330,8 +329,7 @@ const EditFilesPage = () => {
 												{percent}% · Resume at {formatTime(file.progress ?? 0)}
 											</p>
 										)}
-										{!showHistory &&
-											metadataChips(file, parseVideo)}
+										{!showHistory && metadataChips(file, parseVideo)}
 									</div>
 									<div className="flex flex-none items-center gap-1">
 										<Menu
