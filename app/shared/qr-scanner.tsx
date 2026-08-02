@@ -10,6 +10,8 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 	const [active, setActive] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
+	const onScan = useEffectEvent((code: string) => props.onScan(code))
+
 	useEffect(() => {
 		if (!active) return
 
@@ -29,7 +31,7 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 				const code = new URL(data).searchParams.get('code')
 				if (code) {
 					stop()
-					props.onScan(code)
+					onScan(code)
 				}
 			} catch {
 				// not a URL with a code; keep scanning

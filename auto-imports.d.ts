@@ -9,7 +9,6 @@ declare global {
   const Activity: typeof import('react').Activity
   const CheckIcon: typeof import('./app/shared/icons').CheckIcon
   const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
-  const ClockStore: typeof import('./app/shared/utils').ClockStore
   const Controls: typeof import('./app/shared/controls').Controls
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
   const Fragment: typeof import('react').Fragment
