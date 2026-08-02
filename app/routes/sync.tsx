@@ -24,6 +24,27 @@ const SyncPage = () => {
 	const [codeInput, setCodeInput] = useState('')
 	const [busy, setBusy] = useState(false)
 
+	async function join(codeOverride?: string) {
+		const code = (codeOverride ?? codeInput).trim()
+		if (code.length !== 20) return
+		setBusy(true)
+		try {
+			await syncStore.joinGroup(code)
+		} catch (err) {
+			setBusy(false)
+			throw err
+		}
+		setBusy(false)
+	}
+
+	async function retry() {
+		if (syncState.joinedGroupCode) {
+			await syncStore.joinGroup(syncState.joinedGroupCode)
+		} else {
+			await syncStore.startSharing()
+		}
+	}
+
 	useEffect(() => {
 		const codeParam = new URL(location.href).searchParams.get('code')
 		void (async () => {
@@ -49,25 +70,6 @@ const SyncPage = () => {
 	const qrValue = syncSnap.roomCode
 		? `${location.origin}/sync?code=${syncSnap.roomCode}`
 		: ''
-
-	async function join(codeOverride?: string) {
-		const code = (codeOverride ?? codeInput).trim()
-		if (code.length !== 20) return
-		setBusy(true)
-		try {
-			await syncStore.joinGroup(code)
-		} finally {
-			setBusy(false)
-		}
-	}
-
-	async function retry() {
-		if (syncState.joinedGroupCode) {
-			await syncStore.joinGroup(syncState.joinedGroupCode)
-		} else {
-			await syncStore.startSharing()
-		}
-	}
 
 	return (
 		<Page>

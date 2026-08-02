@@ -50,12 +50,8 @@ const buttonVariants: Record<ButtonVariant, string> = {
 	text: 'bg-transparent text-ember-600 underline underline-offset-2 hover:text-ember-700 hover:bg-transparent',
 }
 
-export function Button({
-	className,
-	variant = 'primary',
-	children,
-	...props
-}: ButtonProps) {
+export function Button({ className, children, ...props }: ButtonProps) {
+	const variant = props.variant ?? 'primary'
 	return (
 		<button
 			className={clsx(buttonBase, buttonVariants[variant], className)}

@@ -6,113 +6,106 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-	const Activity: typeof import('react').Activity
-	const CheckIcon: typeof import('./app/shared/icons').CheckIcon
-	const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
-	const ClockStore: typeof import('./app/shared/utils').ClockStore
-	const Controls: typeof import('./app/shared/controls').Controls
-	const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
-	const Fragment: typeof import('react').Fragment
-	const FullScreenIcon: typeof import('./app/shared/icons').FullScreenIcon
-	const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
-	const LeftIcon: typeof import('./app/shared/icons').LeftIcon
-	const LoadingIcon: typeof import('./app/shared/icons').LoadingIcon
-	const Menu: typeof import('./app/shared/menu').Menu
-	const MenuAction: typeof import('./app/shared/menu').MenuAction
-	const MenuIcon: typeof import('./app/shared/icons').MenuIcon
-	const MoreIcon: typeof import('./app/shared/icons').MoreIcon
-	const NumberInput: typeof import('./app/shared/text-input').NumberInput
-	const PauseIcon: typeof import('./app/shared/icons').PauseIcon
-	const PlayIcon: typeof import('./app/shared/icons').PlayIcon
-	const QrCode: typeof import('./app/shared/qr').QrCode
-	const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
-	const RightIcon: typeof import('./app/shared/icons').RightIcon
-	const Subtitle: typeof import('./app/shared/subtitle').Subtitle
-	const Suspense: typeof import('react').Suspense
-	const SyncIcon: typeof import('./app/shared/icons').SyncIcon
-	const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
-	const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
-	const Timeline: typeof import('./app/shared/timeline').Timeline
-	const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
-	const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
-	const TrashIcon: typeof import('./app/shared/icons').TrashIcon
-	const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
-	const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
-	const cache: typeof import('react').cache
-	const cacheSignal: typeof import('react').cacheSignal
-	const calculateActualTimeElapsedMs: typeof import('./app/shared/utils').calculateActualTimeElapsedMs
-	const clock: typeof import('./app/shared/utils').clock
-	const cn: typeof import('./app/shared/utils').cn
-	const controlState: typeof import('./app/shared/utils').controlState
-	const createContext: typeof import('react').createContext
-	const createRef: typeof import('react').createRef
-	const enableFullScreenButton: typeof import('./app/shared/utils').enableFullScreenButton
-	const forwardRef: typeof import('react').forwardRef
-	const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
-	const getCoordinatorId: typeof import('./app/shared/sync').getCoordinatorId
-	const getDuration: typeof import('./app/shared/utils').getDuration
-	const getFile: typeof import('./app/shared/utils').getFile
-	const getSetting: typeof import('./app/shared/utils').getSetting
-	const getTextSize: typeof import('./app/shared/utils').getTextSize
-	const getTimeElapsed: typeof import('./app/shared/utils').getTimeElapsed
-	const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
-	const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
-	const lazy: typeof import('react').lazy
-	const linesToSrtText: typeof import('./app/shared/sync').linesToSrtText
-	const memo: typeof import('react').memo
-	const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
-	const pokeControls: typeof import('./app/shared/utils').pokeControls
-	const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
-	const seekBy: typeof import('./app/shared/sync').seekBy
-	const seekTo: typeof import('./app/shared/sync').seekTo
-	const setClock: typeof import('./app/shared/utils').setClock
-	const setFile: typeof import('./app/shared/utils').setFile
-	const setPlaySpeed: typeof import('./app/shared/sync').setPlaySpeed
-	const setSetting: typeof import('./app/shared/utils').setSetting
-	const setTextSize: typeof import('./app/shared/utils').setTextSize
-	const startTransition: typeof import('react').startTransition
-	const syncState: typeof import('./app/shared/sync').syncState
-	const syncStore: typeof import('./app/shared/sync').syncStore
-	const tick: typeof import('./app/shared/utils').tick
-	const toggleControls: typeof import('./app/shared/utils').toggleControls
-	const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
-	const togglePlayback: typeof import('./app/shared/sync').togglePlayback
-	const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
-	const uiState: typeof import('./app/shared/utils').uiState
-	const unfadeControls: typeof import('./app/shared/utils').unfadeControls
-	const use: typeof import('react').use
-	const useActionState: typeof import('react').useActionState
-	const useCallback: typeof import('react').useCallback
-	const useContext: typeof import('react').useContext
-	const useDebugValue: typeof import('react').useDebugValue
-	const useDeferredValue: typeof import('react').useDeferredValue
-	const useEffect: typeof import('react').useEffect
-	const useEffectEvent: typeof import('react').useEffectEvent
-	const useId: typeof import('react').useId
-	const useImperativeHandle: typeof import('react').useImperativeHandle
-	const useInsertionEffect: typeof import('react').useInsertionEffect
-	const useLayoutEffect: typeof import('react').useLayoutEffect
-	const useMemo: typeof import('react').useMemo
-	const useOptimistic: typeof import('react').useOptimistic
-	const useReducer: typeof import('react').useReducer
-	const useRef: typeof import('react').useRef
-	const useState: typeof import('react').useState
-	const useSyncExternalStore: typeof import('react').useSyncExternalStore
-	const useTransition: typeof import('react').useTransition
+  const Activity: typeof import('react').Activity
+  const CheckIcon: typeof import('./app/shared/icons').CheckIcon
+  const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
+  const ClockStore: typeof import('./app/shared/utils').ClockStore
+  const Controls: typeof import('./app/shared/controls').Controls
+  const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
+  const Fragment: typeof import('react').Fragment
+  const FullScreenIcon: typeof import('./app/shared/icons').FullScreenIcon
+  const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
+  const LeftIcon: typeof import('./app/shared/icons').LeftIcon
+  const LoadingIcon: typeof import('./app/shared/icons').LoadingIcon
+  const Menu: typeof import('./app/shared/menu').Menu
+  const MenuAction: typeof import('./app/shared/menu').MenuAction
+  const MenuIcon: typeof import('./app/shared/icons').MenuIcon
+  const MoreIcon: typeof import('./app/shared/icons').MoreIcon
+  const NumberInput: typeof import('./app/shared/text-input').NumberInput
+  const PauseIcon: typeof import('./app/shared/icons').PauseIcon
+  const PlayIcon: typeof import('./app/shared/icons').PlayIcon
+  const QrCode: typeof import('./app/shared/qr').QrCode
+  const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
+  const RightIcon: typeof import('./app/shared/icons').RightIcon
+  const Subtitle: typeof import('./app/shared/subtitle').Subtitle
+  const Suspense: typeof import('react').Suspense
+  const SyncIcon: typeof import('./app/shared/icons').SyncIcon
+  const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
+  const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
+  const Timeline: typeof import('./app/shared/timeline').Timeline
+  const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
+  const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
+  const TrashIcon: typeof import('./app/shared/icons').TrashIcon
+  const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
+  const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
+  const cache: typeof import('react').cache
+  const cacheSignal: typeof import('react').cacheSignal
+  const calculateActualTimeElapsedMs: typeof import('./app/shared/utils').calculateActualTimeElapsedMs
+  const clock: typeof import('./app/shared/utils').clock
+  const cn: typeof import('./app/shared/utils').cn
+  const controlState: typeof import('./app/shared/utils').controlState
+  const createContext: typeof import('react').createContext
+  const createRef: typeof import('react').createRef
+  const enableFullScreenButton: typeof import('./app/shared/utils').enableFullScreenButton
+  const forwardRef: typeof import('react').forwardRef
+  const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
+  const getCoordinatorId: typeof import('./app/shared/sync').getCoordinatorId
+  const getDuration: typeof import('./app/shared/utils').getDuration
+  const getFile: typeof import('./app/shared/utils').getFile
+  const getSetting: typeof import('./app/shared/utils').getSetting
+  const getTextSize: typeof import('./app/shared/utils').getTextSize
+  const getTimeElapsed: typeof import('./app/shared/utils').getTimeElapsed
+  const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
+  const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
+  const lazy: typeof import('react').lazy
+  const linesToSrtText: typeof import('./app/shared/sync').linesToSrtText
+  const memo: typeof import('react').memo
+  const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
+  const pokeControls: typeof import('./app/shared/utils').pokeControls
+  const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
+  const seekBy: typeof import('./app/shared/sync').seekBy
+  const seekTo: typeof import('./app/shared/sync').seekTo
+  const setClock: typeof import('./app/shared/utils').setClock
+  const setFile: typeof import('./app/shared/utils').setFile
+  const setPlaySpeed: typeof import('./app/shared/sync').setPlaySpeed
+  const setSetting: typeof import('./app/shared/utils').setSetting
+  const setTextSize: typeof import('./app/shared/utils').setTextSize
+  const startTransition: typeof import('react').startTransition
+  const syncState: typeof import('./app/shared/sync').syncState
+  const syncStore: typeof import('./app/shared/sync').syncStore
+  const tick: typeof import('./app/shared/utils').tick
+  const toggleControls: typeof import('./app/shared/utils').toggleControls
+  const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
+  const togglePlayback: typeof import('./app/shared/sync').togglePlayback
+  const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
+  const uiState: typeof import('./app/shared/utils').uiState
+  const unfadeControls: typeof import('./app/shared/utils').unfadeControls
+  const use: typeof import('react').use
+  const useActionState: typeof import('react').useActionState
+  const useCallback: typeof import('react').useCallback
+  const useContext: typeof import('react').useContext
+  const useDebugValue: typeof import('react').useDebugValue
+  const useDeferredValue: typeof import('react').useDeferredValue
+  const useEffect: typeof import('react').useEffect
+  const useEffectEvent: typeof import('react').useEffectEvent
+  const useId: typeof import('react').useId
+  const useImperativeHandle: typeof import('react').useImperativeHandle
+  const useInsertionEffect: typeof import('react').useInsertionEffect
+  const useLayoutEffect: typeof import('react').useLayoutEffect
+  const useMemo: typeof import('react').useMemo
+  const useOptimistic: typeof import('react').useOptimistic
+  const useReducer: typeof import('react').useReducer
+  const useRef: typeof import('react').useRef
+  const useState: typeof import('react').useState
+  const useSyncExternalStore: typeof import('react').useSyncExternalStore
+  const useTransition: typeof import('react').useTransition
 }
 // for type re-export
 declare global {
-	// @ts-ignore
-	export type {
-		SyncRole,
-		ConnectionState,
-		PeerInfo,
-		ReceivedFile,
-		SyncMessage,
-		SyncState,
-	} from './app/shared/sync'
-	import('./app/shared/sync')
-	// @ts-ignore
-	export type { Entry, DbLine } from './app/shared/utils'
-	import('./app/shared/utils')
+  // @ts-ignore
+  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, SyncMessage, SyncState } from './app/shared/sync'
+  import('./app/shared/sync')
+  // @ts-ignore
+  export type { Entry, DbLine } from './app/shared/utils'
+  import('./app/shared/utils')
 }

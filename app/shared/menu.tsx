@@ -51,12 +51,13 @@ export const Menu = function Menu({
 export function MenuAction({
 	children,
 	onClick,
-	danger = false,
+	...props
 }: {
 	children: React.ReactNode
 	onClick?: () => void
 	danger?: boolean
 }) {
+	const danger = props.danger ?? false
 	return (
 		<button
 			type="button"

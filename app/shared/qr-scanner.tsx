@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { once } from 'lodash-es'
 import { Button } from '~/components'
+
+const loadJsQR = once(() => import('jsqr').then((mod) => mod.default))
 
 /** Live QR scanning via getUserMedia + jsQR; emits the scanned code. */
 export const QrScanner = (props: { onScan: (code: string) => void }) => {
@@ -73,7 +76,7 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 				if (!video) return
 				video.srcObject = stream
 				await video.play()
-				const { default: jsQR } = await import('jsqr')
+				const jsQR = await loadJsQR()
 				const canvas = document.createElement('canvas')
 				const ctx = canvas.getContext('2d', { willReadFrequently: true })
 				if (!ctx) return

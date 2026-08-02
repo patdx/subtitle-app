@@ -12,6 +12,34 @@ const parseVideoPromise = once(() =>
 	import('video-name-parser').then((mod) => mod.default),
 )
 
+/**
+ * Import every .srt entry inside a zip archive. Lives at module scope:
+ * React Compiler does not lower dynamic import() or try/finally inside
+ * component-scope functions, so the zip handling stays here.
+ */
+async function importZipArchive(file: File) {
+	const zip = await import('@zip.js/zip.js')
+	const reader = new zip.ZipReader(new zip.BlobReader(file))
+	try {
+		const entries = await reader.getEntries()
+		for (const entry of entries) {
+			if (/.srt$/i.test(entry.filename) && 'getData' in entry) {
+				try {
+					const text = await entry.getData(new zip.TextWriter())
+					await addFileToDatabase(text, entry.filename)
+				} catch (err) {
+					console.log(
+						`The following error occurred while processing ${entry.filename}`,
+					)
+					console.error(err)
+				}
+			}
+		}
+	} finally {
+		await reader.close()
+	}
+}
+
 export function meta({}: Route.MetaArgs) {
 	return [{ title: 'Subtitle App' }]
 }
@@ -32,6 +60,13 @@ interface FileRecord {
 	watched?: boolean
 	progress?: number
 	lastPlayed?: number
+}
+
+/** Most recently played first, then alphabetically. Lives at module scope so
+ * React Compiler does not need to lower the logical expressions inside. */
+const compareByLastPlayed = (a: FileRecord, b: FileRecord): number => {
+	const byTime = (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0)
+	return byTime || a.name.localeCompare(b.name)
 }
 
 const EditFilesPage = () => {
@@ -55,54 +90,38 @@ const EditFilesPage = () => {
 	}
 
 	const handleFile = async (file: File) => {
+		// Check for supported file types
+		const isSupported =
+			/.srt$/i.test(file.name) ||
+			/.zip$/i.test(file.name) ||
+			file.type === 'application/zip' ||
+			file.type === 'text/plain' || // Allow plain text as it might be SRT
+			file.type === 'text/srt' ||
+			file.type === 'application/x-subrip'
+
+		if (!isSupported) {
+			alert(
+				`Unsupported file type: ${file.type}. Please select an SRT or ZIP file.`,
+			)
+			return
+		}
+
+		setProcessing(true)
+		const isZip =
+			/.zip$/i.test(file.name) || file.type === 'application/zip'
 		try {
-			setProcessing(true)
-
-			// Check for supported file types
-			const isSupported =
-				/.srt$/i.test(file.name) ||
-				/.zip$/i.test(file.name) ||
-				file.type === 'application/zip' ||
-				file.type === 'text/plain' || // Allow plain text as it might be SRT
-				file.type === 'text/srt' ||
-				file.type === 'application/x-subrip'
-
-			if (!isSupported) {
-				alert(
-					`Unsupported file type: ${file.type}. Please select an SRT or ZIP file.`,
-				)
-				return
-			}
-
-			if (/.zip$/i.test(file.name) || file.type === 'application/zip') {
-				const zip = await import('@zip.js/zip.js')
-				const reader = new zip.ZipReader(new zip.BlobReader(file))
-				try {
-					const entries = await reader.getEntries()
-					for (const entry of entries) {
-						if (/.srt$/i.test(entry.filename) && 'getData' in entry) {
-							try {
-								const text = await entry.getData(new zip.TextWriter())
-								await addFileToDatabase(text, entry.filename)
-							} catch (err) {
-								console.log(
-									`The following error occurred while processing ${entry.filename}`,
-								)
-								console.error(err)
-							}
-						}
-					}
-				} finally {
-					await reader.close()
-				}
+			if (isZip) {
+				await importZipArchive(file)
 			} else {
 				await addFileToDatabase(await file.text(), file.name)
 			}
 			handler.refetch()
 			await syncStore.broadcastFileList()
-		} finally {
+		} catch (err) {
 			setProcessing(false)
+			throw err
 		}
+		setProcessing(false)
 	}
 
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -115,14 +134,7 @@ const EditFilesPage = () => {
 		typeof file.progress === 'number' && file.progress > 0
 
 	/** One unified list: most recently played first, then alphabetically. */
-	const files = () =>
-		(data() ?? [])
-			.slice()
-			.sort(
-				(a, b) =>
-					(b.lastPlayed ?? 0) - (a.lastPlayed ?? 0) ||
-					a.name.localeCompare(b.name),
-			)
+	const files = () => (data() ?? []).slice().sort(compareByLastPlayed)
 
 	const progressPercent = (file: FileRecord) => {
 		const duration = file.length ?? 0
@@ -177,23 +189,26 @@ const EditFilesPage = () => {
 
 	const ProgressBar = ({
 		percent,
-		className = '',
+		...props
 	}: {
 		percent: number
 		className?: string
-	}) => (
-		<div
-			className={cn(
-				'h-1 w-full overflow-hidden rounded-full bg-ink-100',
-				className,
-			)}
-		>
+	}) => {
+		const className = props.className ?? ''
+		return (
 			<div
-				className="h-full rounded-full bg-ember-500 transition-[width] duration-300"
-				style={{ width: `${percent}%` }}
-			/>
-		</div>
-	)
+				className={cn(
+					'h-1 w-full overflow-hidden rounded-full bg-ink-100',
+					className,
+				)}
+			>
+				<div
+					className="h-full rounded-full bg-ember-500 transition-[width] duration-300"
+					style={{ width: `${percent}%` }}
+				/>
+			</div>
+		)
+	}
 
 	return (
 		<>
@@ -315,7 +330,8 @@ const EditFilesPage = () => {
 												{percent}% · Resume at {formatTime(file.progress ?? 0)}
 											</p>
 										)}
-										{!showHistory && metadataChips(file)}
+										{!showHistory &&
+											metadataChips(file, parseVideo)}
 									</div>
 									<div className="flex flex-none items-center gap-1">
 										<Menu
@@ -402,25 +418,33 @@ const EditFilesPage = () => {
 			</Block>
 		</>
 	)
+}
 
-	function metadataChips(file: FileRecord) {
-		let metadata
-		try {
-			metadata = parseVideo(file.name)
-		} catch (err) {
-			console.warn(err)
-		}
-		return (
-			<div className="flex gap-2">
-				{metadata?.season && (
-					<span className="text-xs text-ink-400">Season {metadata.season}</span>
-				)}
-				{metadata?.episode?.map((item) => (
-					<span key={item} className="text-xs text-ink-400">
-						Episode {item}
-					</span>
-				))}
-			</div>
-		)
+interface VideoMetadata {
+	season?: number | string
+	episode?: (number | string)[]
+}
+
+function metadataChips(
+	file: FileRecord,
+	parseVideo: (name: string) => VideoMetadata | undefined,
+) {
+	let metadata: VideoMetadata | undefined
+	try {
+		metadata = parseVideo(file.name)
+	} catch (err) {
+		console.warn(err)
 	}
+	return (
+		<div className="flex gap-2">
+			{metadata?.season && (
+				<span className="text-xs text-ink-400">Season {metadata.season}</span>
+			)}
+			{metadata?.episode?.map((item) => (
+				<span key={item} className="text-xs text-ink-400">
+					Episode {item}
+				</span>
+			))}
+		</div>
+	)
 }

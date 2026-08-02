@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react'
+import { once } from 'lodash-es'
+
+const loadQrCode = once(() =>
+	import('qrcode').then((mod) => mod.default),
+)
 
 export const QrCode = (props: { value: string; size?: number }) => {
 	const [svg, setSvg] = useState<string | null>(null)
@@ -6,8 +11,8 @@ export const QrCode = (props: { value: string; size?: number }) => {
 	useEffect(() => {
 		let cancelled = false
 
-		import('qrcode')
-			.then(({ default: QRCode }) =>
+		loadQrCode()
+			.then((QRCode) =>
 				QRCode.toString(props.value, {
 					type: 'svg',
 					width: props.size ?? 256,
