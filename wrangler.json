@@ -11,5 +11,16 @@
   },
   "vars": {
     "APP_ID": "b7b69981a7ce76e1fac5f64e1c5941ea"
-  }
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "ROOMS", "class_name": "RoomCoordinator" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RoomCoordinator"] }],
+  "ratelimits": [
+    {
+      "name": "SYNC_RATE_LIMITER",
+      "namespace_id": "742019",
+      "simple": { "limit": 60, "period": 60 }
+    }
+  ]
 }

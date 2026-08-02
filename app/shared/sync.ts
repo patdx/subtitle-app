@@ -32,7 +32,6 @@ import {
 const API = '/api/sync'
 const DC_NAME = 'subtitles'
 const CHUNK_SIZE = 32 * 1024
-const DISCOVERY_POLL_MS = 2500
 const BROADCAST_INTERVAL_MS = 100
 const PING_INTERVAL_MS = 5000
 const CONNECT_TIMEOUT_MS = 15000
@@ -40,10 +39,7 @@ const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export type SyncRole = 'none' | 'host' | 'follower'
 export type ConnectionState =
-	| 'disconnected'
-	| 'connecting'
-	| 'connected'
-	| 'error'
+	'disconnected' | 'connecting' | 'connected' | 'error'
 
 export interface PeerInfo {
 	sessionId: string
@@ -57,24 +53,60 @@ export interface ReceivedFile {
 	name: string
 }
 
+interface PresenceSnapshot {
+	type: 'snapshot'
+	hostSessionId: string
+	peers: { sessionId: string; name: string; isHost: boolean }[]
+}
+
+const isPresenceSnapshot = (value: unknown): value is PresenceSnapshot => {
+	if (!value || typeof value !== 'object') return false
+	const message = value as Partial<PresenceSnapshot>
+	return (
+		message.type === 'snapshot' &&
+		typeof message.hostSessionId === 'string' &&
+		Array.isArray(message.peers) &&
+		message.peers.every(
+			(peer) =>
+				peer &&
+				typeof peer === 'object' &&
+				typeof peer.sessionId === 'string' &&
+				typeof peer.name === 'string' &&
+				typeof peer.isHost === 'boolean',
+		)
+	)
+}
+
 export type SyncMessage =
 	| { type: 'cmd-play' }
 	| { type: 'cmd-pause' }
 	| { type: 'cmd-seek'; positionMs: number }
 	| { type: 'cmd-speed'; speed: number }
-	| { type: 'state-clock'; isPlaying: boolean; positionMs: number; playSpeed: number }
+	| {
+			type: 'state-clock'
+			isPlaying: boolean
+			positionMs: number
+			playSpeed: number
+	  }
 	| { type: 'join'; deviceName: string }
 	| { type: 'leave'; deviceName: string }
 	| { type: 'now-playing'; fileId: string; name: string }
 	| { type: 'file-list'; files: { id: string; name: string }[] }
 	| { type: 'request-file'; fileName: string }
-	| { type: 'file-chunk'; transferId: string; chunkIndex: number; totalChunks: number; fileName: string; data: string }
+	| {
+			type: 'file-chunk'
+			transferId: string
+			chunkIndex: number
+			totalChunks: number
+			fileName: string
+			data: string
+	  }
 	| { type: 'file-deleted'; fileId: string; fileName: string }
 	| { type: 'ping'; sentAt: number }
 	| { type: 'pong'; sentAt: number }
 
 const makeRoomCode = (): string => {
-	const chars = new Uint8Array(6)
+	const chars = new Uint8Array(10)
 	crypto.getRandomValues(chars)
 	let code = ''
 	for (const c of chars) {
@@ -128,13 +160,22 @@ class SyncStore {
 	inboundDcs: Map<string, RTCDataChannel> = new Map()
 	outboundQueue: string[] = []
 	pulledPeers = new Set<string>()
-	discoveryTimer: number | null = null
+	presenceSocket: WebSocket | null = null
+	presenceReconnectTimer: number | null = null
+	presenceReconnectAttempts = 0
+	presenceIntentionalClose = false
+	roomOwnerToken: string | null = null
 	broadcastTimer: number | null = null
 	pingTimer: number | null = null
 	connectTimeout: number | null = null
 	receiveBuffers = new Map<
 		string,
-		{ fileName: string; total: number; chunks: (string | null)[]; timeout: number }
+		{
+			fileName: string
+			total: number
+			chunks: (string | null)[]
+			timeout: number
+		}
 	>()
 	pendingNowPlayingRequests = new Map<string, { name: string }>()
 
@@ -148,7 +189,11 @@ class SyncStore {
 				inboundDcs: false,
 				outboundQueue: false,
 				pulledPeers: false,
-				discoveryTimer: false,
+				presenceSocket: false,
+				presenceReconnectTimer: false,
+				presenceReconnectAttempts: false,
+				presenceIntentionalClose: false,
+				roomOwnerToken: false,
 				broadcastTimer: false,
 				pingTimer: false,
 				connectTimeout: false,
@@ -165,9 +210,9 @@ class SyncStore {
 
 	async init() {
 		this.myGroupCode = (await getSetting<string>('myGroupCode')) ?? null
-		this.joinedGroupCode =
-			(await getSetting<string>('joinedGroupCode')) ?? null
+		this.joinedGroupCode = (await getSetting<string>('joinedGroupCode')) ?? null
 		this.wasSharing = (await getSetting<boolean>('wasSharing')) ?? false
+		this.roomOwnerToken = (await getSetting<string>('roomOwnerToken')) ?? null
 		const deviceName = await getSetting<string>('deviceName')
 		if (typeof deviceName === 'string' && deviceName.length > 0) {
 			this.deviceName = deviceName
@@ -193,9 +238,17 @@ class SyncStore {
 	}
 
 	private async ensureMyGroup(): Promise<string> {
-		if (!this.myGroupCode) {
+		if (!this.myGroupCode || this.myGroupCode.length !== 10) {
 			this.myGroupCode = makeRoomCode()
 			await setSetting('myGroupCode', this.myGroupCode)
+		}
+		if (!this.roomOwnerToken) {
+			const bytes = new Uint8Array(32)
+			crypto.getRandomValues(bytes)
+			this.roomOwnerToken = [...bytes]
+				.map((byte) => byte.toString(16).padStart(2, '0'))
+				.join('')
+			await setSetting('roomOwnerToken', this.roomOwnerToken)
 		}
 		return this.myGroupCode
 	}
@@ -231,7 +284,6 @@ class SyncStore {
 	/** Stop sharing our group (the group code is kept for later). */
 	async stopSharing() {
 		this.send({ type: 'leave', deviceName: this.deviceName })
-		void this._leaveRoom()
 		this.reset()
 		this.wasSharing = false
 		await setSetting('wasSharing', false)
@@ -240,7 +292,6 @@ class SyncStore {
 	/** Leave a group we joined and go back to our own group. */
 	async leaveGroup() {
 		this.send({ type: 'leave', deviceName: this.deviceName })
-		void this._leaveRoom()
 		this.reset()
 		this.joinedGroupCode = null
 		await setSetting('joinedGroupCode', null)
@@ -290,9 +341,7 @@ class SyncStore {
 
 			this.roomCode = keepCode
 			this._startConnectTimeout()
-			await this._registerRoom(keepCode)
-
-			this._startDiscoveryPoll()
+			await this._connectPresence('host')
 			this._startBroadcastTimer()
 			this._startPing()
 
@@ -310,9 +359,11 @@ class SyncStore {
 		this.role = 'follower'
 
 		try {
-		const room = (await (
-			await fetch(`${API}?action=lookup-room&code=${encodeURIComponent(code)}`)
-		).json()) as { hostSessionId?: string; error?: string }
+			const room = (await (
+				await fetch(
+					`${API}?action=lookup-room&code=${encodeURIComponent(code)}`,
+				)
+			).json()) as { hostSessionId?: string; error?: string }
 			if (!room.hostSessionId) {
 				throw new Error(room.error ?? 'Group not found')
 			}
@@ -328,7 +379,6 @@ class SyncStore {
 
 			await establishTransport(pc, sessionId, false)
 			await this.publishChannel(pc, sessionId)
-			await this._registerPeer(code)
 			this._startPing()
 
 			this._startConnectTimeout()
@@ -340,7 +390,7 @@ class SyncStore {
 			this._clearConnectTimeout()
 
 			this.send({ type: 'join', deviceName: this.deviceName })
-			this._startDiscoveryPoll()
+			await this._connectPresence('follower')
 		} catch (err) {
 			this._fail(
 				err,
@@ -559,9 +609,7 @@ class SyncStore {
 		msg: Extract<SyncMessage, { type: 'now-playing' }>,
 	) {
 		const db = await initAndGetDb()
-		const existing = (await db.getAll('files')).find(
-			(f) => f.name === msg.name,
-		)
+		const existing = (await db.getAll('files')).find((f) => f.name === msg.name)
 		if (existing) {
 			this.pendingNowPlaying = { fileId: existing.id, name: msg.name }
 			return
@@ -724,103 +772,107 @@ class SyncStore {
 	}
 
 	// ------------------------------------------------------------------
-	// Discovery / presence
+	// Discovery / presence (one hibernatable Durable Object WebSocket)
 	// ------------------------------------------------------------------
 
-	private async _registerRoom(code: string) {
-		const response = await fetch(`${API}?action=register-room`, {
-			method: 'POST',
-			body: JSON.stringify({
-				code,
-				sessionId: this.sessionId,
-				name: this.deviceName,
-			}),
-		})
-		if (!response.ok) {
-			const body = (await response.json().catch(() => null)) as {
-				error?: string
-			} | null
-			throw new Error(body?.error ?? 'Failed to register group')
+	private _connectPresence(role: Exclude<SyncRole, 'none'>): Promise<void> {
+		if (!this.roomCode || !this.sessionId) {
+			return Promise.reject(new Error('Room transport is not ready'))
 		}
-	}
-
-	private async _registerPeer(code: string) {
-		const response = await fetch(`${API}?action=register-peer`, {
-			method: 'POST',
-			body: JSON.stringify({
-				code: code.toUpperCase(),
-				sessionId: this.sessionId,
-				name: this.deviceName,
-			}),
-		})
-		if (!response.ok) {
-			const body = (await response.json().catch(() => null)) as {
-				error?: string
-			} | null
-			throw new Error(body?.error ?? 'Failed to join group')
-		}
-	}
-
-	private async _leaveRoom() {
-		if (!this.roomCode || !this.sessionId) return
-		await fetch(`${API}?action=remove-peer`, {
-			method: 'POST',
-			body: JSON.stringify({ code: this.roomCode, sessionId: this.sessionId }),
-		}).catch(() => {})
-	}
-
-	private _startDiscoveryPoll() {
-		this._stopDiscoveryPoll()
-		this.discoveryTimer = window.setInterval(
-			() => void this._pollRoom(),
-			DISCOVERY_POLL_MS,
-		)
-		void this._pollRoom()
-	}
-
-	private _stopDiscoveryPoll() {
-		if (this.discoveryTimer !== null) {
-			window.clearInterval(this.discoveryTimer)
-			this.discoveryTimer = null
-		}
-	}
-
-	private async _pollRoom() {
-		if (!this.roomCode) return
-		try {
-			const response = await fetch(
-				`${API}?action=lookup-room&code=${encodeURIComponent(this.roomCode)}`,
-			)
-			if (!response.ok) return
-			const room = (await response.json()) as {
-				hostSessionId: string
-				name: string
-				peers: { sessionId: string; name: string; joinedAt: number }[]
+		this._closePresenceSocket()
+		this.presenceIntentionalClose = false
+		const url = new URL(`${API}/room`, location.origin)
+		url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+		url.searchParams.set('code', this.roomCode)
+		url.searchParams.set('role', role)
+		url.searchParams.set('sessionId', this.sessionId)
+		url.searchParams.set('name', this.deviceName.slice(0, 64))
+		const protocols = ['subtitle-sync']
+		if (role === 'host') {
+			if (!this.roomOwnerToken) {
+				return Promise.reject(new Error('Missing room owner credential'))
 			}
+			protocols.push(`host.${this.roomOwnerToken}`)
+		}
 
-			this.roomPeers = room.peers
-				.filter((peer) => peer.sessionId !== this.sessionId)
-				.map((peer) => ({
-					sessionId: peer.sessionId,
-					name: peer.name,
-					isHost: peer.sessionId === room.hostSessionId,
-					connected: this.inboundDcs.has(peer.sessionId),
-				}))
-
-			if (this.role === 'host' && this.pc) {
-				for (const peer of room.peers) {
-					if (
-						peer.sessionId !== this.sessionId &&
-						!this.pulledPeers.has(peer.sessionId)
-					) {
-						this.pulledPeers.add(peer.sessionId)
-						void this._pullPeerChannel(peer.sessionId)
-					}
+		return new Promise((resolve, reject) => {
+			const socket = new WebSocket(url, protocols)
+			this.presenceSocket = socket
+			let settled = false
+			const fail = () => {
+				if (!settled) {
+					settled = true
+					reject(new Error('Could not connect to room presence'))
 				}
 			}
-		} catch (err) {
-			console.warn('Room poll failed', err)
+			socket.onmessage = (event) => {
+				try {
+					const message: unknown = JSON.parse(String(event.data))
+					if (!isPresenceSnapshot(message)) return
+					this._applyPresenceSnapshot(message)
+					this.presenceReconnectAttempts = 0
+					if (!settled) {
+						settled = true
+						resolve()
+					}
+				} catch (err) {
+					console.warn('Ignoring malformed presence message', err)
+				}
+			}
+			socket.onerror = fail
+			socket.onclose = () => {
+				const isCurrentSocket = this.presenceSocket === socket
+				if (isCurrentSocket) this.presenceSocket = null
+				fail()
+				if (
+					isCurrentSocket &&
+					!this.presenceIntentionalClose &&
+					this.role === role &&
+					this.roomCode
+				) {
+					this._schedulePresenceReconnect(role)
+				}
+			}
+		})
+	}
+
+	private _applyPresenceSnapshot(room: PresenceSnapshot) {
+		this.roomPeers = room.peers
+			.filter((peer) => peer.sessionId !== this.sessionId)
+			.map((peer) => ({
+				...peer,
+				connected: this.inboundDcs.has(peer.sessionId),
+			}))
+		if (this.role !== 'host' || !this.pc) return
+		for (const peer of room.peers) {
+			if (
+				peer.sessionId !== this.sessionId &&
+				!this.pulledPeers.has(peer.sessionId)
+			) {
+				this.pulledPeers.add(peer.sessionId)
+				void this._pullPeerChannel(peer.sessionId)
+			}
 		}
+	}
+
+	private _schedulePresenceReconnect(role: Exclude<SyncRole, 'none'>) {
+		if (this.presenceReconnectTimer !== null) return
+		const attempt = Math.min(this.presenceReconnectAttempts++, 5)
+		const delay = Math.min(30_000, 1000 * 2 ** attempt) + Math.random() * 500
+		this.presenceReconnectTimer = window.setTimeout(() => {
+			this.presenceReconnectTimer = null
+			void this._connectPresence(role).catch(() => {})
+		}, delay)
+	}
+
+	private _closePresenceSocket() {
+		this.presenceIntentionalClose = true
+		if (this.presenceReconnectTimer !== null) {
+			window.clearTimeout(this.presenceReconnectTimer)
+			this.presenceReconnectTimer = null
+		}
+		this.presenceSocket?.close(1000, 'Leaving room')
+		this.presenceSocket = null
 	}
 
 	private async _pullPeerChannel(sessionId: string) {
@@ -908,7 +960,7 @@ class SyncStore {
 	}
 
 	private _teardownTransport() {
-		this._stopDiscoveryPoll()
+		this._closePresenceSocket()
 		this._stopBroadcastTimer()
 		this._stopPing()
 		this._clearConnectTimeout()

@@ -99,7 +99,7 @@ const EditFilesPage = () => {
 	return (
 		<>
 			<Block className="px-4">
-				<p className="text-sm text-gray-600">
+				<p className="max-w-prose text-sm text-gray-600">
 					Import and manage your subtitle files
 				</p>
 			</Block>
@@ -122,7 +122,7 @@ const EditFilesPage = () => {
 				<div className="flex flex-col justify-center self-center">
 					<Button
 						onClick={() => inputRef.current?.click()}
-						className="button-large button-rounded button-raised"
+						className="w-full sm:w-auto"
 					>
 						Import SRT or ZIP
 						<Show when={isProcessing}>
@@ -131,7 +131,7 @@ const EditFilesPage = () => {
 					</Button>
 
 					<Button
-						className="mt-4 button-clear"
+						className="mt-4 bg-transparent text-gray-700 shadow-none hover:bg-gray-100"
 						onClick={async () => {
 							const blob = await fetch(sampleSrtUrl).then((result) =>
 								result.blob(),
@@ -145,7 +145,7 @@ const EditFilesPage = () => {
 				</div>
 			</Block>
 
-			<List className="list-strong-ios list-outline-ios">
+			<List>
 				<For each={data}>
 					{(file) => {
 						let metadata
@@ -161,7 +161,7 @@ const EditFilesPage = () => {
 								title={file.name}
 								after={
 									<Button
-										className="k-color-brand-red button-clear"
+										className="bg-transparent text-red-600 shadow-none hover:bg-red-50"
 									onClick={async (e) => {
 										e.preventDefault()
 										const db = await initAndGetDb()
@@ -205,7 +205,7 @@ const EditFilesPage = () => {
 				</For>
 			</List>
 
-			<List className="list-strong-ios list-outline-ios">
+			<List>
 				<ListItem title="Sync with another device" asChild>
 					<RouterLink to="/sync" />
 				</ListItem>

@@ -1,4 +1,25 @@
 @import 'tailwindcss';
+@import 'tailwindcss-safe-area';
+
+/* ── Type system ─────────────────────────────────────────────── */
+@theme {
+	--font-family-sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif;
+	--font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+	html {
+		font-family: var(--font-family-sans);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		line-height: 1.5;
+	}
+
+	/* Tabular numbers for any element with font-mono */
+	.font-mono {
+		font-variant-numeric: tabular-nums;
+	}
+}
 
 /* Custom variant for PWA standalone display mode */
 @custom-variant pwa (@media (display-mode: standalone));
@@ -33,29 +54,45 @@ body,
 	touch-action: pan-x pan-y;
 }
 
-/* https://x.com/morajabi/status/1846583265072660939 */
-* {
-	user-select: none;
-	user-drag: none;
-	app-region: no-drag;
-}
-
-/* https://forums.developer.apple.com/forums/thread/133399 */
+/* User-select: prevent selection on the player overlay during playback,
+   but allow text selection everywhere else (file list, sync codes, etc.) */
 html {
 	-webkit-touch-callout: none; /* Safari Touch */
-	-webkit-user-select: none; /* Webkit */
-	-moz-user-select: none; /* Firefox */
-	-ms-user-select: none; /* Edge*/
-	user-select: none; /* Future-proof*/
-
 	-webkit-user-drag: none;
 	-moz-user-drag: none;
 	-o-user-drag: none;
 	user-drag: none;
+
+	overscroll-behavior: none;
 }
 
-html {
-	overscroll-behavior: none;
+/* The player overlay disables selection during active subtitle playback.
+   All other surfaces remain selectable. */
+.player-overlay {
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+/* Light-on-dark type compensation for subtitle text */
+.player-overlay .subtitle-text {
+	line-height: 1.6;
+	letter-spacing: 0.01em;
+}
+
+.player-overlay .subtitle-text.text-sm {
+	line-height: 1.5;
+}
+
+.player-overlay .subtitle-text.text-base {
+	line-height: 1.5;
+}
+
+.player-overlay .subtitle-text.text-\[32px\] {
+	line-height: 1.4;
+}
+
+.player-overlay .subtitle-text.text-\[64px\] {
+	line-height: 1.3;
 }
 
 /* https://github.com/ionic-team/ionic-framework/blob/1b11b82eaaa0982f98547f2854563517174c865c/core/src/css/structure.scss#L75 */
@@ -90,7 +127,6 @@ html {
 }
 
 body {
-	user-select: none;
 	text-rendering: optimizeLegibility;
 
 	overflow: hidden;

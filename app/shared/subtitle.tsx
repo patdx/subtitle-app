@@ -36,7 +36,7 @@ export const Subtitle = observer(
 				)}
 				<div
 					className={cn(
-						`text-white`,
+						`subtitle-text text-white`,
 						getTextSize(),
 						nodeIsActive(props.node, getTimeElapsed()) && 'font-bold',
 					)}
