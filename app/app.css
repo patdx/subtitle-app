@@ -6,8 +6,11 @@
    whites, and one restrained ember accent. Everything the player
    does on black and the tool does on paper shares this world. */
 @theme {
-	--font-family-sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif;
-	--font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	--font-family-sans:
+		system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial,
+		Noto Sans, sans-serif;
+	--font-family-mono:
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
 	/* Ink scale — warm near-black neutrals (canvas / surfaces / text) */
 	--color-ink-950: oklch(0.16 0.008 35);

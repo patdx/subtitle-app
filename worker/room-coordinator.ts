@@ -118,8 +118,7 @@ export class RoomCoordinator extends DurableObject<Record<string, never>> {
 			.getWebSockets()
 			.map((ws) => ({ ws, state: attachment(ws) }))
 			.filter(
-				(item): item is { ws: WebSocket; state: Attachment } =>
-					!!item.state,
+				(item): item is { ws: WebSocket; state: Attachment } => !!item.state,
 			)
 	}
 

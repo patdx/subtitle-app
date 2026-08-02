@@ -43,12 +43,10 @@ const buttonBase =
 	'rounded-panel px-4 py-2 text-sm font-semibold transition-[background-color,color,transform,box-shadow] duration-150 ease-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600'
 
 const buttonVariants: Record<ButtonVariant, string> = {
-	primary:
-		'bg-ink-900 text-white hover:bg-ink-800 shadow-sm hover:shadow',
+	primary: 'bg-ink-900 text-white hover:bg-ink-800 shadow-sm hover:shadow',
 	secondary:
 		'bg-paper-raised text-ink-900 border border-ink-400 hover:border-ink-600 hover:bg-ink-50',
-	danger:
-		'bg-danger-soft text-danger hover:bg-danger/10',
+	danger: 'bg-danger-soft text-danger hover:bg-danger/10',
 	text: 'bg-transparent text-ember-600 underline underline-offset-2 hover:text-ember-700 hover:bg-transparent',
 }
 
@@ -71,9 +69,7 @@ export function Button({
 export { Button as NavbarBackLink }
 
 export function List({ className, children }: BaseProps) {
-	return (
-		<ul className={clsx('divide-y divide-edge', className)}>{children}</ul>
-	)
+	return <ul className={clsx('divide-y divide-edge', className)}>{children}</ul>
 }
 
 export interface ListItemProps extends BaseProps {
@@ -112,9 +108,7 @@ export function ListItem({
 					{title && <div className="font-medium text-ink-900">{title}</div>}
 					{after && <div>{after}</div>}
 				</div>
-				{isClickable && !after && (
-					<ChevronRightIcon className="text-ink-400" />
-				)}
+				{isClickable && !after && <ChevronRightIcon className="text-ink-400" />}
 			</div>
 			<Slot.Slottable>{children}</Slot.Slottable>
 			{footer && <div className="mt-2">{footer}</div>}

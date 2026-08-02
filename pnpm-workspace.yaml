@@ -5,4 +5,4 @@ allowBuilds:
   sharp: false
   workerd: false
 
-savePrefix: ""
+savePrefix: ''

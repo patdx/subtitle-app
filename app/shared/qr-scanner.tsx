@@ -36,7 +36,11 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 		const tick = (
 			video: HTMLVideoElement,
 			ctx: CanvasRenderingContext2D,
-			jsQR: (data: Uint8ClampedArray, w: number, h: number) => {
+			jsQR: (
+				data: Uint8ClampedArray,
+				w: number,
+				h: number,
+			) => {
 				data?: string
 			} | null,
 			canvas: HTMLCanvasElement,
@@ -46,21 +50,14 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 				canvas.width = video.videoWidth
 				canvas.height = video.videoHeight
 				ctx.drawImage(video, 0, 0)
-				const imageData = ctx.getImageData(
-					0,
-					0,
-					canvas.width,
-					canvas.height,
-				)
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 				const result = jsQR(imageData.data, imageData.width, imageData.height)
 				if (result?.data) {
 					handleCode(result.data)
 					return
 				}
 			}
-			raf = requestAnimationFrame(() =>
-				tick(video, ctx, jsQR, canvas),
-			)
+			raf = requestAnimationFrame(() => tick(video, ctx, jsQR, canvas))
 		}
 
 		const start = async () => {
@@ -92,14 +89,7 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 
 	return (
 		<div className="flex flex-col items-center gap-2">
-			{active && (
-				<video
-					ref={videoRef}
-					className="hidden"
-					muted
-					playsInline
-				/>
-			)}
+			{active && <video ref={videoRef} className="hidden" muted playsInline />}
 			{error && <p className="text-sm text-red-600">{error}</p>}
 			<Button
 				className="w-full"

@@ -1,3 +1,1 @@
-/pnpm-lock.yaml
-/build/**/*
-/auto-imports.d.ts
+worker-configuration.d.ts
