@@ -2,8 +2,15 @@ import { useQuery } from '@tanstack/react-query'
 import { once } from 'lodash-es'
 import { Link as RouterLink } from 'react-router'
 import { Block, Button, Navbar, Page } from '~/components'
+import {
+	MenuItem,
+	MenuPopup,
+	MenuPortal,
+	MenuPositioner,
+	MenuRoot,
+	MenuTrigger,
+} from '~/components/ui/menu'
 import { CheckIcon, ChevronRightIcon, MoreIcon } from '~/shared/icons'
-import { Menu, MenuAction } from '~/shared/menu'
 import sampleSrtUrl from '../assets/sample.srt?url'
 import { syncStore } from '~/shared/sync'
 import type { Route } from './+types/_index'
@@ -331,58 +338,56 @@ const EditFilesPage = () => {
 										)}
 										{!showHistory && metadataChips(file, parseVideo)}
 									</div>
-									<div className="flex flex-none items-center gap-1">
-										<Menu
-											trigger={(open, toggle) => (
-												<button
-													type="button"
-													aria-label="File actions"
-													aria-expanded={open}
-													className={cn(
-														'flex h-10 w-10 items-center justify-center rounded-control text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-900',
-														open && 'bg-ink-50 text-ink-900',
-													)}
-													onClick={(e) => {
-														e.preventDefault()
-														e.stopPropagation()
-														toggle()
-													}}
-												>
-													<MoreIcon />
-												</button>
-											)}
-										>
-											{(close) => (
-												<>
-													<MenuAction
+									<div
+										className="flex flex-none items-center gap-1"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<MenuRoot>
+											<MenuTrigger
+												render={
+													<button
+														type="button"
+														aria-label="File actions"
+														className="flex h-10 w-10 items-center justify-center rounded-control text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-900"
+														onClick={(e) => {
+															e.preventDefault()
+															e.stopPropagation()
+														}}
+													/>
+												}
+											>
+												<MoreIcon />
+											</MenuTrigger>
+											<MenuPortal>
+												<MenuPositioner>
+													<MenuPopup>
+													<MenuItem
 														onClick={() => {
 															void clearProgress(file)
-															close()
 														}}
 													>
 														Clear watch progress
-													</MenuAction>
-													<MenuAction
+													</MenuItem>
+													<MenuItem
 														onClick={() => {
 															setRenameValue(file.name)
 															setRenamingId(file.id)
-															close()
 														}}
 													>
 														Rename
-													</MenuAction>
-													<MenuAction
-														danger
+													</MenuItem>
+													<MenuItem
+														className="text-destructive focus:text-destructive"
 														onClick={() => {
 															void deleteFile(file)
-															close()
 														}}
 													>
 														Delete
-													</MenuAction>
-												</>
-											)}
-										</Menu>
+													</MenuItem>
+													</MenuPopup>
+												</MenuPositioner>
+											</MenuPortal>
+										</MenuRoot>
 									</div>
 								</div>
 								{showHistory && (
