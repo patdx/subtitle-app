@@ -65,6 +65,10 @@ export const Controls = observer(() => {
 		if (!controlState.isOpen || controlState.faded) return
 		const timer = window.setTimeout(() => {
 			controlState.faded = true
+			// Blur the active element so keyboard focus doesn't land on a hidden control
+			if (document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur()
+			}
 		}, 5000)
 		return () => window.clearTimeout(timer)
 	}, [controlState.isOpen, controlState.faded, controlState.activity])
@@ -73,18 +77,17 @@ export const Controls = observer(() => {
 		<>
 			<div
 				className={cn(
-					'absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)] transition-opacity duration-500',
+					'absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-safe pr-safe pt-safe transition-opacity duration-500',
 					controlState.isOpen && controlState.faded && 'pointer-events-none opacity-0',
 				)}
 				onPointerDown={() => controlState.poke()}
 			>
-				{/* padding for iOS */}
-				<div className="h-[env(safe-area-inset-top,0)]"></div>
 				<div className="flex">
 					<Show when={() => controlState.isOpen}>
 						{/* go back button */}
 						<Link
 							to="/"
+							aria-label="Back to file list"
 							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 						>
 							<GoBackIcon />
@@ -97,6 +100,7 @@ export const Controls = observer(() => {
 					{/* transcript button */}
 					<button
 						onClick={() => controlState.toggleTranscript()}
+						aria-label="Toggle transcript"
 						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 					>
 						<TranscriptIcon />
@@ -107,6 +111,7 @@ export const Controls = observer(() => {
 					{/* device sync button */}
 					<Link
 						to="/sync"
+						aria-label="Device sync"
 						className="relative flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 					>
 						<SyncIcon />
@@ -144,6 +149,7 @@ export const Controls = observer(() => {
 									document.exitFullscreen()
 								}
 							}}
+							aria-label="Toggle fullscreen"
 							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 						>
 							<FullScreenIcon />
@@ -153,6 +159,7 @@ export const Controls = observer(() => {
 					{/* toggle menu */}
 					<button
 						onClick={controlState.toggle}
+						aria-label={controlState.isOpen ? 'Hide controls' : 'Show controls'}
 						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
 					>
 						<MenuIcon />
@@ -163,7 +170,7 @@ export const Controls = observer(() => {
 			<Show when={() => controlState.isOpen}>
 				<div
 					className={cn(
-						'absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-[env(safe-area-inset-left,0)] pr-[env(safe-area-inset-right,0)] transition-opacity duration-500',
+						'absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-safe pr-safe pb-safe transition-opacity duration-500',
 						controlState.faded && 'pointer-events-none opacity-0',
 					)}
 					onPointerDown={() => controlState.poke()}
@@ -246,6 +253,7 @@ export const Controls = observer(() => {
 							<button
 								className="flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
 								onClick={togglePlayback}
+								aria-label={clock.isPlaying ? 'Pause' : 'Play'}
 							>
 								{clock.isPlaying ? <PauseIcon /> : <PlayIcon />}
 							</button>
@@ -294,9 +302,6 @@ export const Controls = observer(() => {
 							</TextButton>
 						</div>
 					</div>
-
-					{/* padding */}
-					<div className="h-[env(safe-area-inset-bottom,0)]"></div>
 				</div>
 			</Show>
 		</>

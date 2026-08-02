@@ -91,7 +91,7 @@ const Play = observer(() => {
 	return (
 		<>
 			<div
-				className="relative h-full overflow-hidden bg-black"
+				className="player-overlay relative h-full overflow-hidden bg-black"
 				onPointerDown={() => {
 					if (controlState.isOpen && controlState.faded) {
 						controlState.unfade()

@@ -10,7 +10,7 @@ Connect your own devices to control playback across them — for example, place 
 
 - Each device has a permanent pairing code. Tap **Start pairing** to show your code and QR, then scan it (or type the code) from your other device to connect them.
 - Play, pause, seek and speed on one device control the others; the device whose code you connected to is the host and its playback is authoritative.
-- Subtitles transfer directly between devices over an encrypted WebRTC data channel (Cloudflare Realtime SFU). **No subtitle content is ever stored on or served by the server** — the signaling endpoint only handles opaque WebRTC session IDs. Both devices need to be online.
+- Subtitles transfer directly between devices over an encrypted WebRTC data channel (Cloudflare Realtime SFU). **No subtitle content is ever stored on or served by the server** — a hibernatable Durable Object only coordinates presence and opaque WebRTC session IDs. Both devices need to be online.
 - The connection is remembered: reopening the app reconnects your devices automatically.
 
 ## Stack
@@ -20,7 +20,7 @@ Connect your own devices to control playback across them — for example, place 
 - MobX 7 + mobx-react-lite 5 for player state
 - Tailwind CSS 4
 - IndexedDB (via `idb`) for subtitle storage
-- Cloudflare Workers via Wrangler 4, Cloudflare Realtime SFU for WebRTC signaling/relay
+- Cloudflare Workers and hibernatable Durable Objects via Wrangler 4, Cloudflare Realtime SFU for WebRTC signaling/relay
 
 ## Development
 

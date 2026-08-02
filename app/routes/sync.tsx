@@ -27,11 +27,13 @@ const SyncPage = observer(() => {
 		const codeParam = new URL(location.href).searchParams.get('code')
 		void (async () => {
 			await syncStore.init()
-			if (
-				codeParam &&
-				codeParam.toUpperCase() !== syncStore.myGroupCode
-			) {
-				setCodeInput(codeParam.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))
+			if (codeParam && codeParam.toUpperCase() !== syncStore.myGroupCode) {
+				setCodeInput(
+					codeParam
+						.toUpperCase()
+						.replace(/[^A-Z0-9]/g, '')
+						.slice(0, 10),
+				)
 				await join(codeParam)
 			} else {
 				await syncStore.restore()
@@ -50,7 +52,7 @@ const SyncPage = observer(() => {
 
 	async function join(codeOverride?: string) {
 		const code = (codeOverride ?? codeInput).trim()
-		if (code.length < 4) return
+		if (code.length !== 10) return
 		setBusy(true)
 		try {
 			await syncStore.joinGroup(code)
@@ -72,19 +74,16 @@ const SyncPage = observer(() => {
 			<Navbar
 				title="Sync"
 				left={
-					<NavbarBackLink onClick={() => navigate(-1)}>
-						Back
-					</NavbarBackLink>
+					<NavbarBackLink onClick={() => navigate(-1)}>Back</NavbarBackLink>
 				}
 			/>
 
 			<Block className="px-4">
-				<p className="text-sm text-gray-600">
-					Connect your own devices — for example, place a tablet below
-					the TV and control it from your phone. Play, pause and seek on
-					one device control the others, and subtitles transfer directly
-					between devices: nothing is stored on a server, and both
-					devices need to be online.
+				<p className="max-w-prose text-sm text-gray-600">
+					Connect your own devices. Place a tablet below the TV and control it
+					from your phone. Play, pause and seek on one device control the
+					others. Subtitles transfer directly between devices. Nothing is stored
+					on a server, and both devices need to be online.
 				</p>
 			</Block>
 
@@ -96,7 +95,7 @@ const SyncPage = observer(() => {
 						onChange={(e) => {
 							void syncStore.setDeviceName(e.target.value)
 						}}
-						className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm"
+						className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-base sm:text-sm"
 						maxLength={24}
 					/>
 				</label>
@@ -171,9 +170,7 @@ const SyncPage = observer(() => {
 							<Button
 								className="mt-3"
 								onClick={() => {
-									void navigator.clipboard
-										?.writeText(qrValue)
-										.catch(() => {})
+									void navigator.clipboard?.writeText(qrValue).catch(() => {})
 								}}
 							>
 								Copy link
@@ -242,8 +239,8 @@ const SyncPage = observer(() => {
 								{busy || connecting ? 'Connecting…' : 'Start pairing'}
 							</Button>
 							<p className="mt-2 text-xs text-gray-500">
-								Scan this code from your other device (phone, tablet,
-								TV box) to connect it.
+								Scan this code from your other device (phone, tablet, TV box) to
+								connect it.
 							</p>
 						</div>
 					</Block>
@@ -261,7 +258,7 @@ const SyncPage = observer(() => {
 									e.target.value
 										.toUpperCase()
 										.replace(/[^A-Z0-9]/g, '')
-										.slice(0, 6),
+										.slice(0, 10),
 								)
 							}
 							placeholder="Enter the code shown on the other device"
@@ -273,7 +270,7 @@ const SyncPage = observer(() => {
 						/>
 						<Button
 							onClick={() => void join()}
-							disabled={busy || connecting || codeInput.trim().length < 4}
+							disabled={busy || connecting || codeInput.trim().length !== 10}
 						>
 							{busy || connecting ? 'Connecting…' : 'Connect'}
 						</Button>
@@ -295,9 +292,7 @@ const MembersList = observer(() => {
 	return (
 		<>
 			<Block className="px-4">
-				<h2 className="text-sm font-medium text-gray-600">
-					Connected devices
-				</h2>
+				<h2 className="text-sm font-medium text-gray-600">Connected devices</h2>
 			</Block>
 			<List className="list-strong-ios list-outline-ios">
 				{syncStore.roomPeers.map((peer) => (
@@ -323,7 +318,10 @@ const MembersList = observer(() => {
 })
 
 const ReceivedFilesList = observer(() => {
-	if (syncStore.transfers.length === 0 && syncStore.receivedFiles.length === 0) {
+	if (
+		syncStore.transfers.length === 0 &&
+		syncStore.receivedFiles.length === 0
+	) {
 		return null
 	}
 	return (

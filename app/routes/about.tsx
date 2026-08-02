@@ -25,7 +25,7 @@ export default function About({}: Route.ComponentProps) {
 				}
 			/>
 			<Block className="px-4">
-				<p className="text-sm text-gray-600">
+				<p className="max-w-prose text-sm text-gray-600">
 					Subtitle App by{' '}
 					<a href="https://github.com/patdx" target="_blank" rel="noreferrer">
 						patdx
