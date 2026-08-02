@@ -1,207 +1,224 @@
 import { DurableObject } from 'cloudflare:workers'
 
-const MAX_ROOM_CONNECTIONS = 8
-const MAX_NAME_LENGTH = 64
-const SESSION_ID_RE = /^[A-Za-z0-9_-]{16,128}$/
+const MAX_CONNECTIONS = 8
+const MAX_MESSAGE_BYTES = 32 * 1024
+const MAX_FOLLOWER_ICE_MESSAGES = 64
+const MAX_FOLLOWER_SIGNAL_MESSAGES = 80
+const MAX_HOST_ICE_MESSAGES = 384
+const MAX_HOST_SIGNAL_MESSAGES = 512
+const ID_RE = /^[A-Fa-f0-9]{32}$/
 const HOST_TOKEN_RE = /^host\.([A-Fa-f0-9]{64})$/
 
-export type RoomRole = 'host' | 'follower'
-
-export interface RoomPeer {
-	sessionId: string
+type Role = 'host' | 'follower'
+interface Attachment {
+	id: string
+	role: Role
 	name: string
-	isHost: boolean
-}
-
-interface SocketAttachment extends RoomPeer {
+	iceMessages: number
+	signalMessages: number
+	negotiated?: boolean
 	superseded?: boolean
 }
 
-export interface RoomSnapshot {
-	hostSessionId: string
-	peers: RoomPeer[]
-}
-
-const socketAttachment = (socket: WebSocket): SocketAttachment | null => {
-	const value: unknown = socket.deserializeAttachment()
+const attachment = (ws: WebSocket): Attachment | null => {
+	const value: unknown = ws.deserializeAttachment()
 	if (!value || typeof value !== 'object') return null
-	const peer = value as Partial<SocketAttachment>
+	const item = value as Partial<Attachment>
 	if (
-		typeof peer.sessionId !== 'string' ||
-		typeof peer.name !== 'string' ||
-		typeof peer.isHost !== 'boolean'
-	) {
+		!ID_RE.test(item.id ?? '') ||
+		(item.role !== 'host' && item.role !== 'follower')
+	)
 		return null
-	}
 	return {
-		sessionId: peer.sessionId,
-		name: peer.name,
-		isHost: peer.isHost,
-		superseded: peer.superseded === true,
+		id: item.id!,
+		role: item.role,
+		name: typeof item.name === 'string' ? item.name : 'Device',
+		iceMessages: typeof item.iceMessages === 'number' ? item.iceMessages : 0,
+		signalMessages:
+			typeof item.signalMessages === 'number' ? item.signalMessages : 0,
+		superseded: item.superseded === true,
+		negotiated: item.negotiated === true,
 	}
 }
 
 export class RoomCoordinator extends DurableObject<Record<string, never>> {
-	getSnapshot(): RoomSnapshot | null {
-		const peers = this.peers()
-		const host = peers.find((peer) => peer.isHost)
-		return host ? { hostSessionId: host.sessionId, peers } : null
-	}
-
 	async fetch(request: Request): Promise<Response> {
-		if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
-			return Response.json(
-				{ error: 'WebSocket upgrade required' },
-				{ status: 426 },
-			)
-		}
-
+		if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket')
+			return new Response('Upgrade required', { status: 426 })
 		const url = new URL(request.url)
-		const role = url.searchParams.get('role')
-		const sessionId = url.searchParams.get('sessionId') ?? ''
+		const role = url.searchParams.get('role') as Role | null
+		const id = url.searchParams.get('id') ?? ''
 		const rawName = url.searchParams.get('name') ?? ''
-		const name = rawName.trim().slice(0, MAX_NAME_LENGTH) || 'Device'
 		if (
 			(role !== 'host' && role !== 'follower') ||
-			!SESSION_ID_RE.test(sessionId) ||
-			rawName.length > MAX_NAME_LENGTH
-		) {
-			return Response.json(
-				{ error: 'Invalid room connection' },
-				{ status: 400 },
-			)
-		}
+			!ID_RE.test(id) ||
+			rawName.length > 64
+		)
+			return new Response('Invalid connection', { status: 400 })
 
-		const sockets = this.ctx.getWebSockets()
-		const active = sockets
-			.map((socket) => ({ socket, peer: socketAttachment(socket) }))
-			.filter(
-				(entry): entry is { socket: WebSocket; peer: SocketAttachment } =>
-					entry.peer !== null && !entry.peer.superseded,
-			)
-		const host = active.find(({ peer }) => peer.isHost)
 		const hostToken = request.headers
 			.get('Sec-WebSocket-Protocol')
 			?.split(',')
-			.map((value) => value.trim())
-			.find((value) => HOST_TOKEN_RE.test(value))
-
+			.map((v) => v.trim())
+			.find((v) => HOST_TOKEN_RE.test(v))
 		if (role === 'host') {
-			if (!hostToken) {
-				return Response.json(
-					{ error: 'Missing host credential' },
-					{ status: 401 },
-				)
-			}
-			const tokenHash = await sha256(hostToken)
-			const ownerHash = await this.ctx.storage.get<string>('ownerTokenHash')
-			if (ownerHash && ownerHash !== tokenHash) {
-				return Response.json(
-					{ error: 'Room owner credential rejected' },
-					{ status: 403 },
-				)
-			}
-			if (!ownerHash) await this.ctx.storage.put('ownerTokenHash', tokenHash)
-			if (host) {
-				if (!this.ctx.getTags(host.socket).includes(hostToken)) {
-					return Response.json(
-						{ error: 'Room already has a host' },
-						{ status: 409 },
-					)
-				}
-				host.peer.superseded = true
-				host.socket.serializeAttachment(host.peer)
-				host.socket.close(1000, 'Replaced by reconnect')
-			}
-		} else if (!host) {
-			return Response.json({ error: 'Room not found' }, { status: 404 })
+			if (!hostToken)
+				return new Response('Missing owner credential', { status: 401 })
+			const hash = await sha256(hostToken)
+			const authorized = await this.ctx.storage.transaction(async (txn) => {
+				const current = await txn.get<string>('ownerTokenHash')
+				if (current && current !== hash) return false
+				if (!current) await txn.put('ownerTokenHash', hash)
+				return true
+			})
+			if (!authorized)
+				return new Response('Owner credential rejected', { status: 403 })
 		}
 
-		const duplicate = active.find(({ peer }) => peer.sessionId === sessionId)
-		if (duplicate && duplicate !== host) {
-			return Response.json(
-				{ error: 'Session already connected' },
-				{ status: 409 },
-			)
+		let sockets = this.activeSockets()
+		const host = sockets.find(({ state }) => state.role === 'host')
+		if (role === 'follower' && !host)
+			return new Response('Room not found', { status: 404 })
+		if (role === 'host' && host) {
+			if (!hostToken || !this.ctx.getTags(host.ws).includes(hostToken))
+				return new Response('Room already hosted', { status: 409 })
+			host.state.superseded = true
+			host.ws.serializeAttachment(host.state)
+			host.ws.close(1000, 'Host reconnected')
+			sockets = this.activeSockets()
 		}
-		if (active.length - (duplicate ? 1 : 0) >= MAX_ROOM_CONNECTIONS) {
-			return Response.json({ error: 'Room is full' }, { status: 429 })
-		}
+		if (sockets.some(({ state }) => state.id === id))
+			return new Response('Duplicate connection', { status: 409 })
+		if (sockets.length >= MAX_CONNECTIONS)
+			return new Response('Room full', { status: 429 })
 
 		const pair = new WebSocketPair()
-		const client = pair[0]
-		const server = pair[1]
-		const peer: SocketAttachment = { sessionId, name, isHost: role === 'host' }
-		server.serializeAttachment(peer)
+		const state: Attachment = {
+			id,
+			role,
+			name: rawName.trim() || 'Device',
+			iceMessages: 0,
+			signalMessages: 0,
+		}
+		pair[1].serializeAttachment(state)
 		this.ctx.acceptWebSocket(
-			server,
-			role === 'host' && hostToken ? ['host', hostToken] : ['follower'],
+			pair[1],
+			role === 'host' && hostToken ? [role, hostToken] : [role],
 		)
-		this.broadcastSnapshot()
-
+		this.sendPeers()
 		return new Response(null, {
 			status: 101,
-			webSocket: client,
+			webSocket: pair[0],
 			headers: { 'Sec-WebSocket-Protocol': 'subtitle-sync' },
 		})
 	}
 
-	webSocketMessage(socket: WebSocket): void {
-		// Presence is server-driven. Closing clients that send application data
-		// prevents this socket from becoming an unbounded relay or wake-up source.
-		socket.close(1008, 'Client messages are not accepted')
+	webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer): void {
+		if (
+			typeof raw !== 'string' ||
+			raw.length > MAX_MESSAGE_BYTES ||
+			new TextEncoder().encode(raw).byteLength > MAX_MESSAGE_BYTES
+		)
+			return ws.close(1009, 'Invalid message')
+		const sender = attachment(ws)
+		if (!sender) return ws.close(1008, 'Invalid sender')
+		let parsed: unknown
+		try {
+			parsed = JSON.parse(raw)
+		} catch {
+			return ws.close(1007, 'Invalid JSON')
+		}
+		if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+			return ws.close(1008, 'Invalid signal')
+		const msg = parsed as {
+			type?: string
+			to?: string
+			generation?: string
+			sdp?: unknown
+			candidates?: unknown
+		}
+		if (
+			!['offer', 'answer', 'ice', 'ready', 'cancel'].includes(msg.type ?? '') ||
+			!ID_RE.test(msg.to ?? '') ||
+			!ID_RE.test(msg.generation ?? '')
+		)
+			return ws.close(1008, 'Invalid signal')
+		const maxSignals =
+			sender.role === 'host'
+				? MAX_HOST_SIGNAL_MESSAGES
+				: MAX_FOLLOWER_SIGNAL_MESSAGES
+		if (++sender.signalMessages > maxSignals)
+			return ws.close(1008, 'Too many signals')
+		if (msg.type === 'ice') {
+			const maxIce =
+				sender.role === 'host'
+					? MAX_HOST_ICE_MESSAGES
+					: MAX_FOLLOWER_ICE_MESSAGES
+			if (++sender.iceMessages > maxIce)
+				return ws.close(1008, 'Too many candidates')
+		}
+		if (
+			(msg.type === 'offer' && sender.role !== 'host') ||
+			((msg.type === 'answer' || msg.type === 'ready') &&
+				sender.role !== 'follower')
+		)
+			return ws.close(1008, 'Invalid signal direction')
+		ws.serializeAttachment(sender)
+		const target = this.activeSockets().find(({ state }) => state.id === msg.to)
+		if (!target || target.state.role === sender.role)
+			return ws.close(1008, 'Invalid target')
+		target.ws.send(JSON.stringify({ ...msg, from: sender.id }))
+		if (msg.type === 'ready' && sender.role === 'follower') {
+			sender.negotiated = true
+			ws.serializeAttachment(sender)
+			ws.close(1000, 'P2P connected')
+		}
 	}
 
-	webSocketClose(socket: WebSocket): void {
-		this.removeSocket(socket)
+	webSocketClose(ws: WebSocket): void {
+		this.remove(ws)
+	}
+	webSocketError(ws: WebSocket): void {
+		this.remove(ws)
 	}
 
-	webSocketError(socket: WebSocket): void {
-		this.removeSocket(socket)
-	}
-
-	private peers(exclude?: WebSocket): RoomPeer[] {
+	private activeSockets() {
 		return this.ctx
 			.getWebSockets()
-			.filter((socket) => socket !== exclude)
-			.map(socketAttachment)
+			.map((ws) => ({ ws, state: attachment(ws) }))
 			.filter(
-				(peer): peer is SocketAttachment => peer !== null && !peer.superseded,
+				(item): item is { ws: WebSocket; state: Attachment } =>
+					!!item.state && !item.state.superseded,
 			)
-			.map(({ sessionId, name, isHost }) => ({ sessionId, name, isHost }))
 	}
-
-	private broadcastSnapshot(exclude?: WebSocket): void {
-		const peers = this.peers(exclude)
-		const host = peers.find((peer) => peer.isHost)
-		const snapshot = host ? { hostSessionId: host.sessionId, peers } : null
-		if (!snapshot) return
-		const message = JSON.stringify({ type: 'snapshot', ...snapshot })
-		for (const socket of this.ctx.getWebSockets()) {
-			const peer = socketAttachment(socket)
-			if (!peer?.superseded) socket.send(message)
-		}
+	private sendPeers(exclude?: WebSocket) {
+		const peers = this.activeSockets()
+			.filter(({ ws }) => ws !== exclude)
+			.map(({ state }) => ({
+				id: state.id,
+				name: state.name,
+				isHost: state.role === 'host',
+			}))
+		const message = JSON.stringify({ type: 'peers', peers })
+		for (const { ws } of this.activeSockets())
+			if (ws !== exclude) ws.send(message)
 	}
-
-	private removeSocket(socket: WebSocket): void {
-		const departed = socketAttachment(socket)
-		if (!departed || departed.superseded) return
-		if (departed.isHost) {
-			for (const follower of this.ctx.getWebSockets('follower')) {
+	private remove(ws: WebSocket) {
+		const state = attachment(ws)
+		if (!state || state.superseded) return
+		if (state.negotiated) return
+		if (state.role === 'host')
+			for (const follower of this.ctx.getWebSockets('follower'))
 				follower.close(1001, 'Host left')
-			}
-			return
-		}
-		this.broadcastSnapshot(socket)
+		else this.sendPeers(ws)
 	}
 }
 
-const sha256 = async (value: string): Promise<string> => {
-	const digest = await crypto.subtle.digest(
-		'SHA-256',
-		new TextEncoder().encode(value),
-	)
-	return [...new Uint8Array(digest)]
-		.map((byte) => byte.toString(16).padStart(2, '0'))
+const sha256 = async (value: string) =>
+	[
+		...new Uint8Array(
+			await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)),
+		),
+	]
+		.map((b) => b.toString(16).padStart(2, '0'))
 		.join('')
-}

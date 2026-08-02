@@ -32,7 +32,7 @@ const SyncPage = observer(() => {
 					codeParam
 						.toUpperCase()
 						.replace(/[^A-Z0-9]/g, '')
-						.slice(0, 10),
+						.slice(0, 20),
 				)
 				await join(codeParam)
 			} else {
@@ -52,7 +52,7 @@ const SyncPage = observer(() => {
 
 	async function join(codeOverride?: string) {
 		const code = (codeOverride ?? codeInput).trim()
-		if (code.length !== 10) return
+		if (code.length !== 20) return
 		setBusy(true)
 		try {
 			await syncStore.joinGroup(code)
@@ -258,7 +258,7 @@ const SyncPage = observer(() => {
 									e.target.value
 										.toUpperCase()
 										.replace(/[^A-Z0-9]/g, '')
-										.slice(0, 10),
+										.slice(0, 20),
 								)
 							}
 							placeholder="Enter the code shown on the other device"
@@ -270,7 +270,7 @@ const SyncPage = observer(() => {
 						/>
 						<Button
 							onClick={() => void join()}
-							disabled={busy || connecting || codeInput.trim().length !== 10}
+							disabled={busy || connecting || codeInput.trim().length !== 20}
 						>
 							{busy || connecting ? 'Connecting…' : 'Connect'}
 						</Button>
