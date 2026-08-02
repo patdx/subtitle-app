@@ -20,5 +20,11 @@
       "namespace_id": "742019",
       "simple": { "limit": 60, "period": 60 }
     }
+  ],
+  "routes": [
+    {
+      "pattern": "subtitle.pmil.me",
+      "custom_domain": true
+    }
   ]
 }
