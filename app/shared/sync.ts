@@ -13,9 +13,9 @@ import {
 } from './utils'
 
 /**
- * Multi-device sync via WebRTC data channels brokered by Cloudflare
- * Realtime SFU (signaling proxied through /api/sync on the Worker). Subtitle content never touches the server: it travels
- * only over the data channel, device to device.
+ * Multi-device sync over direct, bidirectional WebRTC data channels.
+ * A hibernatable Durable Object relays only temporary SDP/ICE signaling;
+ * No relay is configured: peers must establish a direct connection.
  *
  * Device pairing: every device owns a persistent pairing code and can
  * either share its own code (QR/code on screen) or connect to another
@@ -23,10 +23,7 @@ import {
  * its clock is authoritative, and the connected device controls it
  * with play/pause/seek/speed commands.
  *
- * Topology (hub and spoke, full duplex per pair):
- *   - Every device publishes its own "subtitles" data channel.
- *   - The host pulls each connected device's channel (device -> host).
- *   - Each connected device pulls the host's channel (host -> devices).
+ * Topology is hub-and-spoke, with one full-duplex data channel per pair.
  */
 
 const API = '/api/sync'
@@ -35,6 +32,10 @@ const CHUNK_SIZE = 32 * 1024
 const BROADCAST_INTERVAL_MS = 100
 const PING_INTERVAL_MS = 5000
 const CONNECT_TIMEOUT_MS = 15000
+const MAX_PRESENCE_RECONNECT_ATTEMPTS = 6
+const MAX_OUTBOUND_QUEUE = 128
+const MAX_CONCURRENT_TRANSFERS = 4
+const MAX_TRANSFER_CHUNKS = 1024
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export type SyncRole = 'none' | 'host' | 'follower'
@@ -53,28 +54,25 @@ export interface ReceivedFile {
 	name: string
 }
 
-interface PresenceSnapshot {
-	type: 'snapshot'
-	hostSessionId: string
-	peers: { sessionId: string; name: string; isHost: boolean }[]
-}
+type SignalMessage =
+	| { type: 'peers'; peers: { id: string; name: string; isHost: boolean }[] }
+	| {
+			type: 'offer' | 'answer'
+			from: string
+			generation: string
+			sdp: RTCSessionDescriptionInit
+	  }
+	| {
+			type: 'ice'
+			from: string
+			generation: string
+			candidates: RTCIceCandidateInit[]
+	  }
 
-const isPresenceSnapshot = (value: unknown): value is PresenceSnapshot => {
-	if (!value || typeof value !== 'object') return false
-	const message = value as Partial<PresenceSnapshot>
-	return (
-		message.type === 'snapshot' &&
-		typeof message.hostSessionId === 'string' &&
-		Array.isArray(message.peers) &&
-		message.peers.every(
-			(peer) =>
-				peer &&
-				typeof peer === 'object' &&
-				typeof peer.sessionId === 'string' &&
-				typeof peer.name === 'string' &&
-				typeof peer.isHost === 'boolean',
-		)
-	)
+interface PeerTransport {
+	pc: RTCPeerConnection
+	generation: string
+	pendingIce: RTCIceCandidateInit[]
 }
 
 export type SyncMessage =
@@ -106,7 +104,7 @@ export type SyncMessage =
 	| { type: 'pong'; sentAt: number }
 
 const makeRoomCode = (): string => {
-	const chars = new Uint8Array(10)
+	const chars = new Uint8Array(20)
 	crypto.getRandomValues(chars)
 	let code = ''
 	for (const c of chars) {
@@ -156,10 +154,14 @@ class SyncStore {
 
 	/** non-observable WebRTC state */
 	pc: RTCPeerConnection | null = null
+	peerTransports = new Map<string, PeerTransport>()
+	earlyIce = new Map<
+		string,
+		{ generation: string; candidates: RTCIceCandidateInit[] }
+	>()
 	outboundDc: RTCDataChannel | null = null
 	inboundDcs: Map<string, RTCDataChannel> = new Map()
 	outboundQueue: string[] = []
-	pulledPeers = new Set<string>()
 	presenceSocket: WebSocket | null = null
 	presenceReconnectTimer: number | null = null
 	presenceReconnectAttempts = 0
@@ -185,10 +187,11 @@ class SyncStore {
 			this,
 			{
 				pc: false,
+				peerTransports: false,
+				earlyIce: false,
 				outboundDc: false,
 				inboundDcs: false,
 				outboundQueue: false,
-				pulledPeers: false,
 				presenceSocket: false,
 				presenceReconnectTimer: false,
 				presenceReconnectAttempts: false,
@@ -238,7 +241,7 @@ class SyncStore {
 	}
 
 	private async ensureMyGroup(): Promise<string> {
-		if (!this.myGroupCode || this.myGroupCode.length !== 10) {
+		if (!this.myGroupCode || this.myGroupCode.length !== 20) {
 			this.myGroupCode = makeRoomCode()
 			await setSetting('myGroupCode', this.myGroupCode)
 		}
@@ -312,9 +315,15 @@ class SyncStore {
 
 	send(msg: SyncMessage) {
 		const raw = JSON.stringify(msg)
-		if (this.outboundDc && this.outboundDc.readyState === 'open') {
+		if (this.role === 'host') {
+			for (const dc of this.inboundDcs.values()) {
+				if (dc.readyState === 'open') dc.send(raw)
+			}
+		} else if (this.outboundDc && this.outboundDc.readyState === 'open') {
 			this.outboundDc.send(raw)
 		} else {
+			if (this.outboundQueue.length >= MAX_OUTBOUND_QUEUE)
+				this.outboundQueue.shift()
 			this.outboundQueue.push(raw)
 		}
 	}
@@ -329,16 +338,7 @@ class SyncStore {
 		this.role = 'host'
 
 		try {
-			const { sessionId } = await sfu('/sessions/new', { method: 'POST' })
-			this.sessionId = sessionId
-
-			const pc = makePeerConnection()
-			this.pc = pc
-			this._monitorConnection(pc)
-
-			await establishTransport(pc, sessionId, true)
-			await this.publishChannel(pc, sessionId)
-
+			this.sessionId = makeConnectionId()
 			this.roomCode = keepCode
 			this._startConnectTimeout()
 			await this._connectPresence('host')
@@ -359,44 +359,33 @@ class SyncStore {
 		this.role = 'follower'
 
 		try {
-			const room = (await (
-				await fetch(
-					`${API}?action=lookup-room&code=${encodeURIComponent(code)}`,
-				)
-			).json()) as { hostSessionId?: string; error?: string }
-			if (!room.hostSessionId) {
-				throw new Error(room.error ?? 'Group not found')
-			}
-			const hostSessionId = room.hostSessionId as string
 			this.roomCode = code.toUpperCase()
-
-			const { sessionId } = await sfu('/sessions/new', { method: 'POST' })
-			this.sessionId = sessionId
-
-			const pc = makePeerConnection()
-			this.pc = pc
-			this._monitorConnection(pc)
-
-			await establishTransport(pc, sessionId, false)
-			await this.publishChannel(pc, sessionId)
+			this.sessionId = makeConnectionId()
 			this._startPing()
-
 			this._startConnectTimeout()
-			const hostDc = await this.pullChannel(pc, hostSessionId)
-			this.inboundDcs.set(hostSessionId, hostDc)
-			this._attachInboundChannel(hostDc)
-
-			this.connectionState = 'connected'
-			this._clearConnectTimeout()
-
-			this.send({ type: 'join', deviceName: this.deviceName })
 			await this._connectPresence('follower')
+			await this._waitForPeerConnection()
 		} catch (err) {
 			this._fail(
 				err,
 				'Could not reach this group. Make sure the owner is sharing and try again.',
 			)
 		}
+	}
+
+	private _waitForPeerConnection(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			const started = Date.now()
+			const check = window.setInterval(() => {
+				if (this.connectionState === 'connected') {
+					window.clearInterval(check)
+					resolve()
+				} else if (Date.now() - started >= CONNECT_TIMEOUT_MS) {
+					window.clearInterval(check)
+					reject(new Error('Connection timed out'))
+				}
+			}, 100)
+		})
 	}
 
 	// ------------------------------------------------------------------
@@ -513,7 +502,32 @@ class SyncStore {
 	// Incoming messages
 	// ------------------------------------------------------------------
 
-	private _handleMessage(msg: SyncMessage) {
+	private _handleMessage(value: unknown) {
+		if (!value || typeof value !== 'object' || Array.isArray(value)) return
+		const msg = value as SyncMessage
+		const allowed =
+			this.role === 'host'
+				? new Set([
+						'cmd-play',
+						'cmd-pause',
+						'cmd-seek',
+						'cmd-speed',
+						'join',
+						'leave',
+						'request-file',
+						'ping',
+						'pong',
+					])
+				: new Set([
+						'state-clock',
+						'now-playing',
+						'file-list',
+						'file-chunk',
+						'file-deleted',
+						'ping',
+						'pong',
+					])
+		if (!allowed.has(msg.type)) return
 		switch (msg.type) {
 			case 'state-clock':
 				this._applyClockState(msg)
@@ -631,8 +645,24 @@ class SyncStore {
 	}
 
 	private _handleFileChunk(msg: Extract<SyncMessage, { type: 'file-chunk' }>) {
+		if (
+			typeof msg.transferId !== 'string' ||
+			msg.transferId.length > 128 ||
+			typeof msg.fileName !== 'string' ||
+			msg.fileName.length > 256 ||
+			!Number.isInteger(msg.totalChunks) ||
+			msg.totalChunks < 1 ||
+			msg.totalChunks > MAX_TRANSFER_CHUNKS ||
+			!Number.isInteger(msg.chunkIndex) ||
+			msg.chunkIndex < 0 ||
+			msg.chunkIndex >= msg.totalChunks ||
+			typeof msg.data !== 'string' ||
+			msg.data.length > CHUNK_SIZE
+		)
+			return
 		let buffer = this.receiveBuffers.get(msg.transferId)
 		if (!buffer) {
+			if (this.receiveBuffers.size >= MAX_CONCURRENT_TRANSFERS) return
 			buffer = {
 				fileName: msg.fileName,
 				total: msg.totalChunks,
@@ -644,6 +674,8 @@ class SyncStore {
 			}
 			this.receiveBuffers.set(msg.transferId, buffer)
 		}
+		if (buffer.total !== msg.totalChunks || buffer.fileName !== msg.fileName)
+			return
 		buffer.chunks[msg.chunkIndex] = msg.data
 		this._updateTransfers()
 
@@ -701,57 +733,41 @@ class SyncStore {
 	// WebRTC plumbing
 	// ------------------------------------------------------------------
 
-	private async publishChannel(pc: RTCPeerConnection, sessionId: string) {
-		const response = await sfu(`/sessions/${sessionId}/datachannels/new`, {
-			method: 'POST',
-			body: JSON.stringify({
-				dataChannels: [{ location: 'local', dataChannelName: DC_NAME }],
-			}),
-		})
-		const dc = pc.createDataChannel(DC_NAME, {
-			negotiated: true,
-			id: response.dataChannels[0].id,
-		})
-		this.outboundDc = dc
-		dc.onopen = () => {
-			while (this.outboundQueue.length > 0) {
-				const raw = this.outboundQueue.shift()
-				if (raw !== undefined) dc.send(raw)
-			}
-		}
-	}
-
-	private async pullChannel(pc: RTCPeerConnection, publisherSessionId: string) {
-		const response = await sfu(`/sessions/${this.sessionId}/datachannels/new`, {
-			method: 'POST',
-			body: JSON.stringify({
-				dataChannels: [
-					{
-						location: 'remote',
-						sessionId: publisherSessionId,
-						dataChannelName: DC_NAME,
-					},
-				],
-			}),
-		})
-		const dc = pc.createDataChannel(DC_NAME, {
-			negotiated: true,
-			id: response.dataChannels[0].id,
-		})
-		return dc
-	}
-
-	private _monitorConnection(pc: RTCPeerConnection) {
+	private _monitorConnection(pc: RTCPeerConnection, peerId: string) {
 		pc.onconnectionstatechange = () => {
+			if (pc.connectionState === 'connected') {
+				this.connectionState = 'connected'
+				this.presenceReconnectAttempts = 0
+				this._clearConnectTimeout()
+				if (this.role === 'follower')
+					this._sendSignal({
+						type: 'ready',
+						to: peerId,
+						generation:
+							this.peerTransports.get(peerId)?.generation ??
+							makeConnectionId(),
+					})
+			}
 			if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
-				if (this.pc === pc && this.connectionState === 'connected') {
-					this.connectionState = 'disconnected'
+				const transport = this.peerTransports.get(peerId)
+				if (transport?.pc === pc) this.peerTransports.delete(peerId)
+				this.roomPeers = this.roomPeers.map((peer) =>
+					peer.sessionId === peerId ? { ...peer, connected: false } : peer,
+				)
+				if (
+					this.role === 'follower' &&
+					!this.presenceIntentionalClose &&
+					this.roomCode
+				) {
+					this.connectionState = 'connecting'
+					this._startConnectTimeout()
+					this._schedulePresenceReconnect('follower')
 				}
 			}
 		}
 	}
 
-	private _attachInboundChannel(dc: RTCDataChannel) {
+	private _attachDataChannel(dc: RTCDataChannel, peerId: string) {
 		dc.onmessage = (event) => {
 			try {
 				this._handleMessage(JSON.parse(event.data))
@@ -759,15 +775,127 @@ class SyncStore {
 				console.warn('Ignoring malformed sync message', err)
 			}
 		}
-		dc.onclose = () => {
-			for (const [key, channel] of this.inboundDcs) {
-				if (channel === dc) {
-					this.inboundDcs.delete(key)
-					this.roomPeers = this.roomPeers.map((peer) =>
-						peer.sessionId === key ? { ...peer, connected: false } : peer,
-					)
-				}
+		dc.onopen = () => {
+			if (this.role === 'follower') this.outboundDc = dc
+			else this.inboundDcs.set(peerId, dc)
+			this.roomPeers = this.roomPeers.map((peer) =>
+				peer.sessionId === peerId ? { ...peer, connected: true } : peer,
+			)
+			while (this.outboundQueue.length > 0) {
+				const raw = this.outboundQueue.shift()
+				if (raw !== undefined) dc.send(raw)
 			}
+			if (this.role === 'follower')
+				this.send({ type: 'join', deviceName: this.deviceName })
+			else void this._handlePeerJoin()
+		}
+		dc.onclose = () => {
+			this.inboundDcs.delete(peerId)
+			if (this.outboundDc === dc) this.outboundDc = null
+		}
+	}
+
+	private _newPeer(peerId: string, generation: string): PeerTransport {
+		this.peerTransports.get(peerId)?.pc.close()
+		const pc = new RTCPeerConnection({
+			iceServers: [{ urls: 'stun:stun.cloudflare.com:3478' }],
+			iceTransportPolicy: 'all',
+			bundlePolicy: 'max-bundle',
+		})
+		const transport: PeerTransport = { pc, generation, pendingIce: [] }
+		const early = this.earlyIce.get(peerId)
+		if (early?.generation === generation)
+			transport.pendingIce.push(...early.candidates)
+		this.earlyIce.delete(peerId)
+		this.peerTransports.set(peerId, transport)
+		if (this.role === 'follower') this.pc = pc
+		this._monitorConnection(pc, peerId)
+		pc.onicecandidate = (event) => {
+			if (event.candidate)
+				this._sendSignal({
+					type: 'ice',
+					to: peerId,
+					generation,
+					candidates: [event.candidate.toJSON()],
+				})
+		}
+		return transport
+	}
+
+	private async _offerPeer(peerId: string) {
+		const generation = makeConnectionId()
+		const transport = this._newPeer(peerId, generation)
+		const dc = transport.pc.createDataChannel(DC_NAME)
+		this._attachDataChannel(dc, peerId)
+		await transport.pc.setLocalDescription(await transport.pc.createOffer())
+		this._sendSignal({
+			type: 'offer',
+			to: peerId,
+			generation,
+			sdp: transport.pc.localDescription,
+		})
+	}
+
+	private async _handleSignal(message: SignalMessage) {
+		if (message.type === 'peers') {
+			const signaled = message.peers
+				.filter((peer) => peer.id !== this.sessionId)
+				.map((peer) => ({
+					sessionId: peer.id,
+					name: peer.name,
+					isHost: peer.isHost,
+					connected:
+						this.inboundDcs.has(peer.id) ||
+						(peer.isHost && this.outboundDc?.readyState === 'open'),
+				}))
+			const signaledIds = new Set(signaled.map((peer) => peer.sessionId))
+			this.roomPeers = [
+				...signaled,
+				...this.roomPeers.filter(
+					(peer) => peer.connected && !signaledIds.has(peer.sessionId),
+				),
+			]
+			if (this.role === 'host')
+				for (const peer of message.peers)
+					if (!peer.isHost && !this.peerTransports.has(peer.id))
+						void this._offerPeer(peer.id)
+			return
+		}
+		if (message.type === 'offer' && this.role === 'follower') {
+			const transport = this._newPeer(message.from, message.generation)
+			transport.pc.ondatachannel = (event) =>
+				this._attachDataChannel(event.channel, message.from)
+			await transport.pc.setRemoteDescription(message.sdp)
+			for (const ice of transport.pendingIce.splice(0))
+				await transport.pc.addIceCandidate(ice)
+			await transport.pc.setLocalDescription(await transport.pc.createAnswer())
+			this._sendSignal({
+				type: 'answer',
+				to: message.from,
+				generation: message.generation,
+				sdp: transport.pc.localDescription,
+			})
+			return
+		}
+		const transport = this.peerTransports.get(message.from)
+		if (!transport || transport.generation !== message.generation) {
+			if (message.type === 'ice')
+				this.earlyIce.set(message.from, {
+					generation: message.generation,
+					candidates: message.candidates,
+				})
+			return
+		}
+		if (message.type === 'answer' && this.role === 'host') {
+			await transport.pc.setRemoteDescription(message.sdp)
+			for (const ice of transport.pendingIce.splice(0))
+				await transport.pc.addIceCandidate(ice)
+		} else if (message.type === 'ice') {
+			if (!transport.pc.remoteDescription)
+				transport.pendingIce.push(...message.candidates)
+			else
+				for (const ice of message.candidates)
+					await transport.pc.addIceCandidate(ice)
 		}
 	}
 
@@ -785,7 +913,7 @@ class SyncStore {
 		url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 		url.searchParams.set('code', this.roomCode)
 		url.searchParams.set('role', role)
-		url.searchParams.set('sessionId', this.sessionId)
+		url.searchParams.set('id', this.sessionId)
 		url.searchParams.set('name', this.deviceName.slice(0, 64))
 		const protocols = ['subtitle-sync']
 		if (role === 'host') {
@@ -807,11 +935,12 @@ class SyncStore {
 			}
 			socket.onmessage = (event) => {
 				try {
-					const message: unknown = JSON.parse(String(event.data))
-					if (!isPresenceSnapshot(message)) return
-					this._applyPresenceSnapshot(message)
-					this.presenceReconnectAttempts = 0
-					if (!settled) {
+					const message = JSON.parse(String(event.data)) as SignalMessage
+					void this._handleSignal(message).catch((err) =>
+						console.warn('Signal failed', err),
+					)
+					if (role === 'host') this.presenceReconnectAttempts = 0
+					if (!settled && message.type === 'peers') {
 						settled = true
 						resolve()
 					}
@@ -828,6 +957,7 @@ class SyncStore {
 					isCurrentSocket &&
 					!this.presenceIntentionalClose &&
 					this.role === role &&
+					(role === 'host' || this.connectionState !== 'connected') &&
 					this.roomCode
 				) {
 					this._schedulePresenceReconnect(role)
@@ -836,28 +966,23 @@ class SyncStore {
 		})
 	}
 
-	private _applyPresenceSnapshot(room: PresenceSnapshot) {
-		this.roomPeers = room.peers
-			.filter((peer) => peer.sessionId !== this.sessionId)
-			.map((peer) => ({
-				...peer,
-				connected: this.inboundDcs.has(peer.sessionId),
-			}))
-		if (this.role !== 'host' || !this.pc) return
-		for (const peer of room.peers) {
-			if (
-				peer.sessionId !== this.sessionId &&
-				!this.pulledPeers.has(peer.sessionId)
-			) {
-				this.pulledPeers.add(peer.sessionId)
-				void this._pullPeerChannel(peer.sessionId)
-			}
-		}
+	private _sendSignal(message: Record<string, unknown>) {
+		if (this.presenceSocket?.readyState === WebSocket.OPEN)
+			this.presenceSocket.send(JSON.stringify(message))
 	}
 
 	private _schedulePresenceReconnect(role: Exclude<SyncRole, 'none'>) {
 		if (this.presenceReconnectTimer !== null) return
-		const attempt = Math.min(this.presenceReconnectAttempts++, 5)
+		if (
+			this.presenceReconnectAttempts >= MAX_PRESENCE_RECONNECT_ATTEMPTS
+		) {
+			if (role === 'follower' && this.connectionState !== 'connected') {
+				this.connectionState = 'error'
+				this.error = 'Could not reconnect directly to the other device'
+			}
+			return
+		}
+		const attempt = this.presenceReconnectAttempts++
 		const delay = Math.min(30_000, 1000 * 2 ** attempt) + Math.random() * 500
 		this.presenceReconnectTimer = window.setTimeout(() => {
 			this.presenceReconnectTimer = null
@@ -873,25 +998,6 @@ class SyncStore {
 		}
 		this.presenceSocket?.close(1000, 'Leaving room')
 		this.presenceSocket = null
-	}
-
-	private async _pullPeerChannel(sessionId: string) {
-		if (!this.pc || !this.sessionId) return
-		try {
-			const dc = await this.pullChannel(this.pc, sessionId)
-			this.inboundDcs.set(sessionId, dc)
-			this._attachInboundChannel(dc)
-			this.roomPeers = this.roomPeers.map((peer) =>
-				peer.sessionId === sessionId ? { ...peer, connected: true } : peer,
-			)
-			// The newly joined device's own channel may have been open before
-			// we pulled it, so its initial 'join' message could have been
-			// dropped (no subscribers yet). Push our current state to it.
-			await this._handlePeerJoin()
-		} catch (err) {
-			console.warn('Failed to pull peer channel', err)
-			this.pulledPeers.delete(sessionId)
-		}
 	}
 
 	// ------------------------------------------------------------------
@@ -971,7 +1077,9 @@ class SyncStore {
 		this.outboundDc?.close()
 		this.outboundDc = null
 		this.outboundQueue.length = 0
-		this.pulledPeers.clear()
+		for (const transport of this.peerTransports.values()) transport.pc.close()
+		this.peerTransports.clear()
+		this.earlyIce.clear()
 		this.pc?.close()
 		this.pc = null
 	}
@@ -993,62 +1101,13 @@ class SyncStore {
 export const syncStore = new SyncStore()
 
 // ----------------------------------------------------------------------
-// SFU helpers
+// Direct WebRTC helpers
 // ----------------------------------------------------------------------
 
-const sfu = async (path: string, init?: RequestInit): Promise<any> => {
-	const response = await fetch(`${API}/sfu${path}`, init)
-	if (!response.ok) {
-		throw new Error(`SFU request failed (${response.status})`)
-	}
-	return response.json()
-}
-
-const makePeerConnection = (): RTCPeerConnection =>
-	new RTCPeerConnection({
-		iceServers: [{ urls: 'stun:stun.cloudflare.com:3478' }],
-		bundlePolicy: 'max-bundle',
-	})
-
-const establishTransport = async (
-	pc: RTCPeerConnection,
-	sessionId: string,
-	makeOffer: boolean,
-) => {
-	let sdp: string | undefined
-	if (makeOffer) {
-		pc.createDataChannel('server-events')
-		sdp = (await pc.createOffer()).sdp
-		await pc.setLocalDescription({ type: 'offer', sdp })
-	}
-
-	const response = await sfu(`/sessions/${sessionId}/datachannels/establish`, {
-		method: 'POST',
-		body: JSON.stringify({
-			dataChannel: {
-				location: 'remote',
-				dataChannelName: 'server-events',
-			},
-			...(sdp !== undefined
-				? { sessionDescription: { type: 'offer', sdp } }
-				: {}),
-		}),
-	})
-
-	if (response.requiresImmediateRenegotiation) {
-		await pc.setRemoteDescription(response.sessionDescription)
-		const answer = await pc.createAnswer()
-		await pc.setLocalDescription(answer)
-		await sfu(`/sessions/${sessionId}/renegotiate`, {
-			method: 'PUT',
-			body: JSON.stringify({
-				sessionDescription: { type: 'answer', sdp: answer.sdp },
-			}),
-		})
-	} else {
-		await pc.setRemoteDescription(response.sessionDescription)
-	}
-}
+const makeConnectionId = () =>
+	[...crypto.getRandomValues(new Uint8Array(16))]
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('')
 
 // ----------------------------------------------------------------------
 // Playback helpers (exported for the controls UI)

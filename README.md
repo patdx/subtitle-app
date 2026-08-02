@@ -10,7 +10,7 @@ Connect your own devices to control playback across them — for example, place 
 
 - Each device has a permanent pairing code. Tap **Start pairing** to show your code and QR, then scan it (or type the code) from your other device to connect them.
 - Play, pause, seek and speed on one device control the others; the device whose code you connected to is the host and its playback is authoritative.
-- Subtitles transfer directly between devices over an encrypted WebRTC data channel (Cloudflare Realtime SFU). **No subtitle content is ever stored on or served by the server** — a hibernatable Durable Object only coordinates presence and opaque WebRTC session IDs. Both devices need to be online.
+- Subtitles transfer directly between devices over an encrypted peer-to-peer WebRTC data channel. **No subtitle content is ever stored on or served by the server** — a hibernatable Durable Object only relays temporary SDP/ICE signaling. Pairing is direct-only, so both devices should be on a network that permits device-to-device traffic.
 - The connection is remembered: reopening the app reconnects your devices automatically.
 
 ## Stack
@@ -20,7 +20,7 @@ Connect your own devices to control playback across them — for example, place 
 - MobX 7 + mobx-react-lite 5 for player state
 - Tailwind CSS 4
 - IndexedDB (via `idb`) for subtitle storage
-- Cloudflare Workers and hibernatable Durable Objects via Wrangler 4, Cloudflare Realtime SFU for WebRTC signaling/relay
+- Cloudflare Workers and hibernatable Durable Objects via Wrangler 4, with STUN-assisted direct WebRTC connectivity
 
 ## Development
 
@@ -33,10 +33,6 @@ The API Worker (sync signaling) does not run under `pnpm dev`. To test the sync 
 
 ```sh
 pnpm build
-# create a Realtime SFU app in the Cloudflare dashboard, then:
-#   - set APP_ID in wrangler.json vars
-#   - run: npx wrangler secret put APP_TOKEN
-#   - or put both in .dev.vars (local only)
 npx wrangler dev
 ```
 
