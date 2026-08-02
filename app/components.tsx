@@ -1,13 +1,9 @@
 import {
 	isValidElement,
-	type ButtonHTMLAttributes,
 	type PropsWithChildren,
 } from 'react'
 import clsx from 'clsx'
-import { Button as ButtonPrimitive } from '@base-ui/react/button'
 import { useRender } from '@base-ui/react/use-render'
-import { cva } from 'class-variance-authority'
-import { cn } from '~/shared/utils'
 import { ChevronRightIcon } from '~/shared/icons'
 
 export function App({
@@ -38,43 +34,6 @@ interface BaseProps extends PropsWithChildren {
 export function Block({ className, children }: BaseProps) {
 	return <div className={clsx('p-4', className)}>{children}</div>
 }
-
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'text'
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-	className?: string
-	variant?: ButtonVariant
-}
-
-const buttonBase =
-	'rounded-panel px-4 py-2 text-sm font-semibold transition-[background-color,color,transform,box-shadow] duration-150 ease-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600'
-
-const buttonVariants = cva(buttonBase, {
-	variants: {
-		variant: {
-			primary: 'bg-ink-900 text-white hover:bg-ink-800 shadow-sm hover:shadow',
-			secondary:
-				'bg-paper-raised text-ink-900 border border-ink-400 hover:border-ink-600 hover:bg-ink-50',
-			danger: 'bg-danger-soft text-danger hover:bg-danger/10',
-			text: 'bg-transparent text-ember-600 underline underline-offset-2 hover:text-ember-700 hover:bg-transparent',
-		},
-	},
-	defaultVariants: {
-		variant: 'primary',
-	},
-})
-
-export function Button({ className, variant, ...props }: ButtonProps) {
-	const resolvedVariant = variant ?? 'primary'
-	return (
-		<ButtonPrimitive
-			className={cn(buttonVariants({ variant: resolvedVariant }), className)}
-			{...props}
-		/>
-	)
-}
-
-export { Button as NavbarBackLink }
 
 export function List({ className, children }: BaseProps) {
 	return <ul className={clsx('divide-y divide-edge', className)}>{children}</ul>

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { once } from 'lodash-es'
-import { Button } from '~/components'
+import { Button } from '~/components/ui/button'
+import { Alert, AlertDescription } from '~/components/ui/alert'
+import { buttonChrome } from '~/shared/utils'
 
 const loadJsQR = once(() => import('jsqr').then((mod) => mod.default))
 
@@ -95,9 +97,13 @@ export const QrScanner = (props: { onScan: (code: string) => void }) => {
 	return (
 		<div className="flex flex-col items-center gap-2">
 			{active && <video ref={videoRef} className="hidden" muted playsInline />}
-			{error && <p className="text-sm text-red-600">{error}</p>}
+			{error && (
+				<Alert variant="destructive" className="w-full">
+					<AlertDescription>{error}</AlertDescription>
+				</Alert>
+			)}
 			<Button
-				className="w-full"
+				className={cn(buttonChrome, 'w-full')}
 				onClick={() => {
 					setError(null)
 					setActive((value) => !value)

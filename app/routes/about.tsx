@@ -1,13 +1,14 @@
 import {
 	Block,
 	Navbar,
-	NavbarBackLink,
 	Page,
 	List,
 	ListItem,
 } from '~/components'
+import { Button } from '~/components/ui/button'
 import type { Route } from './+types/about'
 import { Link, useNavigate } from 'react-router'
+import { buttonChrome, canGoBack } from '~/shared/utils'
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: 'About - Subtitle App' }]
@@ -21,7 +22,18 @@ export default function About({}: Route.ComponentProps) {
 			<Navbar
 				title="About"
 				left={
-					<NavbarBackLink onClick={() => navigate(-1)}>Back</NavbarBackLink>
+					<Button
+						onClick={() => {
+							if (canGoBack()) {
+								navigate(-1)
+							} else {
+								navigate('/')
+							}
+						}}
+						className={buttonChrome}
+					>
+						Back
+					</Button>
 				}
 			/>
 			<Block className="px-4">

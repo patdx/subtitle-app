@@ -11,6 +11,17 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
+/** App-wide button chrome: the shadcn default is compact, the product language
+ * is roomier. Applied to every Button via cn(). */
+export const buttonChrome =
+	'h-auto rounded-lg px-4 py-2 text-sm font-semibold'
+
+/** The app may be opened directly via a QR code or external link, leaving no
+ * previous history entry to go back to. */
+export function canGoBack() {
+	return window.history.length > 1
+}
+
 // SRT/VTT files may contain inline HTML (b/i/u/font/br).
 // Render only a safe whitelist and strip all attributes so
 // malicious markup from subtitle files cannot execute.

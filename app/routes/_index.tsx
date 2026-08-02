@@ -1,7 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { once } from 'lodash-es'
 import { Link as RouterLink } from 'react-router'
-import { Block, Button, Navbar, Page } from '~/components'
+import { Block, Navbar, Page } from '~/components'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
+import { Progress } from '~/components/ui/progress'
+import { Badge } from '~/components/ui/badge'
 import {
 	MenuItem,
 	MenuPopup,
@@ -11,6 +15,7 @@ import {
 	MenuTrigger,
 } from '~/components/ui/menu'
 import { CheckIcon, ChevronRightIcon, MoreIcon } from '~/shared/icons'
+import { buttonChrome } from '~/shared/utils'
 import sampleSrtUrl from '../assets/sample.srt?url'
 import { syncStore } from '~/shared/sync'
 import type { Route } from './+types/_index'
@@ -195,24 +200,17 @@ const EditFilesPage = () => {
 
 	const ProgressBar = ({
 		percent,
-		...props
+		className,
 	}: {
 		percent: number
 		className?: string
 	}) => {
-		const className = props.className ?? ''
 		return (
-			<div
-				className={cn(
-					'h-1 w-full overflow-hidden rounded-full bg-ink-100',
-					className,
-				)}
-			>
-				<div
-					className="h-full rounded-full bg-ember-500 transition-[width] duration-300"
-					style={{ width: `${percent}%` }}
-				/>
-			</div>
+			<Progress
+				value={percent}
+				indicatorClassName="bg-ember-500"
+				className={cn('w-full', className)}
+			/>
 		)
 	}
 
@@ -241,7 +239,10 @@ const EditFilesPage = () => {
 				/>
 
 				<div className="flex flex-wrap items-center gap-2">
-					<Button onClick={() => inputRef.current?.click()} className="">
+					<Button
+						onClick={() => inputRef.current?.click()}
+						className={buttonChrome}
+					>
 						Import SRT or ZIP
 						{isProcessing && <LoadingIcon />}
 					</Button>
@@ -255,6 +256,7 @@ const EditFilesPage = () => {
 							const file = new File([blob], 'sample.srt')
 							await handleFile(file)
 						}}
+						className={cn(buttonChrome, 'border-ink-400')}
 					>
 						Try with sample file
 					</Button>
@@ -290,7 +292,7 @@ const EditFilesPage = () => {
 									<div className="min-w-0 flex-1">
 										{renamingId === file.id ? (
 											<div className="flex items-center gap-2">
-												<input
+												<Input
 													autoFocus
 													value={renameValue}
 													onChange={(e) => setRenameValue(e.target.value)}
@@ -301,7 +303,7 @@ const EditFilesPage = () => {
 															setRenamingId(null)
 														}
 													}}
-													className="w-full rounded-field border border-ink-400 bg-paper px-3 py-1.5 text-sm text-ink-900 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30"
+													className="rounded-field border-ink-400 bg-paper px-3 py-1.5 text-sm text-ink-900"
 												/>
 												<button
 													type="button"
@@ -441,12 +443,14 @@ function metadataChips(
 	return (
 		<div className="flex gap-2">
 			{metadata?.season && (
-				<span className="text-xs text-ink-400">Season {metadata.season}</span>
+				<Badge variant="ghost" className="h-auto px-0 py-0 text-ink-400">
+					Season {metadata.season}
+				</Badge>
 			)}
 			{metadata?.episode?.map((item) => (
-				<span key={item} className="text-xs text-ink-400">
+				<Badge key={item} variant="ghost" className="h-auto px-0 py-0 text-ink-400">
 					Episode {item}
-				</span>
+				</Badge>
 			))}
 		</div>
 	)

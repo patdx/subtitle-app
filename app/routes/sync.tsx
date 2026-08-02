@@ -2,15 +2,17 @@ import { Link as RouterLink, useNavigate } from 'react-router'
 import { useSnapshot } from 'valtio'
 import {
 	Block,
-	Button,
 	List,
 	ListItem,
 	Navbar,
-	NavbarBackLink,
 	Page,
 } from '~/components'
+import { Alert, AlertDescription } from '~/components/ui/alert'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 import { QrCode } from '~/shared/qr'
 import { QrScanner } from '~/shared/qr-scanner'
+import { buttonChrome, canGoBack } from '~/shared/utils'
 import { syncState, syncStore } from '~/shared/sync'
 import type { Route } from './+types/sync'
 
@@ -76,7 +78,18 @@ const SyncPage = () => {
 			<Navbar
 				title="Sync"
 				left={
-					<NavbarBackLink onClick={() => navigate(-1)}>Back</NavbarBackLink>
+					<Button
+						onClick={() => {
+							if (canGoBack()) {
+								navigate(-1)
+							} else {
+								navigate('/')
+							}
+						}}
+						className={buttonChrome}
+					>
+						Back
+					</Button>
 				}
 			/>
 
@@ -89,12 +102,12 @@ const SyncPage = () => {
 			<Block className="px-4">
 				<label className="flex items-center gap-2 text-sm">
 					<span className="text-ink-500">Device name</span>
-					<input
+					<Input
 						value={syncSnap.deviceName}
 						onChange={(e) => {
 							void syncStore.setDeviceName(e.target.value)
 						}}
-						className="flex-1 rounded-field border border-edge bg-paper-raised px-3 py-1.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30 sm:text-sm"
+						className="flex-1 rounded-field border-edge bg-paper-raised px-3 py-1.5 text-base text-ink-900 placeholder:text-ink-400 sm:text-sm"
 						maxLength={24}
 					/>
 				</label>
@@ -105,7 +118,9 @@ const SyncPage = () => {
 			{/* ---------------------------------------------------------- */}
 			<Block className="px-4">
 				{syncSnap.error && (
-					<p className="mb-3 text-sm text-danger">{syncSnap.error}</p>
+					<Alert variant="destructive" className="mb-3">
+						<AlertDescription>{syncSnap.error}</AlertDescription>
+					</Alert>
 				)}
 
 				<div className="flex items-center justify-between">
@@ -144,6 +159,7 @@ const SyncPage = () => {
 							variant="secondary"
 							onClick={() => void retry()}
 							disabled={busy}
+							className={cn(buttonChrome, 'border-ink-400')}
 						>
 							Retry
 						</Button>
@@ -176,22 +192,28 @@ const SyncPage = () => {
 									onClick={() => {
 										void navigator.clipboard?.writeText(qrValue).catch(() => {})
 									}}
+									className={cn(buttonChrome, 'border-ink-400')}
 								>
 									Copy link
 								</Button>
 								<Button
-									variant="danger"
+									variant="destructive"
 									onClick={() => {
 										void (syncState.joinedGroupCode
 											? syncStore.leaveGroup()
 											: syncStore.stopSharing())
 									}}
+									className={buttonChrome}
 								>
 									Disconnect
 								</Button>
 								<Button
-									variant="text"
+									variant="link"
 									onClick={() => void syncStore.createNewGroup()}
+									className={cn(
+										buttonChrome,
+										'text-ember-600 hover:text-ember-700 underline-offset-2',
+									)}
 								>
 									Create new group
 								</Button>
@@ -222,7 +244,7 @@ const SyncPage = () => {
 								</p>
 							)}
 							<Button
-								className="mt-4 w-full"
+								className={cn(buttonChrome, 'mt-4 w-full')}
 								onClick={() => void syncStore.startSharing()}
 								disabled={busy || connecting}
 							>
@@ -241,7 +263,7 @@ const SyncPage = () => {
 						</h2>
 					</Block>
 					<Block className="flex flex-col gap-3 px-4">
-						<input
+						<Input
 							value={codeInput}
 							onChange={(e) =>
 								setCodeInput(
@@ -252,7 +274,7 @@ const SyncPage = () => {
 								)
 							}
 							placeholder="Enter the code shown on the other device"
-							className="w-full rounded-field border border-edge bg-paper-raised px-3 py-2 text-center font-mono text-xl tracking-widest text-ink-900 placeholder:text-ink-400 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30"
+							className="w-full rounded-field border-edge bg-paper-raised px-3 py-2 text-center font-mono text-xl tracking-widest text-ink-900 placeholder:text-ink-400"
 							maxLength={20}
 							autoCapitalize="characters"
 							autoCorrect="off"
@@ -261,6 +283,7 @@ const SyncPage = () => {
 						<Button
 							onClick={() => void join()}
 							disabled={busy || connecting || codeInput.trim().length !== 20}
+							className={buttonChrome}
 						>
 							{busy || connecting ? 'Connecting…' : 'Connect'}
 						</Button>

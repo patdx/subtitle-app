@@ -38,9 +38,11 @@ declare global {
   const TrashIcon: typeof import('./app/shared/icons').TrashIcon
   const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
+  const buttonChrome: typeof import('./app/shared/utils').buttonChrome
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
   const calculateActualTimeElapsedMs: typeof import('./app/shared/utils').calculateActualTimeElapsedMs
+  const canGoBack: typeof import('./app/shared/utils').canGoBack
   const clock: typeof import('./app/shared/utils').clock
   const cn: typeof import('./app/shared/utils').cn
   const controlState: typeof import('./app/shared/utils').controlState
