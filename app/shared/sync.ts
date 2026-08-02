@@ -17,11 +17,9 @@ import {
  * A hibernatable Durable Object relays only temporary SDP/ICE signaling;
  * No relay is configured: peers must establish a direct connection.
  *
- * Device pairing: every device owns a persistent pairing code and can
- * either share its own code (QR/code on screen) or connect to another
- * device's code. The device whose code you connect to is the "host":
- * its clock is authoritative, and the connected device controls it
- * with play/pause/seek/speed commands.
+ * Device pairing creates a remembered group. Every online member connects
+ * directly to every other member, and an internal coordinator is elected
+ * automatically. There are no user-facing host/client roles.
  *
  * Topology is hub-and-spoke, with one full-duplex data channel per pair.
  */
@@ -29,23 +27,22 @@ import {
 const API = '/api/sync'
 const DC_NAME = 'subtitles'
 const CHUNK_SIZE = 32 * 1024
+const MAX_DATA_MESSAGE_CHARS = 64 * 1024
 const BROADCAST_INTERVAL_MS = 100
 const PING_INTERVAL_MS = 5000
 const CONNECT_TIMEOUT_MS = 15000
 const MAX_PRESENCE_RECONNECT_ATTEMPTS = 6
-const MAX_OUTBOUND_QUEUE = 128
 const MAX_CONCURRENT_TRANSFERS = 4
 const MAX_TRANSFER_CHUNKS = 1024
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
-export type SyncRole = 'none' | 'host' | 'follower'
+export type SyncRole = 'none' | 'peer'
 export type ConnectionState =
 	'disconnected' | 'connecting' | 'connected' | 'error'
 
 export interface PeerInfo {
 	sessionId: string
 	name: string
-	isHost: boolean
 	connected: boolean
 }
 
@@ -55,7 +52,7 @@ export interface ReceivedFile {
 }
 
 type SignalMessage =
-	| { type: 'peers'; peers: { id: string; name: string; isHost: boolean }[] }
+	| { type: 'peers'; peers: { id: string; name: string }[] }
 	| {
 			type: 'offer' | 'answer'
 			from: string
@@ -80,6 +77,7 @@ export type SyncMessage =
 	| { type: 'cmd-pause' }
 	| { type: 'cmd-seek'; positionMs: number }
 	| { type: 'cmd-speed'; speed: number }
+	| { type: 'claim-coordinator'; term: number; claimantId: string }
 	| {
 			type: 'state-clock'
 			isPlaying: boolean
@@ -99,7 +97,6 @@ export type SyncMessage =
 			fileName: string
 			data: string
 	  }
-	| { type: 'file-deleted'; fileId: string; fileName: string }
 	| { type: 'ping'; sentAt: number }
 	| { type: 'pong'; sentAt: number }
 
@@ -139,9 +136,11 @@ class SyncStore {
 	error: string | null = null
 	deviceName: string
 	roomPeers: PeerInfo[] = []
+	coordinationClaim: { term: number; claimantId: string } | null = null
 	receivedFiles: ReceivedFile[] = []
 	transfers: { fileName: string; received: number; total: number }[] = []
 	pendingNowPlaying: ReceivedFile | null = null
+	suppressNextFileAnnouncement = false
 
 	/** this device's own persistent group code */
 	myGroupCode: string | null = null
@@ -159,14 +158,11 @@ class SyncStore {
 		string,
 		{ generation: string; candidates: RTCIceCandidateInit[] }
 	>()
-	outboundDc: RTCDataChannel | null = null
 	inboundDcs: Map<string, RTCDataChannel> = new Map()
-	outboundQueue: string[] = []
 	presenceSocket: WebSocket | null = null
 	presenceReconnectTimer: number | null = null
 	presenceReconnectAttempts = 0
 	presenceIntentionalClose = false
-	roomOwnerToken: string | null = null
 	broadcastTimer: number | null = null
 	pingTimer: number | null = null
 	connectTimeout: number | null = null
@@ -180,6 +176,8 @@ class SyncStore {
 		}
 	>()
 	pendingNowPlayingRequests = new Map<string, { name: string }>()
+	lastFileRequestAt = new Map<string, number>()
+	peerReconnectAttempts = new Map<string, number>()
 
 	constructor() {
 		this.deviceName = `Device ${Math.floor(Math.random() * 1000)}`
@@ -189,19 +187,19 @@ class SyncStore {
 				pc: false,
 				peerTransports: false,
 				earlyIce: false,
-				outboundDc: false,
 				inboundDcs: false,
-				outboundQueue: false,
 				presenceSocket: false,
 				presenceReconnectTimer: false,
 				presenceReconnectAttempts: false,
 				presenceIntentionalClose: false,
-				roomOwnerToken: false,
 				broadcastTimer: false,
 				pingTimer: false,
 				connectTimeout: false,
 				receiveBuffers: false,
 				pendingNowPlayingRequests: false,
+				lastFileRequestAt: false,
+				peerReconnectAttempts: false,
+				suppressNextFileAnnouncement: false,
 			},
 			{ autoBind: true },
 		)
@@ -215,7 +213,6 @@ class SyncStore {
 		this.myGroupCode = (await getSetting<string>('myGroupCode')) ?? null
 		this.joinedGroupCode = (await getSetting<string>('joinedGroupCode')) ?? null
 		this.wasSharing = (await getSetting<boolean>('wasSharing')) ?? false
-		this.roomOwnerToken = (await getSetting<string>('roomOwnerToken')) ?? null
 		const deviceName = await getSetting<string>('deviceName')
 		if (typeof deviceName === 'string' && deviceName.length > 0) {
 			this.deviceName = deviceName
@@ -245,14 +242,6 @@ class SyncStore {
 			this.myGroupCode = makeRoomCode()
 			await setSetting('myGroupCode', this.myGroupCode)
 		}
-		if (!this.roomOwnerToken) {
-			const bytes = new Uint8Array(32)
-			crypto.getRandomValues(bytes)
-			this.roomOwnerToken = [...bytes]
-				.map((byte) => byte.toString(16).padStart(2, '0'))
-				.join('')
-			await setSetting('roomOwnerToken', this.roomOwnerToken)
-		}
 		return this.myGroupCode
 	}
 
@@ -264,8 +253,8 @@ class SyncStore {
 	/** Share our own group; showing the QR implicitly starts it. */
 	async startSharing() {
 		const code = await this.ensureMyGroup()
-		await this.createHostSession(code)
-		if (this.role === 'host' && this.connectionState === 'connected') {
+		await this.connectGroup(code)
+		if (this.role === 'peer' && this.connectionState === 'connected') {
 			this.joinedGroupCode = null
 			this.wasSharing = true
 			await setSetting('joinedGroupCode', null)
@@ -275,8 +264,8 @@ class SyncStore {
 
 	/** Join someone else's group. */
 	async joinGroup(code: string) {
-		await this.joinSession(code)
-		if (this.role === 'follower' && this.connectionState === 'connected') {
+		await this.connectGroup(code)
+		if (this.role === 'peer' && this.connectionState === 'connected') {
 			this.joinedGroupCode = this.roomCode
 			this.wasSharing = false
 			await setSetting('joinedGroupCode', this.roomCode)
@@ -300,31 +289,71 @@ class SyncStore {
 		await setSetting('joinedGroupCode', null)
 	}
 
+	/** Rotate the bearer group capability and start a fresh remembered group. */
+	async createNewGroup() {
+		this.reset()
+		this.myGroupCode = makeRoomCode()
+		this.joinedGroupCode = null
+		this.wasSharing = true
+		await setSetting('myGroupCode', this.myGroupCode)
+		await setSetting('joinedGroupCode', null)
+		await setSetting('wasSharing', true)
+		await this.connectGroup(this.myGroupCode)
+	}
+
 	reconnect() {
-		if (this.role === 'host' && this.roomCode) {
-			void this.createHostSession(this.roomCode)
-		} else if (this.role === 'follower' && this.roomCode) {
-			void this.joinSession(this.roomCode)
-		}
+		if (this.role === 'peer' && this.roomCode) void this.connectGroup(this.roomCode)
+	}
+
+	get coordinatorId(): string | null {
+		if (!this.sessionId) return null
+		const online = [
+			this.sessionId,
+			...this.roomPeers.map((peer) => peer.sessionId),
+		]
+		if (
+			this.coordinationClaim &&
+			online.includes(this.coordinationClaim.claimantId)
+		)
+			return this.coordinationClaim.claimantId
+		return online.sort()[0]
+	}
+
+	get isCoordinator() {
+		return this.role === 'peer' && this.coordinatorId === this.sessionId
 	}
 
 	/** Consume the announced now-playing file (cleared after opening it). */
 	consumePendingNowPlaying() {
 		this.pendingNowPlaying = null
+		this.suppressNextFileAnnouncement = true
 	}
 
 	send(msg: SyncMessage) {
 		const raw = JSON.stringify(msg)
-		if (this.role === 'host') {
-			for (const dc of this.inboundDcs.values()) {
-				if (dc.readyState === 'open') dc.send(raw)
+		for (const dc of this.inboundDcs.values()) {
+			if (dc.readyState === 'open') dc.send(raw)
+		}
+	}
+
+	private async _sendWithBackpressure(msg: SyncMessage) {
+		const raw = JSON.stringify(msg)
+		for (const dc of this.inboundDcs.values()) {
+			if (dc.readyState !== 'open') continue
+			if (dc.bufferedAmount > 512 * 1024) {
+				dc.bufferedAmountLowThreshold = 256 * 1024
+				await new Promise<void>((resolve) => {
+					const done = () => {
+						window.clearTimeout(timeout)
+						dc.removeEventListener('bufferedamountlow', done)
+						resolve()
+					}
+					const timeout = window.setTimeout(done, 2000)
+					dc.addEventListener('bufferedamountlow', done, { once: true })
+				})
 			}
-		} else if (this.outboundDc && this.outboundDc.readyState === 'open') {
-			this.outboundDc.send(raw)
-		} else {
-			if (this.outboundQueue.length >= MAX_OUTBOUND_QUEUE)
-				this.outboundQueue.shift()
-			this.outboundQueue.push(raw)
+			if (dc.readyState === 'open' && dc.bufferedAmount <= 512 * 1024)
+				dc.send(raw)
 		}
 	}
 
@@ -332,16 +361,16 @@ class SyncStore {
 	// Connection setup
 	// ------------------------------------------------------------------
 
-	private async createHostSession(keepCode: string) {
+	private async connectGroup(code: string) {
 		this.reset()
 		this.connectionState = 'connecting'
-		this.role = 'host'
+		this.role = 'peer'
 
 		try {
 			this.sessionId = makeConnectionId()
-			this.roomCode = keepCode
+			this.roomCode = code.toUpperCase()
 			this._startConnectTimeout()
-			await this._connectPresence('host')
+			await this._connectPresence()
 			this._startBroadcastTimer()
 			this._startPing()
 
@@ -349,43 +378,11 @@ class SyncStore {
 			this._clearConnectTimeout()
 			void this.onFileLoaded()
 		} catch (err) {
-			this._fail(err)
-		}
-	}
-
-	private async joinSession(code: string) {
-		this.reset()
-		this.connectionState = 'connecting'
-		this.role = 'follower'
-
-		try {
-			this.roomCode = code.toUpperCase()
-			this.sessionId = makeConnectionId()
-			this._startPing()
-			this._startConnectTimeout()
-			await this._connectPresence('follower')
-			await this._waitForPeerConnection()
-		} catch (err) {
 			this._fail(
 				err,
-				'Could not reach this group. Make sure the owner is sharing and try again.',
+				'Could not reach this group. Check the code and network, then try again.',
 			)
 		}
-	}
-
-	private _waitForPeerConnection(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const started = Date.now()
-			const check = window.setInterval(() => {
-				if (this.connectionState === 'connected') {
-					window.clearInterval(check)
-					resolve()
-				} else if (Date.now() - started >= CONNECT_TIMEOUT_MS) {
-					window.clearInterval(check)
-					reject(new Error('Connection timed out'))
-				}
-			}, 100)
-		})
 	}
 
 	// ------------------------------------------------------------------
@@ -398,7 +395,7 @@ class SyncStore {
 
 	seekTo(positionMs: number) {
 		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: positionMs })
-		if (this.role === 'host') {
+		if (this.isCoordinator) {
 			this.broadcastClockState()
 		} else if (this.role !== 'none') {
 			this.send({ type: 'cmd-seek', positionMs: getTimeElapsed() })
@@ -408,7 +405,7 @@ class SyncStore {
 	togglePlayback() {
 		const isPlaying = !clock.isPlaying
 		clock.toggleIsPlaying(isPlaying)
-		if (this.role === 'host') {
+		if (this.isCoordinator) {
 			this.broadcastClockState()
 		} else if (this.role !== 'none') {
 			this.send({ type: isPlaying ? 'cmd-play' : 'cmd-pause' })
@@ -421,7 +418,7 @@ class SyncStore {
 			lastActionAt: Date.now(),
 			lastTimeElapsedMs: getTimeElapsed(),
 		})
-		if (this.role === 'host') {
+		if (this.isCoordinator) {
 			this.broadcastClockState()
 		} else if (this.role !== 'none') {
 			this.send({ type: 'cmd-speed', speed })
@@ -429,17 +426,29 @@ class SyncStore {
 	}
 
 	// ------------------------------------------------------------------
-	// Owner broadcasts
+	// Coordinator broadcasts
 	// ------------------------------------------------------------------
 
 	async onFileLoaded() {
-		if (this.role !== 'host') return
+		if (this.suppressNextFileAnnouncement) {
+			this.suppressNextFileAnnouncement = false
+			return
+		}
+		if (this.role !== 'peer' || !this.sessionId) return
+		if (!this.isCoordinator) {
+			const claim = {
+				term: (this.coordinationClaim?.term ?? 0) + 1,
+				claimantId: this.sessionId,
+			}
+			this.coordinationClaim = claim
+			this.send({ type: 'claim-coordinator', ...claim })
+		}
 		await this.broadcastNowPlaying()
 		await this.broadcastFileList()
 	}
 
 	async broadcastNowPlaying() {
-		if (this.role !== 'host') return
+		if (!this.isCoordinator) return
 		const lines = getFile()
 		const fileId = lines?.[0]?.fileId
 		if (!fileId) return
@@ -449,17 +458,19 @@ class SyncStore {
 	}
 
 	async broadcastFileList() {
-		if (this.role !== 'host') return
+		if (!this.isCoordinator) return
 		const db = await initAndGetDb()
 		const files = await db.getAll('files')
 		this.send({
 			type: 'file-list',
-			files: files.map((file) => ({ id: file.id, name: file.name })),
+			files: files
+				.slice(0, 256)
+				.map((file) => ({ id: file.id, name: file.name.slice(0, 256) })),
 		})
 	}
 
 	async sendFile(fileName: string) {
-		if (this.role !== 'host') return
+		if (!this.isCoordinator) return
 		const db = await initAndGetDb()
 		const file = (await db.getAll('files')).find((f) => f.name === fileName)
 		if (!file) return
@@ -470,9 +481,13 @@ class SyncStore {
 		const text = linesToSrtText(lines)
 		const transferId = nanoid()
 		const totalChunks = Math.max(1, Math.ceil(text.length / CHUNK_SIZE))
+		if (totalChunks > MAX_TRANSFER_CHUNKS) {
+			this.error = 'This subtitle file is too large to sync directly'
+			return
+		}
 
 		for (let i = 0; i < totalChunks; i++) {
-			this.send({
+			await this._sendWithBackpressure({
 				type: 'file-chunk',
 				transferId,
 				chunkIndex: i,
@@ -484,12 +499,14 @@ class SyncStore {
 	}
 
 	sendFileDeleted(fileId: string, fileName: string) {
-		if (this.role !== 'host') return
-		this.send({ type: 'file-deleted', fileId, fileName })
+		// Deletion stays local. A group peer must never be able to delete another
+		// device's IndexedDB content, even when it is the current coordinator.
+		void fileId
+		void fileName
 	}
 
 	broadcastClockState() {
-		if (this.role !== 'host' || this.connectionState !== 'connected') return
+		if (!this.isCoordinator || this.connectionState !== 'connected') return
 		this.send({
 			type: 'state-clock',
 			isPlaying: clock.isPlaying,
@@ -502,11 +519,32 @@ class SyncStore {
 	// Incoming messages
 	// ------------------------------------------------------------------
 
-	private _handleMessage(value: unknown) {
+	private _handleMessage(value: unknown, peerId: string) {
 		if (!value || typeof value !== 'object' || Array.isArray(value)) return
 		const msg = value as SyncMessage
+		if (msg.type === 'claim-coordinator') {
+			if (
+				msg.claimantId !== peerId ||
+				!Number.isSafeInteger(msg.term) ||
+				msg.term < 1 ||
+				msg.term > 1_000_000_000
+			)
+				return
+			const current = this.coordinationClaim
+			if (
+				!current ||
+				msg.term > current.term ||
+				(msg.term === current.term && msg.claimantId > current.claimantId)
+			)
+				this.coordinationClaim = {
+					term: msg.term,
+					claimantId: msg.claimantId,
+				}
+			return
+		}
+		const fromCoordinator = peerId === this.coordinatorId
 		const allowed =
-			this.role === 'host'
+			this.isCoordinator
 				? new Set([
 						'cmd-play',
 						'cmd-pause',
@@ -518,26 +556,49 @@ class SyncStore {
 						'ping',
 						'pong',
 					])
-				: new Set([
+				: fromCoordinator
+					? new Set([
 						'state-clock',
 						'now-playing',
 						'file-list',
 						'file-chunk',
-						'file-deleted',
 						'ping',
 						'pong',
 					])
+					: new Set(['ping', 'pong'])
 		if (!allowed.has(msg.type)) return
 		switch (msg.type) {
 			case 'state-clock':
+				if (
+					typeof msg.isPlaying !== 'boolean' ||
+					!Number.isFinite(msg.positionMs) ||
+					msg.positionMs < 0 ||
+					!Number.isFinite(msg.playSpeed) ||
+					msg.playSpeed < 0.1 ||
+					msg.playSpeed > 5
+				)
+					return
 				this._applyClockState(msg)
 				return
 			case 'now-playing':
+				if (typeof msg.name !== 'string' || msg.name.length > 256) return
 				void this._handleNowPlaying(msg).catch((err) =>
 					console.error('now-playing handler failed', err),
 				)
 				return
 			case 'file-list':
+				if (
+					!Array.isArray(msg.files) ||
+					msg.files.length > 256 ||
+					msg.files.some(
+						(file) =>
+							!file ||
+							typeof file.id !== 'string' ||
+							typeof file.name !== 'string' ||
+							file.name.length > 256,
+					)
+				)
+					return
 				void this._handleFileList(msg).catch((err) =>
 					console.error('file-list handler failed', err),
 				)
@@ -545,17 +606,12 @@ class SyncStore {
 			case 'file-chunk':
 				this._handleFileChunk(msg)
 				return
-			case 'file-deleted':
-				void this._handleFileDeleted(msg).catch((err) =>
-					console.error('file-deleted handler failed', err),
-				)
-				return
 			case 'ping':
 				this.send({ type: 'pong', sentAt: msg.sentAt })
 				return
 		}
 
-		if (this.role !== 'host') return
+		if (!this.isCoordinator) return
 
 		switch (msg.type) {
 			case 'cmd-play':
@@ -571,6 +627,7 @@ class SyncStore {
 				}
 				return
 			case 'cmd-seek':
+				if (!Number.isFinite(msg.positionMs) || msg.positionMs < 0) return
 				setClock({
 					lastActionAt: Date.now(),
 					lastTimeElapsedMs: msg.positionMs,
@@ -578,6 +635,12 @@ class SyncStore {
 				this.broadcastClockState()
 				return
 			case 'cmd-speed':
+				if (
+					!Number.isFinite(msg.speed) ||
+					msg.speed < 0.1 ||
+					msg.speed > 5
+				)
+					return
 				setClock({
 					playSpeed: msg.speed,
 					lastActionAt: Date.now(),
@@ -592,6 +655,11 @@ class SyncStore {
 				this._handlePeerLeave(msg.deviceName)
 				return
 			case 'request-file':
+				if (typeof msg.fileName !== 'string' || msg.fileName.length > 256)
+					return
+				if (Date.now() - (this.lastFileRequestAt.get(peerId) ?? 0) < 2000)
+					return
+				this.lastFileRequestAt.set(peerId, Date.now())
 				void this.sendFile(msg.fileName)
 				return
 		}
@@ -688,24 +756,6 @@ class SyncStore {
 		}
 	}
 
-	private async _handleFileDeleted(
-		msg: Extract<SyncMessage, { type: 'file-deleted' }>,
-	) {
-		const db = await initAndGetDb()
-		const file = (await db.getAll('files')).find((f) => f.name === msg.fileName)
-		if (!file) return
-		const tx = db.transaction(['files', 'lines'], 'readwrite')
-		tx.objectStore('files').delete(file.id)
-		const keys = await tx
-			.objectStore('lines')
-			.index('by-file-id')
-			.getAllKeys(file.id)
-		for (const key of keys) {
-			tx.objectStore('lines').delete(key)
-		}
-		await tx.done
-	}
-
 	private _updateTransfers() {
 		this.transfers = [...this.receiveBuffers.values()].map((buffer) => ({
 			fileName: buffer.fileName,
@@ -736,10 +786,11 @@ class SyncStore {
 	private _monitorConnection(pc: RTCPeerConnection, peerId: string) {
 		pc.onconnectionstatechange = () => {
 			if (pc.connectionState === 'connected') {
+				this.peerReconnectAttempts.set(peerId, 0)
 				this.connectionState = 'connected'
 				this.presenceReconnectAttempts = 0
 				this._clearConnectTimeout()
-				if (this.role === 'follower')
+				if (this.sessionId && this.sessionId > peerId)
 					this._sendSignal({
 						type: 'ready',
 						to: peerId,
@@ -754,14 +805,14 @@ class SyncStore {
 				this.roomPeers = this.roomPeers.map((peer) =>
 					peer.sessionId === peerId ? { ...peer, connected: false } : peer,
 				)
+				const retries = this.peerReconnectAttempts.get(peerId) ?? 0
 				if (
-					this.role === 'follower' &&
+					retries < 3 &&
 					!this.presenceIntentionalClose &&
 					this.roomCode
 				) {
-					this.connectionState = 'connecting'
-					this._startConnectTimeout()
-					this._schedulePresenceReconnect('follower')
+					this.peerReconnectAttempts.set(peerId, retries + 1)
+					this._schedulePresenceReconnect()
 				}
 			}
 		}
@@ -770,28 +821,28 @@ class SyncStore {
 	private _attachDataChannel(dc: RTCDataChannel, peerId: string) {
 		dc.onmessage = (event) => {
 			try {
-				this._handleMessage(JSON.parse(event.data))
+				if (
+					typeof event.data !== 'string' ||
+					event.data.length > MAX_DATA_MESSAGE_CHARS
+				)
+					return
+				this._handleMessage(JSON.parse(event.data), peerId)
 			} catch (err) {
 				console.warn('Ignoring malformed sync message', err)
 			}
 		}
 		dc.onopen = () => {
-			if (this.role === 'follower') this.outboundDc = dc
-			else this.inboundDcs.set(peerId, dc)
+			this.inboundDcs.set(peerId, dc)
 			this.roomPeers = this.roomPeers.map((peer) =>
 				peer.sessionId === peerId ? { ...peer, connected: true } : peer,
 			)
-			while (this.outboundQueue.length > 0) {
-				const raw = this.outboundQueue.shift()
-				if (raw !== undefined) dc.send(raw)
-			}
-			if (this.role === 'follower')
-				this.send({ type: 'join', deviceName: this.deviceName })
-			else void this._handlePeerJoin()
+			if (this.coordinationClaim?.claimantId === this.sessionId)
+				dc.send(JSON.stringify({ type: 'claim-coordinator', ...this.coordinationClaim }))
+			this.send({ type: 'join', deviceName: this.deviceName })
+			if (this.isCoordinator) void this._handlePeerJoin()
 		}
 		dc.onclose = () => {
-			this.inboundDcs.delete(peerId)
-			if (this.outboundDc === dc) this.outboundDc = null
+			if (this.inboundDcs.get(peerId) === dc) this.inboundDcs.delete(peerId)
 		}
 	}
 
@@ -808,7 +859,7 @@ class SyncStore {
 			transport.pendingIce.push(...early.candidates)
 		this.earlyIce.delete(peerId)
 		this.peerTransports.set(peerId, transport)
-		if (this.role === 'follower') this.pc = pc
+		this.pc = pc
 		this._monitorConnection(pc, peerId)
 		pc.onicecandidate = (event) => {
 			if (event.candidate)
@@ -838,30 +889,41 @@ class SyncStore {
 
 	private async _handleSignal(message: SignalMessage) {
 		if (message.type === 'peers') {
+			const wasCoordinator = this.isCoordinator
 			const signaled = message.peers
 				.filter((peer) => peer.id !== this.sessionId)
 				.map((peer) => ({
 					sessionId: peer.id,
 					name: peer.name,
-					isHost: peer.isHost,
-					connected:
-						this.inboundDcs.has(peer.id) ||
-						(peer.isHost && this.outboundDc?.readyState === 'open'),
+					connected: this.inboundDcs.get(peer.id)?.readyState === 'open',
 				}))
-			const signaledIds = new Set(signaled.map((peer) => peer.sessionId))
-			this.roomPeers = [
-				...signaled,
-				...this.roomPeers.filter(
-					(peer) => peer.connected && !signaledIds.has(peer.sessionId),
-				),
-			]
-			if (this.role === 'host')
-				for (const peer of message.peers)
-					if (!peer.isHost && !this.peerTransports.has(peer.id))
-						void this._offerPeer(peer.id)
+			this.roomPeers = signaled
+			if (
+				this.coordinationClaim &&
+				this.coordinationClaim.claimantId !== this.sessionId &&
+				!signaled.some(
+					(peer) => peer.sessionId === this.coordinationClaim?.claimantId,
+				)
+			)
+				this.coordinationClaim = null
+			if (!wasCoordinator && this.isCoordinator) {
+				this.broadcastClockState()
+				void this.onFileLoaded()
+			}
+			for (const peer of message.peers)
+				if (
+					this.sessionId &&
+					this.sessionId < peer.id &&
+					!this.peerTransports.has(peer.id)
+				)
+					void this._offerPeer(peer.id)
 			return
 		}
-		if (message.type === 'offer' && this.role === 'follower') {
+		if (
+			message.type === 'offer' &&
+			this.sessionId &&
+			message.from < this.sessionId
+		) {
 			const transport = this._newPeer(message.from, message.generation)
 			transport.pc.ondatachannel = (event) =>
 				this._attachDataChannel(event.channel, message.from)
@@ -886,7 +948,7 @@ class SyncStore {
 				})
 			return
 		}
-		if (message.type === 'answer' && this.role === 'host') {
+		if (message.type === 'answer') {
 			await transport.pc.setRemoteDescription(message.sdp)
 			for (const ice of transport.pendingIce.splice(0))
 				await transport.pc.addIceCandidate(ice)
@@ -903,7 +965,7 @@ class SyncStore {
 	// Discovery / presence (one hibernatable Durable Object WebSocket)
 	// ------------------------------------------------------------------
 
-	private _connectPresence(role: Exclude<SyncRole, 'none'>): Promise<void> {
+	private _connectPresence(): Promise<void> {
 		if (!this.roomCode || !this.sessionId) {
 			return Promise.reject(new Error('Room transport is not ready'))
 		}
@@ -912,19 +974,11 @@ class SyncStore {
 		const url = new URL(`${API}/room`, location.origin)
 		url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 		url.searchParams.set('code', this.roomCode)
-		url.searchParams.set('role', role)
 		url.searchParams.set('id', this.sessionId)
 		url.searchParams.set('name', this.deviceName.slice(0, 64))
-		const protocols = ['subtitle-sync']
-		if (role === 'host') {
-			if (!this.roomOwnerToken) {
-				return Promise.reject(new Error('Missing room owner credential'))
-			}
-			protocols.push(`host.${this.roomOwnerToken}`)
-		}
 
 		return new Promise((resolve, reject) => {
-			const socket = new WebSocket(url, protocols)
+			const socket = new WebSocket(url, ['subtitle-sync'])
 			this.presenceSocket = socket
 			let settled = false
 			const fail = () => {
@@ -939,7 +993,7 @@ class SyncStore {
 					void this._handleSignal(message).catch((err) =>
 						console.warn('Signal failed', err),
 					)
-					if (role === 'host') this.presenceReconnectAttempts = 0
+					this.presenceReconnectAttempts = 0
 					if (!settled && message.type === 'peers') {
 						settled = true
 						resolve()
@@ -956,11 +1010,10 @@ class SyncStore {
 				if (
 					isCurrentSocket &&
 					!this.presenceIntentionalClose &&
-					this.role === role &&
-					(role === 'host' || this.connectionState !== 'connected') &&
+					this.role === 'peer' &&
 					this.roomCode
 				) {
-					this._schedulePresenceReconnect(role)
+					this._schedulePresenceReconnect()
 				}
 			}
 		})
@@ -971,12 +1024,12 @@ class SyncStore {
 			this.presenceSocket.send(JSON.stringify(message))
 	}
 
-	private _schedulePresenceReconnect(role: Exclude<SyncRole, 'none'>) {
+	private _schedulePresenceReconnect() {
 		if (this.presenceReconnectTimer !== null) return
 		if (
 			this.presenceReconnectAttempts >= MAX_PRESENCE_RECONNECT_ATTEMPTS
 		) {
-			if (role === 'follower' && this.connectionState !== 'connected') {
+			if (this.connectionState !== 'connected') {
 				this.connectionState = 'error'
 				this.error = 'Could not reconnect directly to the other device'
 			}
@@ -986,7 +1039,7 @@ class SyncStore {
 		const delay = Math.min(30_000, 1000 * 2 ** attempt) + Math.random() * 500
 		this.presenceReconnectTimer = window.setTimeout(() => {
 			this.presenceReconnectTimer = null
-			void this._connectPresence(role).catch(() => {})
+			void this._connectPresence().catch(() => {})
 		}, delay)
 	}
 
@@ -1007,7 +1060,7 @@ class SyncStore {
 	private _startBroadcastTimer() {
 		this._stopBroadcastTimer()
 		this.broadcastTimer = window.setInterval(() => {
-			if (this.role === 'host' && clock.isPlaying) {
+			if (this.isCoordinator && clock.isPlaying) {
 				this.broadcastClockState()
 			}
 		}, BROADCAST_INTERVAL_MS)
@@ -1074,12 +1127,11 @@ class SyncStore {
 			dc.close()
 		}
 		this.inboundDcs.clear()
-		this.outboundDc?.close()
-		this.outboundDc = null
-		this.outboundQueue.length = 0
 		for (const transport of this.peerTransports.values()) transport.pc.close()
 		this.peerTransports.clear()
 		this.earlyIce.clear()
+		this.lastFileRequestAt.clear()
+		this.peerReconnectAttempts.clear()
 		this.pc?.close()
 		this.pc = null
 	}
@@ -1092,9 +1144,11 @@ class SyncStore {
 		this.connectionState = 'disconnected'
 		this.error = null
 		this.roomPeers = []
+		this.coordinationClaim = null
 		this.receivedFiles = []
 		this.transfers = []
 		this.pendingNowPlaying = null
+		this.suppressNextFileAnnouncement = false
 	}
 }
 

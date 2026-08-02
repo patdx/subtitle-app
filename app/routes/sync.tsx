@@ -27,6 +27,7 @@ const SyncPage = observer(() => {
 		const codeParam = new URL(location.href).searchParams.get('code')
 		void (async () => {
 			await syncStore.init()
+			if (codeParam) window.history.replaceState(null, '', location.pathname)
 			if (codeParam && codeParam.toUpperCase() !== syncStore.myGroupCode) {
 				setCodeInput(
 					codeParam
@@ -43,9 +44,7 @@ const SyncPage = observer(() => {
 
 	const connecting = syncStore.connectionState === 'connecting'
 	const connected = syncStore.connectionState === 'connected'
-	const isOwner = syncStore.role === 'host'
-	const isMember = syncStore.role === 'follower'
-	const active = isOwner || isMember
+	const active = syncStore.role === 'peer'
 	const qrValue = syncStore.roomCode
 		? `${location.origin}/sync?code=${syncStore.roomCode}`
 		: ''
@@ -82,8 +81,8 @@ const SyncPage = observer(() => {
 				<p className="max-w-prose text-sm text-gray-600">
 					Connect your own devices. Place a tablet below the TV and control it
 					from your phone. Play, pause and seek on one device control the
-					others. Subtitles transfer directly between devices. Nothing is stored
-					on a server, and both devices need to be online.
+					others. Up to five devices form a direct mesh, and no device needs to
+					stay in a special host role. Nothing is stored on the signaling server.
 				</p>
 			</Block>
 
@@ -135,9 +134,7 @@ const SyncPage = observer(() => {
 						{syncStore.isRestoring || connecting
 							? 'Connecting…'
 							: connected
-								? isOwner
-									? 'Sharing this device'
-									: `Connected to device ${syncStore.roomCode ?? ''}`
+								? `Connected to group ${syncStore.roomCode ?? ''}`
 								: syncStore.connectionState === 'error'
 									? 'Not connected'
 									: 'Not sharing'}
@@ -151,13 +148,13 @@ const SyncPage = observer(() => {
 			</Block>
 
 			{/* ---------------------------------------------------------- */}
-			{/* Owner: code + QR + members                                   */}
+			{/* Active group: code + QR + members                            */}
 			{/* ---------------------------------------------------------- */}
-			{isOwner && (
+			{active && (
 				<>
 					<Block className="px-4">
 						<div className="text-center">
-							<p className="text-sm text-gray-600">This device's code</p>
+							<p className="text-sm text-gray-600">Your group code</p>
 							<p className="font-mono text-4xl font-bold tracking-[0.4em]">
 								{syncStore.roomCode}
 							</p>
@@ -165,7 +162,7 @@ const SyncPage = observer(() => {
 								<QrCode value={qrValue} size={176} />
 							</div>
 							<p className="mt-2 text-xs text-gray-500">
-								Scan this from your other device to connect it.
+								Scan this once on another device to add it to this group.
 							</p>
 							<Button
 								className="mt-3"
@@ -175,36 +172,21 @@ const SyncPage = observer(() => {
 							>
 								Copy link
 							</Button>
-						</div>
-					</Block>
-
-					<MembersList />
-				</>
-			)}
-
-			{/* ---------------------------------------------------------- */}
-			{/* Member: group info + leave                                   */}
-			{/* ---------------------------------------------------------- */}
-			{isMember && (
-				<>
-					<Block className="px-4">
-						<div className="text-center">
-							<p className="text-sm text-gray-600">
-								Connected to device{' '}
-								<span className="font-mono font-semibold">
-									{syncStore.roomCode}
-								</span>
-							</p>
-							<p className="mt-1 text-xs text-gray-500">
-								You can control it from here.
-							</p>
 							<Button
-								className="mt-3"
+								className="mt-3 ml-2"
 								onClick={() => {
-									void syncStore.leaveGroup()
+									void (syncStore.joinedGroupCode
+										? syncStore.leaveGroup()
+										: syncStore.stopSharing())
 								}}
 							>
 								Disconnect
+							</Button>
+							<Button
+								className="mt-3 ml-2"
+								onClick={() => void syncStore.createNewGroup()}
+							>
+								Create new group
 							</Button>
 						</div>
 					</Block>
@@ -263,7 +245,7 @@ const SyncPage = observer(() => {
 							}
 							placeholder="Enter the code shown on the other device"
 							className="w-full rounded-lg border border-gray-300 px-3 py-2 text-center font-mono text-xl tracking-widest"
-							maxLength={6}
+							maxLength={20}
 							autoCapitalize="characters"
 							autoCorrect="off"
 							spellCheck={false}
@@ -299,7 +281,7 @@ const MembersList = observer(() => {
 					<ListItem
 						key={peer.sessionId}
 						title={peer.name}
-						after={peer.isHost ? 'Host' : 'Device'}
+						after="Device"
 						footer={
 							<span
 								className={cn(

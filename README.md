@@ -9,9 +9,10 @@ Built as a React Router SPA (client-side rendering with prerendered pages), depl
 Connect your own devices to control playback across them — for example, place a tablet below the TV showing subtitles and control it from your phone.
 
 - Each device has a permanent pairing code. Tap **Start pairing** to show your code and QR, then scan it (or type the code) from your other device to connect them.
-- Play, pause, seek and speed on one device control the others; the device whose code you connected to is the host and its playback is authoritative.
-- Subtitles transfer directly between devices over an encrypted peer-to-peer WebRTC data channel. **No subtitle content is ever stored on or served by the server** — a hibernatable Durable Object only relays temporary SDP/ICE signaling. Pairing is direct-only, so both devices should be on a network that permits device-to-device traffic.
+- Up to five devices form a remembered peer-to-peer mesh. Any device can display subtitles or control playback, while an internal coordinator is elected automatically.
+- Subtitles transfer directly between devices over encrypted WebRTC data channels. **No subtitle content or group membership is stored on or served by the server** — a hibernatable Durable Object only relays bounded SDP/ICE signaling between currently online members. Pairing is direct-only, so devices must be on networks that permit direct connectivity.
 - The connection is remembered: reopening the app reconnects your devices automatically.
+- The group code is a bearer invitation: anyone with it can join as an equal member. Use **Create new group** to rotate the code and revoke the old invitation.
 
 ## Stack
 

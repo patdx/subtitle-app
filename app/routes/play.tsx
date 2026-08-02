@@ -69,15 +69,15 @@ const Play = observer(() => {
 		}
 	}, [])
 
-	// When becoming the host while a file is already loaded (e.g. the user
-	// started hosting from the sync page), announce the current file.
+	// When becoming the internal coordinator with a file already loaded,
+	// announce it to the rest of the group.
 	useEffect(() => {
-		if (syncStore.role === 'host') {
+		if (syncStore.isCoordinator) {
 			void syncStore.onFileLoaded()
 		}
-	}, [syncStore.role])
+	}, [syncStore.isCoordinator])
 
-	// When the host announces a file and we don't have one loaded, open it.
+	// When the group coordinator announces a file, open it if needed.
 	useEffect(() => {
 		const pending = syncStore.pendingNowPlaying
 		if (!pending) return
