@@ -1,31 +1,27 @@
 import { useRef } from 'react'
-import { useEffect } from 'react'
-import { observer } from 'mobx-react-lite'
+import { useEffect, useState } from 'react'
 
 /**
  * A minimal popover menu. The trigger button and the panel are wired together
  * via context-free prop passing; the panel closes on outside click or Escape.
  */
-export const Menu = observer(function Menu({
+export const Menu = function Menu({
 	trigger,
 	children,
 }: {
 	trigger: (open: boolean, toggle: () => void) => React.ReactNode
 	children: (close: () => void) => React.ReactNode
 }) {
-	const [open, setOpen] = useSignal(false)
+	const [open, setOpen] = useState(false)
 	const rootRef = useRef<HTMLDivElement>(null)
 
 	const toggle = () => setOpen((value) => !value)
 	const close = () => setOpen(false)
 
 	useEffect(() => {
-		if (!open()) return
+		if (!open) return
 		const onPointerDown = (e: PointerEvent) => {
-			if (
-				rootRef.current &&
-				!rootRef.current.contains(e.target as Node)
-			) {
+			if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
 				close()
 			}
 		}
@@ -42,15 +38,15 @@ export const Menu = observer(function Menu({
 
 	return (
 		<div ref={rootRef} className="relative">
-			{trigger(open(), toggle)}
-			{open() && (
+			{trigger(open, toggle)}
+			{open && (
 				<div className="absolute right-0 top-full z-20 mt-1 min-w-44 overflow-hidden rounded-panel border border-edge bg-paper-raised py-1 shadow-lg">
 					{children(close)}
 				</div>
 			)}
 		</div>
 	)
-})
+}
 
 export function MenuAction({
 	children,

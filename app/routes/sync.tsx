@@ -1,5 +1,5 @@
-import { observer } from 'mobx-react-lite'
 import { Link as RouterLink, useNavigate } from 'react-router'
+import { useSnapshot } from 'valtio'
 import {
 	Block,
 	Button,
@@ -11,15 +11,16 @@ import {
 } from '~/components'
 import { QrCode } from '~/shared/qr'
 import { QrScanner } from '~/shared/qr-scanner'
-import { syncStore } from '~/shared/sync'
+import { syncState, syncStore } from '~/shared/sync'
 import type { Route } from './+types/sync'
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: 'Sync - Subtitle App' }]
 }
 
-const SyncPage = observer(() => {
+const SyncPage = () => {
 	const navigate = useNavigate()
+	const syncSnap = useSnapshot(syncState)
 	const [codeInput, setCodeInput] = useState('')
 	const [busy, setBusy] = useState(false)
 
@@ -28,7 +29,7 @@ const SyncPage = observer(() => {
 		void (async () => {
 			await syncStore.init()
 			if (codeParam) window.history.replaceState(null, '', location.pathname)
-			if (codeParam && codeParam.toUpperCase() !== syncStore.myGroupCode) {
+			if (codeParam && codeParam.toUpperCase() !== syncState.myGroupCode) {
 				setCodeInput(
 					codeParam
 						.toUpperCase()
@@ -42,11 +43,11 @@ const SyncPage = observer(() => {
 		})()
 	}, [])
 
-	const connecting = syncStore.connectionState === 'connecting'
-	const connected = syncStore.connectionState === 'connected'
-	const active = syncStore.role === 'peer'
-	const qrValue = syncStore.roomCode
-		? `${location.origin}/sync?code=${syncStore.roomCode}`
+	const connecting = syncSnap.connectionState === 'connecting'
+	const connected = syncSnap.connectionState === 'connected'
+	const active = syncSnap.role === 'peer'
+	const qrValue = syncSnap.roomCode
+		? `${location.origin}/sync?code=${syncSnap.roomCode}`
 		: ''
 
 	async function join(codeOverride?: string) {
@@ -61,8 +62,8 @@ const SyncPage = observer(() => {
 	}
 
 	async function retry() {
-		if (syncStore.joinedGroupCode) {
-			await syncStore.joinGroup(syncStore.joinedGroupCode)
+		if (syncState.joinedGroupCode) {
+			await syncStore.joinGroup(syncState.joinedGroupCode)
 		} else {
 			await syncStore.startSharing()
 		}
@@ -87,7 +88,7 @@ const SyncPage = observer(() => {
 				<label className="flex items-center gap-2 text-sm">
 					<span className="text-ink-500">Device name</span>
 					<input
-						value={syncStore.deviceName}
+						value={syncSnap.deviceName}
 						onChange={(e) => {
 							void syncStore.setDeviceName(e.target.value)
 						}}
@@ -101,8 +102,8 @@ const SyncPage = observer(() => {
 			{/* Status + own group                                          */}
 			{/* ---------------------------------------------------------- */}
 			<Block className="px-4">
-				{syncStore.error && (
-					<p className="mb-3 text-sm text-danger">{syncStore.error}</p>
+				{syncSnap.error && (
+					<p className="mb-3 text-sm text-danger">{syncSnap.error}</p>
 				)}
 
 				<div className="flex items-center justify-between">
@@ -111,7 +112,7 @@ const SyncPage = observer(() => {
 							'flex items-center gap-2 text-sm font-medium',
 							connected
 								? 'text-ok'
-								: syncStore.connectionState === 'error'
+								: syncSnap.connectionState === 'error'
 									? 'text-danger'
 									: 'text-ink-600',
 						)}
@@ -121,23 +122,27 @@ const SyncPage = observer(() => {
 								'h-2.5 w-2.5 rounded-full',
 								connected
 									? 'bg-ok'
-									: syncStore.connectionState === 'error'
+									: syncSnap.connectionState === 'error'
 										? 'bg-danger'
-										: syncStore.isRestoring || connecting
+										: syncSnap.isRestoring || connecting
 											? 'bg-warn'
 											: 'bg-ink-300',
 							)}
 						/>
-						{syncStore.isRestoring || connecting
+						{syncSnap.isRestoring || connecting
 							? 'Connecting…'
 							: connected
-								? `Connected to group ${syncStore.roomCode ?? ''}`
-								: syncStore.connectionState === 'error'
+								? `Connected to group ${syncSnap.roomCode ?? ''}`
+								: syncSnap.connectionState === 'error'
 									? 'Not connected'
 									: 'Not sharing'}
 					</span>
-					{syncStore.connectionState === 'error' && active === false && (
-						<Button variant="secondary" onClick={() => void retry()} disabled={busy}>
+					{syncSnap.connectionState === 'error' && active === false && (
+						<Button
+							variant="secondary"
+							onClick={() => void retry()}
+							disabled={busy}
+						>
 							Retry
 						</Button>
 					)}
@@ -155,7 +160,7 @@ const SyncPage = observer(() => {
 								Your group code
 							</p>
 							<p className="mt-2 font-mono text-3xl font-bold tracking-[0.35em] text-ink-900">
-								{syncStore.roomCode}
+								{syncSnap.roomCode}
 							</p>
 							<div className="mx-auto mt-4 w-44 bg-white p-2">
 								<QrCode value={qrValue} size={160} />
@@ -175,7 +180,7 @@ const SyncPage = observer(() => {
 								<Button
 									variant="danger"
 									onClick={() => {
-										void (syncStore.joinedGroupCode
+										void (syncState.joinedGroupCode
 											? syncStore.leaveGroup()
 											: syncStore.stopSharing())
 									}}
@@ -205,9 +210,9 @@ const SyncPage = observer(() => {
 					<Block className="px-4">
 						<div className="rounded-panel border border-edge bg-paper-raised p-5 text-center">
 							<p className="text-sm font-medium text-ink-900">This device</p>
-							{syncStore.myGroupCode ? (
+							{syncSnap.myGroupCode ? (
 								<p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-ink-900">
-									{syncStore.myGroupCode}
+									{syncSnap.myGroupCode}
 								</p>
 							) : (
 								<p className="mt-1 text-sm text-ink-500">
@@ -268,23 +273,22 @@ const SyncPage = observer(() => {
 			)}
 		</Page>
 	)
-})
+}
 
-const MembersList = observer(() => {
-	if (syncStore.roomPeers.length === 0) return null
+const MembersList = () => {
+	const syncSnap = useSnapshot(syncState)
+	if (syncSnap.roomPeers.length === 0) return null
 	return (
 		<>
 			<Block className="px-4">
 				<h2 className="text-sm font-medium text-ink-600">Connected devices</h2>
 			</Block>
 			<List>
-				{syncStore.roomPeers.map((peer) => (
+				{syncSnap.roomPeers.map((peer) => (
 					<ListItem
 						key={peer.sessionId}
 						title={peer.name}
-						after={
-							<span className="text-xs text-ink-400">Device</span>
-						}
+						after={<span className="text-xs text-ink-400">Device</span>}
 						footer={
 							<span
 								className={cn(
@@ -300,36 +304,32 @@ const MembersList = observer(() => {
 			</List>
 		</>
 	)
-})
+}
 
-const ReceivedFilesList = observer(() => {
-	if (
-		syncStore.transfers.length === 0 &&
-		syncStore.receivedFiles.length === 0
-	) {
+const ReceivedFilesList = () => {
+	const syncSnap = useSnapshot(syncState)
+	if (syncSnap.transfers.length === 0 && syncSnap.receivedFiles.length === 0) {
 		return null
 	}
 	return (
 		<>
-			{syncStore.transfers.length > 0 && (
+			{syncSnap.transfers.length > 0 && (
 				<Block className="px-4">
 					<p className="text-sm font-medium">Receiving files…</p>
-					{syncStore.transfers.map((transfer) => (
+					{syncSnap.transfers.map((transfer) => (
 						<p key={transfer.fileName} className="text-sm text-ink-600">
 							{transfer.fileName} ({transfer.received}/{transfer.total})
 						</p>
 					))}
 				</Block>
 			)}
-			{syncStore.receivedFiles.length > 0 && (
+			{syncSnap.receivedFiles.length > 0 && (
 				<>
 					<Block className="px-4">
-						<h2 className="text-sm font-medium text-ink-600">
-							Received files
-						</h2>
+						<h2 className="text-sm font-medium text-ink-600">Received files</h2>
 					</Block>
 					<List>
-						{syncStore.receivedFiles.map((file) => (
+						{syncSnap.receivedFiles.map((file) => (
 							<ListItem key={file.fileId} title={file.name} asChild>
 								<RouterLink to={`/play?id=${file.fileId}`} />
 							</ListItem>
@@ -339,6 +339,6 @@ const ReceivedFilesList = observer(() => {
 			)}
 		</>
 	)
-})
+}
 
 export default SyncPage

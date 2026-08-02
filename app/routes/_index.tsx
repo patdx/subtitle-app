@@ -36,9 +36,9 @@ interface FileRecord {
 
 const EditFilesPage = () => {
 	const id = useId()
-	const [isProcessing, setProcessing] = useSignal(false)
-	const [renamingId, setRenamingId] = useSignal<string | null>(null)
-	const [renameValue, setRenameValue] = useSignal('')
+	const [isProcessing, setProcessing] = useState(false)
+	const [renamingId, setRenamingId] = useState<string | null>(null)
+	const [renameValue, setRenameValue] = useState('')
 
 	const result = useQuery({
 		queryKey: ['files'],
@@ -222,9 +222,7 @@ const EditFilesPage = () => {
 				<div className="flex flex-wrap items-center gap-2">
 					<Button onClick={() => inputRef.current?.click()} className="">
 						Import SRT or ZIP
-						<Show when={isProcessing}>
-							<LoadingIcon />
-						</Show>
+						{isProcessing && <LoadingIcon />}
 					</Button>
 
 					<Button
@@ -243,147 +241,146 @@ const EditFilesPage = () => {
 			</Block>
 
 			{/* Empty state teaches the space. */}
-			<Show when={isEmpty}>
+			{isEmpty() && (
 				<Block className="px-4 pt-8">
-					<p className="text-base font-medium text-ink-900">No subtitle files yet</p>
+					<p className="text-base font-medium text-ink-900">
+						No subtitle files yet
+					</p>
 					<p className="mt-1 max-w-prose text-sm text-ink-500">
-						Import an SRT or ZIP to get started, or load the sample file
-						above to see the player.
+						Import an SRT or ZIP to get started, or load the sample file above
+						to see the player.
 					</p>
 				</Block>
-			</Show>
+			)}
 
 			{/* One unified card list — most recently watched first */}
-			<Show when={() => !isEmpty()}>
+			{!isEmpty() && (
 				<div className="flex flex-col gap-3 px-4 pt-6">
-					<For each={files}>
-						{(file) => {
-							const percent = progressPercent(file)
-							const showHistory = hasHistory(file)
-							return (
-								<RouterLink
-									key={file.id}
-									to={`/play?id=${file.id}`}
-									className="block rounded-panel border border-edge bg-paper-raised p-4 hover:border-ink-400"
-								>
-									<div className="flex items-start justify-between gap-3">
-										<div className="min-w-0 flex-1">
-											{renamingId() === file.id ? (
-												<div className="flex items-center gap-2">
-													<input
-														autoFocus
-														value={renameValue()}
-														onChange={(e) => setRenameValue(e.target.value)}
-														onKeyDown={(e) => {
-															if (e.key === 'Enter') {
-																void renameFile(file, renameValue())
-															} else if (e.key === 'Escape') {
-																setRenamingId(null)
-															}
-														}}
-														className="w-full rounded-field border border-ink-400 bg-paper px-3 py-1.5 text-sm text-ink-900 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30"
-													/>
-													<button
-														type="button"
-														aria-label="Save rename"
-														className="flex h-9 w-9 flex-none items-center justify-center rounded-control text-ok hover:bg-ok-soft"
-														onClick={(e) => {
-															e.preventDefault()
-															void renameFile(file, renameValue())
-														}}
-													>
-														<CheckIcon />
-													</button>
-													<button
-														type="button"
-														aria-label="Cancel rename"
-														className="flex h-9 w-9 flex-none items-center justify-center rounded-control text-ink-400 hover:bg-ink-50 hover:text-ink-900"
-														onClick={(e) => {
-															e.preventDefault()
+					{files().map((file) => {
+						const percent = progressPercent(file)
+						const showHistory = hasHistory(file)
+						return (
+							<RouterLink
+								key={file.id}
+								to={`/play?id=${file.id}`}
+								className="block rounded-panel border border-edge bg-paper-raised p-4 hover:border-ink-400"
+							>
+								<div className="flex items-start justify-between gap-3">
+									<div className="min-w-0 flex-1">
+										{renamingId === file.id ? (
+											<div className="flex items-center gap-2">
+												<input
+													autoFocus
+													value={renameValue}
+													onChange={(e) => setRenameValue(e.target.value)}
+													onKeyDown={(e) => {
+														if (e.key === 'Enter') {
+															void renameFile(file, renameValue)
+														} else if (e.key === 'Escape') {
 															setRenamingId(null)
-														}}
-													>
-														<MoreIcon className="rotate-90" />
-													</button>
-												</div>
-											) : (
-												<p className="truncate font-medium text-ink-900">
-													{file.name}
-												</p>
-											)}
-											{showHistory && (
-												<p className="mt-1 text-xs text-ink-500">
-													{percent}% · Resume at{' '}
-													{formatTime(file.progress ?? 0)}
-												</p>
-											)}
-											{!showHistory && metadataChips(file)}
-										</div>
-										<div className="flex flex-none items-center gap-1">
-											<Menu
-												trigger={(open, toggle) => (
-													<button
-														type="button"
-														aria-label="File actions"
-														aria-expanded={open}
-														className={cn(
-															'flex h-10 w-10 items-center justify-center rounded-control text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-900',
-															open && 'bg-ink-50 text-ink-900',
-														)}
-														onClick={(e) => {
-															e.preventDefault()
-															e.stopPropagation()
-															toggle()
-														}}
-													>
-														<MoreIcon />
-													</button>
-												)}
-											>
-												{(close) => (
-													<>
-														<MenuAction
-															onClick={() => {
-																void clearProgress(file)
-																close()
-															}}
-														>
-															Clear watch progress
-														</MenuAction>
-														<MenuAction
-															onClick={() => {
-																setRenameValue(file.name)
-																setRenamingId(file.id)
-																close()
-															}}
-														>
-															Rename
-														</MenuAction>
-														<MenuAction
-															danger
-															onClick={() => {
-																void deleteFile(file)
-																close()
-															}}
-														>
-															Delete
-														</MenuAction>
-													</>
-												)}
-											</Menu>
-										</div>
+														}
+													}}
+													className="w-full rounded-field border border-ink-400 bg-paper px-3 py-1.5 text-sm text-ink-900 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30"
+												/>
+												<button
+													type="button"
+													aria-label="Save rename"
+													className="flex h-9 w-9 flex-none items-center justify-center rounded-control text-ok hover:bg-ok-soft"
+													onClick={(e) => {
+														e.preventDefault()
+														void renameFile(file, renameValue)
+													}}
+												>
+													<CheckIcon />
+												</button>
+												<button
+													type="button"
+													aria-label="Cancel rename"
+													className="flex h-9 w-9 flex-none items-center justify-center rounded-control text-ink-400 hover:bg-ink-50 hover:text-ink-900"
+													onClick={(e) => {
+														e.preventDefault()
+														setRenamingId(null)
+													}}
+												>
+													<MoreIcon className="rotate-90" />
+												</button>
+											</div>
+										) : (
+											<p className="truncate font-medium text-ink-900">
+												{file.name}
+											</p>
+										)}
+										{showHistory && (
+											<p className="mt-1 text-xs text-ink-500">
+												{percent}% · Resume at {formatTime(file.progress ?? 0)}
+											</p>
+										)}
+										{!showHistory && metadataChips(file)}
 									</div>
-									{showHistory && (
-										<div className="mt-3">
-											<ProgressBar percent={percent} />
-										</div>
-									)}
-								</RouterLink>
-							)
-						}}
-					</For>
+									<div className="flex flex-none items-center gap-1">
+										<Menu
+											trigger={(open, toggle) => (
+												<button
+													type="button"
+													aria-label="File actions"
+													aria-expanded={open}
+													className={cn(
+														'flex h-10 w-10 items-center justify-center rounded-control text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-900',
+														open && 'bg-ink-50 text-ink-900',
+													)}
+													onClick={(e) => {
+														e.preventDefault()
+														e.stopPropagation()
+														toggle()
+													}}
+												>
+													<MoreIcon />
+												</button>
+											)}
+										>
+											{(close) => (
+												<>
+													<MenuAction
+														onClick={() => {
+															void clearProgress(file)
+															close()
+														}}
+													>
+														Clear watch progress
+													</MenuAction>
+													<MenuAction
+														onClick={() => {
+															setRenameValue(file.name)
+															setRenamingId(file.id)
+															close()
+														}}
+													>
+														Rename
+													</MenuAction>
+													<MenuAction
+														danger
+														onClick={() => {
+															void deleteFile(file)
+															close()
+														}}
+													>
+														Delete
+													</MenuAction>
+												</>
+											)}
+										</Menu>
+									</div>
+								</div>
+								{showHistory && (
+									<div className="mt-3">
+										<ProgressBar percent={percent} />
+									</div>
+								)}
+							</RouterLink>
+						)
+					})}
 				</div>
-			</Show>
+			)}
 
 			<Block className="px-4 pt-4">
 				<RouterLink

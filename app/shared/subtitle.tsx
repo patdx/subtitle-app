@@ -1,11 +1,11 @@
+import { useSnapshot } from 'valtio'
 import {
-	getTextSize,
-	getTimeElapsed,
+	clock,
 	nodeIsActive,
 	sanitizeSubtitleHtml,
+	uiState,
 	type Entry,
 } from './utils'
-import { observer } from 'mobx-react-lite'
 
 const formatTime = (ms: number): string => {
 	const totalSeconds = Math.floor(ms / 1000)
@@ -14,37 +14,36 @@ const formatTime = (ms: number): string => {
 	return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 
-export const TimeDisplay = observer(
-	(props: { ms: number; className?: string }) => {
-		return (
-			<span className={cn('font-mono', props.className)}>
-				{formatTime(props.ms)}
-			</span>
-		)
-	},
-)
+export const TimeDisplay = (props: { ms: number; className?: string }) => {
+	return (
+		<span className={cn('font-mono', props.className)}>
+			{formatTime(props.ms)}
+		</span>
+	)
+}
 
-export const Subtitle = observer(
-	(props: { node: Entry; showTime?: boolean }) => {
-		return (
-			<div className="flex flex-col items-center">
-				{props.showTime && (
-					<TimeDisplay
-						ms={props.node.from}
-						className="text-xs text-gray-400 mb-1"
-					/>
-				)}
-				<div
-					className={cn(
-						`subtitle-text text-white`,
-						getTextSize(),
-						nodeIsActive(props.node, getTimeElapsed()) && 'font-bold',
-					)}
-					dangerouslySetInnerHTML={{
-						__html: sanitizeSubtitleHtml(props.node.text),
-					}}
+export const Subtitle = (props: { node: Entry; showTime?: boolean }) => {
+	const uiSnap = useSnapshot(uiState)
+	const clockSnap = useSnapshot(clock)
+	return (
+		<div className="flex flex-col items-center">
+			{props.showTime && (
+				<TimeDisplay
+					ms={props.node.from}
+					className="text-xs text-gray-400 mb-1"
 				/>
-			</div>
-		)
-	},
-)
+			)}
+			<div
+				className={cn(
+					`subtitle-text text-white`,
+					uiSnap.textSize,
+					nodeIsActive(props.node, clockSnap.actualTimeElapsedMs) &&
+						'font-bold',
+				)}
+				dangerouslySetInnerHTML={{
+					__html: sanitizeSubtitleHtml(props.node.text),
+				}}
+			/>
+		</div>
+	)
+}

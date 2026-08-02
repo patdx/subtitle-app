@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react-lite'
+import { useSnapshot } from 'valtio'
 import { Link } from 'react-router'
 import {
 	FullScreenIcon,
@@ -16,15 +16,20 @@ import {
 	seekBy,
 	seekTo,
 	setPlaySpeed,
+	syncState,
 	syncStore,
 	togglePlayback,
 } from './sync'
 import {
 	clock,
 	controlState,
+	enableFullScreenButton,
 	getTimeElapsedAsDuration,
+	pokeControls,
 	setTextSize,
 	TEXT_SIZES,
+	toggleControls,
+	toggleTranscript,
 } from './utils'
 
 const IconTextButton = ({
@@ -73,8 +78,9 @@ const TextButton = ({
 }
 
 /** A real readout: the current time as text, not four tappable steppers. */
-const TimeReadout = observer(() => {
-	const d = getTimeElapsedAsDuration()
+const TimeReadout = () => {
+	const clockSnap = useSnapshot(clock)
+	const d = getTimeElapsedAsDuration(clockSnap.actualTimeElapsedMs)
 	const text = `${d.hours}h ${d.minutes}m ${d.seconds}s`
 	return (
 		<div className="flex h-10 flex-none items-center justify-center gap-2">
@@ -83,17 +89,21 @@ const TimeReadout = observer(() => {
 			</span>
 		</div>
 	)
-})
+}
 
-export const Controls = observer(() => {
+export const Controls = () => {
+	const controlSnap = useSnapshot(controlState)
+	const syncSnap = useSnapshot(syncState)
+	const clockSnap = useSnapshot(clock)
+
 	useEffect(() => {
 		if (document.fullscreenEnabled) {
-			controlState.enableFullScreenButton()
+			enableFullScreenButton()
 		}
 	}, [])
 
 	useEffect(() => {
-		if (!controlState.isOpen || controlState.faded) return
+		if (!controlSnap.isOpen || controlSnap.faded) return
 		const timer = window.setTimeout(() => {
 			controlState.faded = true
 			// Blur the active element so keyboard focus doesn't land on a hidden control
@@ -102,20 +112,22 @@ export const Controls = observer(() => {
 			}
 		}, 5000)
 		return () => window.clearTimeout(timer)
-	}, [controlState.isOpen, controlState.faded, controlState.activity])
+	}, [controlSnap.isOpen, controlSnap.faded, controlSnap.activity])
 
 	return (
 		<>
 			<div
 				className={cn(
 					'absolute left-0 right-0 top-0 bg-linear-to-b from-black to-transparent pb-8 pl-safe pr-safe pt-safe transition-opacity duration-500',
-					controlState.isOpen && controlState.faded && 'pointer-events-none opacity-0',
+					controlSnap.isOpen &&
+						controlSnap.faded &&
+						'pointer-events-none opacity-0',
 				)}
-				onPointerDown={() => controlState.poke()}
+				onPointerDown={pokeControls}
 			>
 				<div className="flex items-center">
-					<Show when={() => controlState.isOpen}>
-						{/* go back button */}
+					{controlSnap.isOpen && (
+						/* go back button */
 						<Link
 							to="/"
 							aria-label="Back to file list"
@@ -123,43 +135,43 @@ export const Controls = observer(() => {
 						>
 							<GoBackIcon />
 						</Link>
-					</Show>
+					)}
 
 					<div className="flex-1"></div>
 
-					<Show when={() => controlState.isOpen}>
-						{/* transcript button */}
+					{controlSnap.isOpen && (
+						/* transcript button */
 						<button
-							onClick={() => controlState.toggleTranscript()}
+							onClick={toggleTranscript}
 							aria-label="Toggle transcript"
 							className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 						>
 							<TranscriptIcon />
 						</button>
-					</Show>
+					)}
 
-					<Show when={() => controlState.isOpen}>
-						{/* device sync button */}
+					{controlSnap.isOpen && (
+						/* device sync button */
 						<Link
 							to="/sync"
 							aria-label="Device sync"
 							className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 						>
 							<SyncIcon />
-							<Show when={() => syncStore.connectionState === 'connected'}>
+							{syncSnap.connectionState === 'connected' && (
 								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-ok" />
-							</Show>
-							<Show when={() => syncStore.connectionState === 'connecting'}>
+							)}
+							{syncSnap.connectionState === 'connecting' && (
 								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-warn" />
-							</Show>
-							<Show when={() => syncStore.connectionState === 'error'}>
+							)}
+							{syncSnap.connectionState === 'error' && (
 								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-danger" />
-							</Show>
+							)}
 						</Link>
-					</Show>
+					)}
 
-					<Show when={() => controlState.showFullScreenButton}>
-						{/* full screen button (for Android) */}
+					{controlSnap.isOpen && controlSnap.fullScreenEnabled && (
+						/* full screen button (for Android) */
 						<button
 							onClick={() => {
 								let elem = document.getElementById('app')
@@ -185,12 +197,12 @@ export const Controls = observer(() => {
 						>
 							<FullScreenIcon />
 						</button>
-					</Show>
+					)}
 
 					{/* toggle menu */}
 					<button
-						onClick={controlState.toggle}
-						aria-label={controlState.isOpen ? 'Hide controls' : 'Show controls'}
+						onClick={toggleControls}
+						aria-label={controlSnap.isOpen ? 'Hide controls' : 'Show controls'}
 						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 					>
 						<MenuIcon />
@@ -198,13 +210,13 @@ export const Controls = observer(() => {
 				</div>
 			</div>
 
-			<Show when={() => controlState.isOpen}>
+			{controlSnap.isOpen && (
 				<div
 					className={cn(
 						'absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent pt-16 pl-safe pr-safe pb-safe transition-opacity duration-500',
-						controlState.faded && 'pointer-events-none opacity-0',
+						controlSnap.faded && 'pointer-events-none opacity-0',
 					)}
-					onPointerDown={() => controlState.poke()}
+					onPointerDown={pokeControls}
 				>
 					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
 						{/* time readout + seek */}
@@ -241,9 +253,9 @@ export const Controls = observer(() => {
 							<button
 								className="flex h-12 w-12 items-center justify-center rounded-control text-white transition-colors duration-150 hover:text-white active:text-white"
 								onClick={togglePlayback}
-								aria-label={clock.isPlaying ? 'Pause' : 'Play'}
+								aria-label={clockSnap.isPlaying ? 'Pause' : 'Play'}
 							>
-								{clock.isPlaying ? <PauseIcon /> : <PlayIcon />}
+								{clockSnap.isPlaying ? <PauseIcon /> : <PlayIcon />}
 							</button>
 
 							<IconTextButton
@@ -271,7 +283,7 @@ export const Controls = observer(() => {
 						{/* speed + text size */}
 						<div className="flex items-center justify-center">
 							<NumberInput
-								value={() => clock.playSpeed}
+								value={clockSnap.playSpeed}
 								suffix="x"
 								onChange={(value) => {
 									if (Number.isFinite(value) && value > 0) {
@@ -306,7 +318,7 @@ export const Controls = observer(() => {
 						</div>
 					</div>
 				</div>
-			</Show>
+			)}
 		</>
 	)
-})
+}

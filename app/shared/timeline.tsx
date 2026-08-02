@@ -1,20 +1,22 @@
-import { observer } from 'mobx-react-lite'
+import { useSnapshot } from 'valtio'
 import { TimeDisplay } from './subtitle'
-import { clock, getDuration, getTimeElapsed, setClock } from './utils'
+import { clock, getDuration, setClock, toggleIsPlaying, uiState } from './utils'
 
-export const Timeline = observer(() => {
+export const Timeline = () => {
+	const uiSnap = useSnapshot(uiState)
+	const clockSnap = useSnapshot(clock)
 	const wasPlaying = useRef(false)
 
-	const duration = getDuration()
+	const duration = getDuration(uiSnap.file)
 	if (!duration || duration <= 0) return null
 
-	const elapsed = Math.min(getTimeElapsed(), duration)
+	const elapsed = Math.min(clockSnap.actualTimeElapsedMs, duration)
 	const percent = (elapsed / duration) * 100
 
 	const handlePointerDown = () => {
 		wasPlaying.current = clock.isPlaying
 		if (clock.isPlaying) {
-			clock.toggleIsPlaying(false)
+			toggleIsPlaying(false)
 		}
 	}
 
@@ -27,7 +29,7 @@ export const Timeline = observer(() => {
 
 	const handlePointerUp = () => {
 		if (wasPlaying.current) {
-			clock.toggleIsPlaying(true)
+			toggleIsPlaying(true)
 		}
 	}
 
@@ -56,4 +58,4 @@ export const Timeline = observer(() => {
 			/>
 		</div>
 	)
-})
+}

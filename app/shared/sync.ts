@@ -1,4 +1,4 @@
-import * as mobx from 'mobx'
+import { proxy } from 'valtio'
 import { nanoid } from 'nanoid'
 import {
 	addFileToDatabase,
@@ -9,6 +9,7 @@ import {
 	setClock,
 	setSetting,
 	getSetting,
+	toggleIsPlaying,
 	type DbLine,
 } from './utils'
 
@@ -128,29 +129,64 @@ export const linesToSrtText = (lines: DbLine[]): string =>
 		)
 		.join('\n')
 
-class SyncStore {
-	role: SyncRole = 'none'
-	sessionId: string | null = null
-	roomCode: string | null = null
-	connectionState: ConnectionState = 'disconnected'
-	error: string | null = null
+export interface SyncState {
+	role: SyncRole
+	sessionId: string | null
+	roomCode: string | null
+	connectionState: ConnectionState
+	error: string | null
 	deviceName: string
-	roomPeers: PeerInfo[] = []
-	coordinationClaim: { term: number; claimantId: string } | null = null
-	receivedFiles: ReceivedFile[] = []
-	transfers: { fileName: string; received: number; total: number }[] = []
-	pendingNowPlaying: ReceivedFile | null = null
-	suppressNextFileAnnouncement = false
-
-	/** this device's own persistent group code */
-	myGroupCode: string | null = null
+	roomPeers: PeerInfo[]
+	coordinationClaim: { term: number; claimantId: string } | null
+	receivedFiles: ReceivedFile[]
+	transfers: { fileName: string; received: number; total: number }[]
+	pendingNowPlaying: ReceivedFile | null
+	myGroupCode: string | null
 	/** group code we joined (null = our own group) */
-	joinedGroupCode: string | null = null
+	joinedGroupCode: string | null
 	/** whether our own group was active when we last left */
-	wasSharing = false
+	wasSharing: boolean
 	/** true while restoring a previously active group */
-	isRestoring = false
+	isRestoring: boolean
+}
 
+export const syncState = proxy<SyncState>({
+	role: 'none',
+	sessionId: null,
+	roomCode: null,
+	connectionState: 'disconnected',
+	error: null,
+	deviceName: `Device ${Math.floor(Math.random() * 1000)}`,
+	roomPeers: [],
+	coordinationClaim: null,
+	receivedFiles: [],
+	transfers: [],
+	pendingNowPlaying: null,
+	myGroupCode: null,
+	joinedGroupCode: null,
+	wasSharing: false,
+	isRestoring: false,
+})
+
+export const getCoordinatorId = (state: {
+	sessionId: string | null
+	roomPeers: readonly PeerInfo[]
+	coordinationClaim: { term: number; claimantId: string } | null
+}): string | null => {
+	if (!state.sessionId) return null
+	const online = [
+		state.sessionId,
+		...state.roomPeers.map((peer) => peer.sessionId),
+	]
+	if (
+		state.coordinationClaim &&
+		online.includes(state.coordinationClaim.claimantId)
+	)
+		return state.coordinationClaim.claimantId
+	return online.sort()[0]
+}
+
+class SyncEngine {
 	/** non-observable WebRTC state */
 	pc: RTCPeerConnection | null = null
 	peerTransports = new Map<string, PeerTransport>()
@@ -179,29 +215,16 @@ class SyncStore {
 	lastFileRequestAt = new Map<string, number>()
 	peerReconnectAttempts = new Map<string, number>()
 
-	constructor() {
-		this.deviceName = `Device ${Math.floor(Math.random() * 1000)}`
-		mobx.makeAutoObservable(
-			this,
-			{
-				pc: false,
-				peerTransports: false,
-				earlyIce: false,
-				inboundDcs: false,
-				presenceSocket: false,
-				presenceReconnectTimer: false,
-				presenceReconnectAttempts: false,
-				presenceIntentionalClose: false,
-				broadcastTimer: false,
-				pingTimer: false,
-				connectTimeout: false,
-				receiveBuffers: false,
-				pendingNowPlayingRequests: false,
-				lastFileRequestAt: false,
-				peerReconnectAttempts: false,
-				suppressNextFileAnnouncement: false,
-			},
-			{ autoBind: true },
+	/** true while the next file announcement is swallowed (internal only) */
+	suppressNextFileAnnouncement = false
+
+	get coordinatorId(): string | null {
+		return getCoordinatorId(syncState)
+	}
+
+	get isCoordinator(): boolean {
+		return (
+			syncState.role === 'peer' && this.coordinatorId === syncState.sessionId
 		)
 	}
 
@@ -210,43 +233,44 @@ class SyncStore {
 	// ------------------------------------------------------------------
 
 	async init() {
-		this.myGroupCode = (await getSetting<string>('myGroupCode')) ?? null
-		this.joinedGroupCode = (await getSetting<string>('joinedGroupCode')) ?? null
-		this.wasSharing = (await getSetting<boolean>('wasSharing')) ?? false
+		syncState.myGroupCode = (await getSetting<string>('myGroupCode')) ?? null
+		syncState.joinedGroupCode =
+			(await getSetting<string>('joinedGroupCode')) ?? null
+		syncState.wasSharing = (await getSetting<boolean>('wasSharing')) ?? false
 		const deviceName = await getSetting<string>('deviceName')
 		if (typeof deviceName === 'string' && deviceName.length > 0) {
-			this.deviceName = deviceName
+			syncState.deviceName = deviceName
 		} else {
-			await setSetting('deviceName', this.deviceName)
+			await setSetting('deviceName', syncState.deviceName)
 		}
 	}
 
 	/** Bring back the previously active group when opening the app. */
 	async restore() {
 		await this.init()
-		if (this.connectionState !== 'disconnected') return
-		this.isRestoring = true
+		if (syncState.connectionState !== 'disconnected') return
+		syncState.isRestoring = true
 		try {
-			if (this.joinedGroupCode) {
-				await this.joinGroup(this.joinedGroupCode)
-			} else if (this.wasSharing) {
+			if (syncState.joinedGroupCode) {
+				await this.joinGroup(syncState.joinedGroupCode)
+			} else if (syncState.wasSharing) {
 				await this.startSharing()
 			}
 		} finally {
-			this.isRestoring = false
+			syncState.isRestoring = false
 		}
 	}
 
 	private async ensureMyGroup(): Promise<string> {
-		if (!this.myGroupCode || this.myGroupCode.length !== 20) {
-			this.myGroupCode = makeRoomCode()
-			await setSetting('myGroupCode', this.myGroupCode)
+		if (!syncState.myGroupCode || syncState.myGroupCode.length !== 20) {
+			syncState.myGroupCode = makeRoomCode()
+			await setSetting('myGroupCode', syncState.myGroupCode)
 		}
-		return this.myGroupCode
+		return syncState.myGroupCode
 	}
 
 	async setDeviceName(name: string) {
-		this.deviceName = name
+		syncState.deviceName = name
 		await setSetting('deviceName', name)
 	}
 
@@ -254,9 +278,12 @@ class SyncStore {
 	async startSharing() {
 		const code = await this.ensureMyGroup()
 		await this.connectGroup(code)
-		if (this.role === 'peer' && this.connectionState === 'connected') {
-			this.joinedGroupCode = null
-			this.wasSharing = true
+		if (
+			syncState.role === 'peer' &&
+			syncState.connectionState === 'connected'
+		) {
+			syncState.joinedGroupCode = null
+			syncState.wasSharing = true
 			await setSetting('joinedGroupCode', null)
 			await setSetting('wasSharing', true)
 		}
@@ -265,67 +292,53 @@ class SyncStore {
 	/** Join someone else's group. */
 	async joinGroup(code: string) {
 		await this.connectGroup(code)
-		if (this.role === 'peer' && this.connectionState === 'connected') {
-			this.joinedGroupCode = this.roomCode
-			this.wasSharing = false
-			await setSetting('joinedGroupCode', this.roomCode)
+		if (
+			syncState.role === 'peer' &&
+			syncState.connectionState === 'connected'
+		) {
+			syncState.joinedGroupCode = syncState.roomCode
+			syncState.wasSharing = false
+			await setSetting('joinedGroupCode', syncState.roomCode)
 			await setSetting('wasSharing', false)
 		}
 	}
 
 	/** Stop sharing our group (the group code is kept for later). */
 	async stopSharing() {
-		this.send({ type: 'leave', deviceName: this.deviceName })
+		this.send({ type: 'leave', deviceName: syncState.deviceName })
 		this.reset()
-		this.wasSharing = false
+		syncState.wasSharing = false
 		await setSetting('wasSharing', false)
 	}
 
 	/** Leave a group we joined and go back to our own group. */
 	async leaveGroup() {
-		this.send({ type: 'leave', deviceName: this.deviceName })
+		this.send({ type: 'leave', deviceName: syncState.deviceName })
 		this.reset()
-		this.joinedGroupCode = null
+		syncState.joinedGroupCode = null
 		await setSetting('joinedGroupCode', null)
 	}
 
 	/** Rotate the bearer group capability and start a fresh remembered group. */
 	async createNewGroup() {
 		this.reset()
-		this.myGroupCode = makeRoomCode()
-		this.joinedGroupCode = null
-		this.wasSharing = true
-		await setSetting('myGroupCode', this.myGroupCode)
+		syncState.myGroupCode = makeRoomCode()
+		syncState.joinedGroupCode = null
+		syncState.wasSharing = true
+		await setSetting('myGroupCode', syncState.myGroupCode)
 		await setSetting('joinedGroupCode', null)
 		await setSetting('wasSharing', true)
-		await this.connectGroup(this.myGroupCode)
+		await this.connectGroup(syncState.myGroupCode)
 	}
 
 	reconnect() {
-		if (this.role === 'peer' && this.roomCode) void this.connectGroup(this.roomCode)
-	}
-
-	get coordinatorId(): string | null {
-		if (!this.sessionId) return null
-		const online = [
-			this.sessionId,
-			...this.roomPeers.map((peer) => peer.sessionId),
-		]
-		if (
-			this.coordinationClaim &&
-			online.includes(this.coordinationClaim.claimantId)
-		)
-			return this.coordinationClaim.claimantId
-		return online.sort()[0]
-	}
-
-	get isCoordinator() {
-		return this.role === 'peer' && this.coordinatorId === this.sessionId
+		if (syncState.role === 'peer' && syncState.roomCode)
+			void this.connectGroup(syncState.roomCode)
 	}
 
 	/** Consume the announced now-playing file (cleared after opening it). */
 	consumePendingNowPlaying() {
-		this.pendingNowPlaying = null
+		syncState.pendingNowPlaying = null
 		this.suppressNextFileAnnouncement = true
 	}
 
@@ -363,18 +376,18 @@ class SyncStore {
 
 	private async connectGroup(code: string) {
 		this.reset()
-		this.connectionState = 'connecting'
-		this.role = 'peer'
+		syncState.connectionState = 'connecting'
+		syncState.role = 'peer'
 
 		try {
-			this.sessionId = makeConnectionId()
-			this.roomCode = code.toUpperCase()
+			syncState.sessionId = makeConnectionId()
+			syncState.roomCode = code.toUpperCase()
 			this._startConnectTimeout()
 			await this._connectPresence()
 			this._startBroadcastTimer()
 			this._startPing()
 
-			this.connectionState = 'connected'
+			syncState.connectionState = 'connected'
 			this._clearConnectTimeout()
 			void this.onFileLoaded()
 		} catch (err) {
@@ -397,17 +410,17 @@ class SyncStore {
 		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: positionMs })
 		if (this.isCoordinator) {
 			this.broadcastClockState()
-		} else if (this.role !== 'none') {
+		} else if (syncState.role !== 'none') {
 			this.send({ type: 'cmd-seek', positionMs: getTimeElapsed() })
 		}
 	}
 
 	togglePlayback() {
 		const isPlaying = !clock.isPlaying
-		clock.toggleIsPlaying(isPlaying)
+		toggleIsPlaying(isPlaying)
 		if (this.isCoordinator) {
 			this.broadcastClockState()
-		} else if (this.role !== 'none') {
+		} else if (syncState.role !== 'none') {
 			this.send({ type: isPlaying ? 'cmd-play' : 'cmd-pause' })
 		}
 	}
@@ -420,7 +433,7 @@ class SyncStore {
 		})
 		if (this.isCoordinator) {
 			this.broadcastClockState()
-		} else if (this.role !== 'none') {
+		} else if (syncState.role !== 'none') {
 			this.send({ type: 'cmd-speed', speed })
 		}
 	}
@@ -434,13 +447,13 @@ class SyncStore {
 			this.suppressNextFileAnnouncement = false
 			return
 		}
-		if (this.role !== 'peer' || !this.sessionId) return
+		if (syncState.role !== 'peer' || !syncState.sessionId) return
 		if (!this.isCoordinator) {
 			const claim = {
-				term: (this.coordinationClaim?.term ?? 0) + 1,
-				claimantId: this.sessionId,
+				term: (syncState.coordinationClaim?.term ?? 0) + 1,
+				claimantId: syncState.sessionId,
 			}
-			this.coordinationClaim = claim
+			syncState.coordinationClaim = claim
 			this.send({ type: 'claim-coordinator', ...claim })
 		}
 		await this.broadcastNowPlaying()
@@ -482,7 +495,7 @@ class SyncStore {
 		const transferId = nanoid()
 		const totalChunks = Math.max(1, Math.ceil(text.length / CHUNK_SIZE))
 		if (totalChunks > MAX_TRANSFER_CHUNKS) {
-			this.error = 'This subtitle file is too large to sync directly'
+			syncState.error = 'This subtitle file is too large to sync directly'
 			return
 		}
 
@@ -506,7 +519,7 @@ class SyncStore {
 	}
 
 	broadcastClockState() {
-		if (!this.isCoordinator || this.connectionState !== 'connected') return
+		if (!this.isCoordinator || syncState.connectionState !== 'connected') return
 		this.send({
 			type: 'state-clock',
 			isPlaying: clock.isPlaying,
@@ -530,34 +543,33 @@ class SyncStore {
 				msg.term > 1_000_000_000
 			)
 				return
-			const current = this.coordinationClaim
+			const current = syncState.coordinationClaim
 			if (
 				!current ||
 				msg.term > current.term ||
 				(msg.term === current.term && msg.claimantId > current.claimantId)
 			)
-				this.coordinationClaim = {
+				syncState.coordinationClaim = {
 					term: msg.term,
 					claimantId: msg.claimantId,
 				}
 			return
 		}
 		const fromCoordinator = peerId === this.coordinatorId
-		const allowed =
-			this.isCoordinator
+		const allowed = this.isCoordinator
+			? new Set([
+					'cmd-play',
+					'cmd-pause',
+					'cmd-seek',
+					'cmd-speed',
+					'join',
+					'leave',
+					'request-file',
+					'ping',
+					'pong',
+				])
+			: fromCoordinator
 				? new Set([
-						'cmd-play',
-						'cmd-pause',
-						'cmd-seek',
-						'cmd-speed',
-						'join',
-						'leave',
-						'request-file',
-						'ping',
-						'pong',
-					])
-				: fromCoordinator
-					? new Set([
 						'state-clock',
 						'now-playing',
 						'file-list',
@@ -565,7 +577,7 @@ class SyncStore {
 						'ping',
 						'pong',
 					])
-					: new Set(['ping', 'pong'])
+				: new Set(['ping', 'pong'])
 		if (!allowed.has(msg.type)) return
 		switch (msg.type) {
 			case 'state-clock':
@@ -616,13 +628,13 @@ class SyncStore {
 		switch (msg.type) {
 			case 'cmd-play':
 				if (!clock.isPlaying) {
-					clock.toggleIsPlaying(true)
+					toggleIsPlaying(true)
 					this.broadcastClockState()
 				}
 				return
 			case 'cmd-pause':
 				if (clock.isPlaying) {
-					clock.toggleIsPlaying(false)
+					toggleIsPlaying(false)
 					this.broadcastClockState()
 				}
 				return
@@ -635,11 +647,7 @@ class SyncStore {
 				this.broadcastClockState()
 				return
 			case 'cmd-speed':
-				if (
-					!Number.isFinite(msg.speed) ||
-					msg.speed < 0.1 ||
-					msg.speed > 5
-				)
+				if (!Number.isFinite(msg.speed) || msg.speed < 0.1 || msg.speed > 5)
 					return
 				setClock({
 					playSpeed: msg.speed,
@@ -667,7 +675,7 @@ class SyncStore {
 
 	private _applyClockState(msg: Extract<SyncMessage, { type: 'state-clock' }>) {
 		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: msg.positionMs })
-		clock.toggleIsPlaying(msg.isPlaying)
+		toggleIsPlaying(msg.isPlaying)
 		setClock({
 			playSpeed: msg.playSpeed,
 			lastActionAt: Date.now(),
@@ -682,7 +690,7 @@ class SyncStore {
 	}
 
 	private _handlePeerLeave(deviceName: string) {
-		this.roomPeers = this.roomPeers.map((peer) =>
+		syncState.roomPeers = syncState.roomPeers.map((peer) =>
 			peer.name === deviceName ? { ...peer, connected: false } : peer,
 		)
 	}
@@ -693,7 +701,7 @@ class SyncStore {
 		const db = await initAndGetDb()
 		const existing = (await db.getAll('files')).find((f) => f.name === msg.name)
 		if (existing) {
-			this.pendingNowPlaying = { fileId: existing.id, name: msg.name }
+			syncState.pendingNowPlaying = { fileId: existing.id, name: msg.name }
 			return
 		}
 		this.pendingNowPlayingRequests.set(msg.name, msg)
@@ -757,7 +765,7 @@ class SyncStore {
 	}
 
 	private _updateTransfers() {
-		this.transfers = [...this.receiveBuffers.values()].map((buffer) => ({
+		syncState.transfers = [...this.receiveBuffers.values()].map((buffer) => ({
 			fileName: buffer.fileName,
 			received: buffer.chunks.filter((chunk) => chunk !== null).length,
 			total: buffer.total,
@@ -765,14 +773,17 @@ class SyncStore {
 	}
 
 	private async _importReceivedFile(fileName: string, text: string) {
-		if (this.receivedFiles.some((file) => file.name === fileName)) return
+		if (syncState.receivedFiles.some((file) => file.name === fileName)) return
 		try {
 			const fileId = await addFileToDatabase(text, fileName)
-			this.receivedFiles = [...this.receivedFiles, { fileId, name: fileName }]
+			syncState.receivedFiles = [
+				...syncState.receivedFiles,
+				{ fileId, name: fileName },
+			]
 			const pending = this.pendingNowPlayingRequests.get(fileName)
 			if (pending) {
 				this.pendingNowPlayingRequests.delete(fileName)
-				this.pendingNowPlaying = { fileId, name: fileName }
+				syncState.pendingNowPlaying = { fileId, name: fileName }
 			}
 		} catch (err) {
 			console.error('Failed to import received file', err)
@@ -787,29 +798,28 @@ class SyncStore {
 		pc.onconnectionstatechange = () => {
 			if (pc.connectionState === 'connected') {
 				this.peerReconnectAttempts.set(peerId, 0)
-				this.connectionState = 'connected'
+				syncState.connectionState = 'connected'
 				this.presenceReconnectAttempts = 0
 				this._clearConnectTimeout()
-				if (this.sessionId && this.sessionId > peerId)
+				if (syncState.sessionId && syncState.sessionId > peerId)
 					this._sendSignal({
 						type: 'ready',
 						to: peerId,
 						generation:
-							this.peerTransports.get(peerId)?.generation ??
-							makeConnectionId(),
+							this.peerTransports.get(peerId)?.generation ?? makeConnectionId(),
 					})
 			}
 			if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
 				const transport = this.peerTransports.get(peerId)
 				if (transport?.pc === pc) this.peerTransports.delete(peerId)
-				this.roomPeers = this.roomPeers.map((peer) =>
+				syncState.roomPeers = syncState.roomPeers.map((peer) =>
 					peer.sessionId === peerId ? { ...peer, connected: false } : peer,
 				)
 				const retries = this.peerReconnectAttempts.get(peerId) ?? 0
 				if (
 					retries < 3 &&
 					!this.presenceIntentionalClose &&
-					this.roomCode
+					syncState.roomCode
 				) {
 					this.peerReconnectAttempts.set(peerId, retries + 1)
 					this._schedulePresenceReconnect()
@@ -833,12 +843,17 @@ class SyncStore {
 		}
 		dc.onopen = () => {
 			this.inboundDcs.set(peerId, dc)
-			this.roomPeers = this.roomPeers.map((peer) =>
+			syncState.roomPeers = syncState.roomPeers.map((peer) =>
 				peer.sessionId === peerId ? { ...peer, connected: true } : peer,
 			)
-			if (this.coordinationClaim?.claimantId === this.sessionId)
-				dc.send(JSON.stringify({ type: 'claim-coordinator', ...this.coordinationClaim }))
-			this.send({ type: 'join', deviceName: this.deviceName })
+			if (syncState.coordinationClaim?.claimantId === syncState.sessionId)
+				dc.send(
+					JSON.stringify({
+						type: 'claim-coordinator',
+						...syncState.coordinationClaim,
+					}),
+				)
+			this.send({ type: 'join', deviceName: syncState.deviceName })
 			if (this.isCoordinator) void this._handlePeerJoin()
 		}
 		dc.onclose = () => {
@@ -891,29 +906,29 @@ class SyncStore {
 		if (message.type === 'peers') {
 			const wasCoordinator = this.isCoordinator
 			const signaled = message.peers
-				.filter((peer) => peer.id !== this.sessionId)
+				.filter((peer) => peer.id !== syncState.sessionId)
 				.map((peer) => ({
 					sessionId: peer.id,
 					name: peer.name,
 					connected: this.inboundDcs.get(peer.id)?.readyState === 'open',
 				}))
-			this.roomPeers = signaled
+			syncState.roomPeers = signaled
 			if (
-				this.coordinationClaim &&
-				this.coordinationClaim.claimantId !== this.sessionId &&
+				syncState.coordinationClaim &&
+				syncState.coordinationClaim.claimantId !== syncState.sessionId &&
 				!signaled.some(
-					(peer) => peer.sessionId === this.coordinationClaim?.claimantId,
+					(peer) => peer.sessionId === syncState.coordinationClaim?.claimantId,
 				)
 			)
-				this.coordinationClaim = null
+				syncState.coordinationClaim = null
 			if (!wasCoordinator && this.isCoordinator) {
 				this.broadcastClockState()
 				void this.onFileLoaded()
 			}
 			for (const peer of message.peers)
 				if (
-					this.sessionId &&
-					this.sessionId < peer.id &&
+					syncState.sessionId &&
+					syncState.sessionId < peer.id &&
 					!this.peerTransports.has(peer.id)
 				)
 					void this._offerPeer(peer.id)
@@ -921,8 +936,8 @@ class SyncStore {
 		}
 		if (
 			message.type === 'offer' &&
-			this.sessionId &&
-			message.from < this.sessionId
+			syncState.sessionId &&
+			message.from < syncState.sessionId
 		) {
 			const transport = this._newPeer(message.from, message.generation)
 			transport.pc.ondatachannel = (event) =>
@@ -966,16 +981,16 @@ class SyncStore {
 	// ------------------------------------------------------------------
 
 	private _connectPresence(): Promise<void> {
-		if (!this.roomCode || !this.sessionId) {
+		if (!syncState.roomCode || !syncState.sessionId) {
 			return Promise.reject(new Error('Room transport is not ready'))
 		}
 		this._closePresenceSocket()
 		this.presenceIntentionalClose = false
 		const url = new URL(`${API}/room`, location.origin)
 		url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-		url.searchParams.set('code', this.roomCode)
-		url.searchParams.set('id', this.sessionId)
-		url.searchParams.set('name', this.deviceName.slice(0, 64))
+		url.searchParams.set('code', syncState.roomCode)
+		url.searchParams.set('id', syncState.sessionId)
+		url.searchParams.set('name', syncState.deviceName.slice(0, 64))
 
 		return new Promise((resolve, reject) => {
 			const socket = new WebSocket(url, ['subtitle-sync'])
@@ -1010,8 +1025,8 @@ class SyncStore {
 				if (
 					isCurrentSocket &&
 					!this.presenceIntentionalClose &&
-					this.role === 'peer' &&
-					this.roomCode
+					syncState.role === 'peer' &&
+					syncState.roomCode
 				) {
 					this._schedulePresenceReconnect()
 				}
@@ -1026,12 +1041,10 @@ class SyncStore {
 
 	private _schedulePresenceReconnect() {
 		if (this.presenceReconnectTimer !== null) return
-		if (
-			this.presenceReconnectAttempts >= MAX_PRESENCE_RECONNECT_ATTEMPTS
-		) {
-			if (this.connectionState !== 'connected') {
-				this.connectionState = 'error'
-				this.error = 'Could not reconnect directly to the other device'
+		if (this.presenceReconnectAttempts >= MAX_PRESENCE_RECONNECT_ATTEMPTS) {
+			if (syncState.connectionState !== 'connected') {
+				syncState.connectionState = 'error'
+				syncState.error = 'Could not reconnect directly to the other device'
 			}
 			return
 		}
@@ -1090,9 +1103,9 @@ class SyncStore {
 	private _startConnectTimeout() {
 		this._clearConnectTimeout()
 		this.connectTimeout = window.setTimeout(() => {
-			if (this.connectionState === 'connecting') {
-				this.connectionState = 'error'
-				this.error = 'Connection timed out'
+			if (syncState.connectionState === 'connecting') {
+				syncState.connectionState = 'error'
+				syncState.error = 'Connection timed out'
 			}
 		}, CONNECT_TIMEOUT_MS)
 	}
@@ -1110,11 +1123,11 @@ class SyncStore {
 
 	private _fail(err: unknown, friendlyMessage?: string) {
 		console.error('Sync failed', err)
-		this.connectionState = 'error'
-		this.error =
+		syncState.connectionState = 'error'
+		syncState.error =
 			friendlyMessage ??
 			(err instanceof Error ? err.message : 'Connection failed')
-		this.role = 'none'
+		syncState.role = 'none'
 		this._teardownTransport()
 	}
 
@@ -1138,21 +1151,21 @@ class SyncStore {
 
 	reset() {
 		this._teardownTransport()
-		this.role = 'none'
-		this.sessionId = null
-		this.roomCode = null
-		this.connectionState = 'disconnected'
-		this.error = null
-		this.roomPeers = []
-		this.coordinationClaim = null
-		this.receivedFiles = []
-		this.transfers = []
-		this.pendingNowPlaying = null
+		syncState.role = 'none'
+		syncState.sessionId = null
+		syncState.roomCode = null
+		syncState.connectionState = 'disconnected'
+		syncState.error = null
+		syncState.roomPeers = []
+		syncState.coordinationClaim = null
+		syncState.receivedFiles = []
+		syncState.transfers = []
+		syncState.pendingNowPlaying = null
 		this.suppressNextFileAnnouncement = false
 	}
 }
 
-export const syncStore = new SyncStore()
+export const syncStore = new SyncEngine()
 
 // ----------------------------------------------------------------------
 // Direct WebRTC helpers

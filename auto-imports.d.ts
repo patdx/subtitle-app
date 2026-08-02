@@ -12,7 +12,6 @@ declare global {
   const ClockStore: typeof import('./app/shared/utils').ClockStore
   const Controls: typeof import('./app/shared/controls').Controls
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
-  const For: typeof import('./app/shared/solid-helpers').For
   const Fragment: typeof import('react').Fragment
   const FullScreenIcon: typeof import('./app/shared/icons').FullScreenIcon
   const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
@@ -28,7 +27,6 @@ declare global {
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
   const RightIcon: typeof import('./app/shared/icons').RightIcon
-  const Show: typeof import('./app/shared/solid-helpers').Show
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
   const SyncIcon: typeof import('./app/shared/icons').SyncIcon
@@ -42,13 +40,16 @@ declare global {
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
+  const calculateActualTimeElapsedMs: typeof import('./app/shared/utils').calculateActualTimeElapsedMs
   const clock: typeof import('./app/shared/utils').clock
   const cn: typeof import('./app/shared/utils').cn
   const controlState: typeof import('./app/shared/utils').controlState
   const createContext: typeof import('react').createContext
   const createRef: typeof import('react').createRef
+  const enableFullScreenButton: typeof import('./app/shared/utils').enableFullScreenButton
   const forwardRef: typeof import('react').forwardRef
   const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
+  const getCoordinatorId: typeof import('./app/shared/sync').getCoordinatorId
   const getDuration: typeof import('./app/shared/utils').getDuration
   const getFile: typeof import('./app/shared/utils').getFile
   const getSetting: typeof import('./app/shared/utils').getSetting
@@ -60,6 +61,7 @@ declare global {
   const linesToSrtText: typeof import('./app/shared/sync').linesToSrtText
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
+  const pokeControls: typeof import('./app/shared/utils').pokeControls
   const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
   const seekBy: typeof import('./app/shared/sync').seekBy
   const seekTo: typeof import('./app/shared/sync').seekTo
@@ -69,8 +71,15 @@ declare global {
   const setSetting: typeof import('./app/shared/utils').setSetting
   const setTextSize: typeof import('./app/shared/utils').setTextSize
   const startTransition: typeof import('react').startTransition
+  const syncState: typeof import('./app/shared/sync').syncState
   const syncStore: typeof import('./app/shared/sync').syncStore
+  const tick: typeof import('./app/shared/utils').tick
+  const toggleControls: typeof import('./app/shared/utils').toggleControls
+  const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
   const togglePlayback: typeof import('./app/shared/sync').togglePlayback
+  const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
+  const uiState: typeof import('./app/shared/utils').uiState
+  const unfadeControls: typeof import('./app/shared/utils').unfadeControls
   const use: typeof import('react').use
   const useActionState: typeof import('react').useActionState
   const useCallback: typeof import('react').useCallback
@@ -87,7 +96,6 @@ declare global {
   const useOptimistic: typeof import('react').useOptimistic
   const useReducer: typeof import('react').useReducer
   const useRef: typeof import('react').useRef
-  const useSignal: typeof import('./app/shared/solid-helpers').useSignal
   const useState: typeof import('react').useState
   const useSyncExternalStore: typeof import('react').useSyncExternalStore
   const useTransition: typeof import('react').useTransition
@@ -95,9 +103,9 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, SyncMessage } from './app/shared/sync'
+  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, SyncMessage, SyncState } from './app/shared/sync'
   import('./app/shared/sync')
   // @ts-ignore
-  export type { ClockStore, Entry, DbLine } from './app/shared/utils'
+  export type { Entry, DbLine } from './app/shared/utils'
   import('./app/shared/utils')
 }

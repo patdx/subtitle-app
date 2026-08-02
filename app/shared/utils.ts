@@ -1,4 +1,4 @@
-import * as mobx from 'mobx'
+import { proxy } from 'valtio'
 import { openDB, type DBSchema } from 'idb'
 import { findLast, once } from 'lodash-es'
 import { parse } from '@plussub/srt-vtt-parser'
@@ -98,7 +98,7 @@ export const nodeIsActive = (node: Entry, currentTime: number): boolean => {
 }
 
 export const getActiveNodes = (
-	nodes: Entry[] = [],
+	nodes: readonly Entry[] = [],
 	currentTime: number,
 ): Entry[] => {
 	const selectedNodes = new Set<Entry>()
@@ -147,51 +147,35 @@ export const getActiveNodes = (
 	return [...selectedNodes]
 }
 
-class ControlState {
-	constructor() {
-		mobx.makeAutoObservable(
-			this,
-			{},
-			{
-				autoBind: true,
-			},
-		)
-	}
-
-	isOpen = true
-	toggle() {
-		this.isOpen = !this.isOpen
-	}
-
+export const controlState = proxy({
+	isOpen: true,
 	/** controls are auto-hidden after a period of inactivity */
-	faded = false
+	faded: false,
 	/** bumped on interaction to reset the auto-fade timer */
-	activity = 0
-	poke() {
-		this.activity += 1
-	}
-	unfade() {
-		this.faded = false
-	}
-
+	activity: 0,
 	/**
 	 * fullscreen support is client-only; set after hydration so the
 	 * prerendered HTML matches the client's first render
 	 */
-	fullScreenEnabled = false
-	enableFullScreenButton() {
-		this.fullScreenEnabled = true
-	}
-	get showFullScreenButton() {
-		return this.isOpen && this.fullScreenEnabled
-	}
+	fullScreenEnabled: false,
+	showTranscript: false,
+})
 
-	showTranscript = false
-	toggleTranscript() {
-		this.showTranscript = !this.showTranscript
-	}
+export const toggleControls = () => {
+	controlState.isOpen = !controlState.isOpen
 }
-export const controlState = new ControlState()
+export const pokeControls = () => {
+	controlState.activity += 1
+}
+export const unfadeControls = () => {
+	controlState.faded = false
+}
+export const enableFullScreenButton = () => {
+	controlState.fullScreenEnabled = true
+}
+export const toggleTranscript = () => {
+	controlState.showTranscript = !controlState.showTranscript
+}
 
 const getNoSleep = once(async () => {
 	const { default: NoSleep } = await import('nosleep.js')
@@ -206,81 +190,69 @@ function disableNoSleep() {
 	getNoSleep().then((ns) => ns.disable())
 }
 
-export class ClockStore {
-	constructor() {
-		mobx.makeAutoObservable(
-			this,
-			{},
-			{
-				autoBind: true,
-			},
-		)
-	}
-
-	lastActionAt = Date.now()
-	lastTimeElapsedMs = 0
-	playSpeed = 1
-	isPlaying = false
-	_ticking = false
-
+export const clock = proxy({
+	lastActionAt: Date.now(),
+	lastTimeElapsedMs: 0,
+	playSpeed: 1,
+	isPlaying: false,
 	/** is calculated based on lastActionAt, playSpeed and lastTimeElapsedMs */
-	actualTimeElapsedMs = 0
+	actualTimeElapsedMs: 0,
+})
 
-	calculateActualTimeElapsedMs() {
-		const timeSinceLastAction = this.isPlaying
-			? Math.abs(Date.now() - this.lastActionAt) * this.playSpeed
-			: 0
+/** true while the requestAnimationFrame tick loop is scheduled */
+let ticking = false
 
-		this.actualTimeElapsedMs = timeSinceLastAction + this.lastTimeElapsedMs
-	}
+export const calculateActualTimeElapsedMs = () => {
+	const timeSinceLastAction = clock.isPlaying
+		? Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
+		: 0
 
-	tick() {
-		this.calculateActualTimeElapsedMs()
-		if (this.isPlaying) {
-			requestAnimationFrame(this.tick)
-		} else {
-			this._ticking = false
-		}
-	}
+	clock.actualTimeElapsedMs = timeSinceLastAction + clock.lastTimeElapsedMs
+}
 
-	toggleIsPlaying(isPlaying: boolean) {
-		this.isPlaying = isPlaying
-		if (isPlaying) {
-			enableNoSleep()
-			setClock({
-				lastActionAt: Date.now(),
-				// todo: recalculate at time of action
-				// instead of using Signal
-				lastTimeElapsedMs: getTimeElapsed(),
-				isPlaying,
-			})
-			if (!this._ticking) {
-				this._ticking = true
-				this.tick()
-			}
-		} else {
-			disableNoSleep()
-			setClock({
-				lastActionAt: Date.now(),
-				lastTimeElapsedMs: getTimeElapsed(),
-				isPlaying,
-			})
-		}
-	}
-
-	setClock(value: Partial<typeof clock>) {
-		Object.assign(this, value)
-		this.calculateActualTimeElapsedMs()
+export const tick = () => {
+	calculateActualTimeElapsedMs()
+	if (clock.isPlaying) {
+		requestAnimationFrame(tick)
+	} else {
+		ticking = false
 	}
 }
 
-export const clock = new ClockStore()
+export const toggleIsPlaying = (isPlaying: boolean) => {
+	clock.isPlaying = isPlaying
+	if (isPlaying) {
+		enableNoSleep()
+		setClock({
+			lastActionAt: Date.now(),
+			// todo: recalculate at time of action
+			// instead of using Signal
+			lastTimeElapsedMs: getTimeElapsed(),
+			isPlaying,
+		})
+		if (!ticking) {
+			ticking = true
+			tick()
+		}
+	} else {
+		disableNoSleep()
+		setClock({
+			lastActionAt: Date.now(),
+			lastTimeElapsedMs: getTimeElapsed(),
+			isPlaying,
+		})
+	}
+}
 
-export const setClock = (value: Partial<typeof clock>) => clock.setClock(value)
+export const setClock = (value: Partial<typeof clock>) => {
+	Object.assign(clock, value)
+	calculateActualTimeElapsedMs()
+}
+
 export const getTimeElapsed = () => clock.actualTimeElapsedMs
 
-export const getTimeElapsedAsDuration = () => {
-	const d = Duration.fromMillis(getTimeElapsed()).shiftTo(
+export const getTimeElapsedAsDuration = (ms: number = getTimeElapsed()) => {
+	const d = Duration.fromMillis(ms).shiftTo(
 		'hours',
 		'minutes',
 		'seconds',
@@ -298,16 +270,24 @@ export const TEXT_SIZES = [
 ] as const
 type TextSize = (typeof TEXT_SIZES)[number]
 
-const textSize = mobx.observable.box<TextSize>('text-[32px]')
-export const getTextSize = () => textSize.get()
-export const setTextSize = (value: TextSize) => textSize.set(value)
+export const uiState = proxy({
+	textSize: 'text-[32px]' as TextSize,
+	file: undefined as DbLine[] | undefined,
+})
 
-const file = mobx.observable.box<DbLine[]>()
-export const getFile = () => file.get()
-export const setFile = (value: DbLine[]) => file.set(value)
+export const getTextSize = () => uiState.textSize
+export const setTextSize = (value: TextSize) => {
+	uiState.textSize = value
+}
 
-export const getDuration = (): number => {
-	const lines = getFile()
+export const getFile = () => uiState.file
+export const setFile = (value: DbLine[]) => {
+	uiState.file = value
+}
+
+export const getDuration = (
+	lines: readonly DbLine[] | undefined = getFile(),
+): number => {
 	if (!lines || lines.length === 0) return 0
 	return lines[lines.length - 1].to
 }
