@@ -27,32 +27,63 @@ import {
 	TEXT_SIZES,
 } from './utils'
 
-const IconTextButton = ({ icon, text, onClick }: any) => {
+const IconTextButton = ({
+	icon,
+	text,
+	onClick,
+	label,
+}: {
+	icon: React.ReactNode
+	text: string
+	onClick?: () => void
+	label: string
+}) => {
 	return (
 		<button
-			className="relative h-10 w-10 text-gray-200 hover:text-white active:text-white"
+			aria-label={label}
+			className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600 active:text-white"
 			onClick={onClick}
 		>
-			<div className="absolute top-0 left-0 right-0 flex justify-center">
-				{icon}
-			</div>
-			<div className="absolute bottom-0.5 left-0 right-0 text-center text-xs">
+			{icon}
+			<span className="absolute bottom-0.5 left-0 right-0 text-center text-[10px] leading-none">
 				{text}
-			</div>
+			</span>
 		</button>
 	)
 }
 
-const TextButton = ({ children, onClick }: any) => {
+const TextButton = ({
+	children,
+	onClick,
+	label,
+}: {
+	children: React.ReactNode
+	onClick?: () => void
+	label: string
+}) => {
 	return (
 		<button
-			className="relative flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
+			aria-label={label}
+			className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600 active:text-white"
 			onClick={onClick}
 		>
 			{children}
 		</button>
 	)
 }
+
+/** A real readout: the current time as text, not four tappable steppers. */
+const TimeReadout = observer(() => {
+	const d = getTimeElapsedAsDuration()
+	const text = `${d.hours}h ${d.minutes}m ${d.seconds}s`
+	return (
+		<div className="flex h-10 flex-none items-center justify-center gap-2">
+			<span className="font-mono text-sm tabular-nums text-ink-100">
+				{text}
+			</span>
+		</div>
+	)
+})
 
 export const Controls = observer(() => {
 	useEffect(() => {
@@ -82,13 +113,13 @@ export const Controls = observer(() => {
 				)}
 				onPointerDown={() => controlState.poke()}
 			>
-				<div className="flex">
+				<div className="flex items-center">
 					<Show when={() => controlState.isOpen}>
 						{/* go back button */}
 						<Link
 							to="/"
 							aria-label="Back to file list"
-							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+							className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 						>
 							<GoBackIcon />
 						</Link>
@@ -96,36 +127,36 @@ export const Controls = observer(() => {
 
 					<div className="flex-1"></div>
 
-				<Show when={() => controlState.isOpen}>
-					{/* transcript button */}
-					<button
-						onClick={() => controlState.toggleTranscript()}
-						aria-label="Toggle transcript"
-						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
-					>
-						<TranscriptIcon />
-					</button>
-				</Show>
+					<Show when={() => controlState.isOpen}>
+						{/* transcript button */}
+						<button
+							onClick={() => controlState.toggleTranscript()}
+							aria-label="Toggle transcript"
+							className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+						>
+							<TranscriptIcon />
+						</button>
+					</Show>
 
-				<Show when={() => controlState.isOpen}>
-					{/* device sync button */}
-					<Link
-						to="/sync"
-						aria-label="Device sync"
-						className="relative flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
-					>
-						<SyncIcon />
-						<Show when={() => syncStore.connectionState === 'connected'}>
-							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500" />
-						</Show>
-						<Show when={() => syncStore.connectionState === 'connecting'}>
-							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-yellow-500" />
-						</Show>
-						<Show when={() => syncStore.connectionState === 'error'}>
-							<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-						</Show>
-					</Link>
-				</Show>
+					<Show when={() => controlState.isOpen}>
+						{/* device sync button */}
+						<Link
+							to="/sync"
+							aria-label="Device sync"
+							className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+						>
+							<SyncIcon />
+							<Show when={() => syncStore.connectionState === 'connected'}>
+								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-ok" />
+							</Show>
+							<Show when={() => syncStore.connectionState === 'connecting'}>
+								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-warn" />
+							</Show>
+							<Show when={() => syncStore.connectionState === 'error'}>
+								<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-danger" />
+							</Show>
+						</Link>
+					</Show>
 
 					<Show when={() => controlState.showFullScreenButton}>
 						{/* full screen button (for Android) */}
@@ -150,7 +181,7 @@ export const Controls = observer(() => {
 								}
 							}}
 							aria-label="Toggle fullscreen"
-							className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+							className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 						>
 							<FullScreenIcon />
 						</button>
@@ -160,7 +191,7 @@ export const Controls = observer(() => {
 					<button
 						onClick={controlState.toggle}
 						aria-label={controlState.isOpen ? 'Hide controls' : 'Show controls'}
-						className="flex h-10 w-10 flex-none items-center justify-center text-gray-200 hover:text-white active:text-white"
+						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 					>
 						<MenuIcon />
 					</button>
@@ -175,83 +206,40 @@ export const Controls = observer(() => {
 					)}
 					onPointerDown={() => controlState.poke()}
 				>
-					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-2 sm:max-w-none sm:flex-row sm:items-center">
-						<div className="flex items-center justify-between sm:justify-center">
-							<NumberInput
-								value={() => getTimeElapsedAsDuration().hours}
-								padWidth={2}
-								suffix="h"
-								onChange={(value) => {
-									const duration = getTimeElapsedAsDuration().set({
-										hours: value,
-									})
-									seekTo(duration.toMillis())
-								}}
-							/>
-
-							<NumberInput
-								value={() => getTimeElapsedAsDuration().minutes}
-								padWidth={2}
-								suffix="m"
-								onChange={(value) => {
-									const duration = getTimeElapsedAsDuration().set({
-										minutes: value,
-									})
-									seekTo(duration.toMillis())
-								}}
-							/>
-
-							<NumberInput
-								value={() => getTimeElapsedAsDuration().seconds}
-								padWidth={2}
-								suffix="s"
-								onChange={(value) => {
-									const duration = getTimeElapsedAsDuration().set({
-										seconds: value,
-									})
-									seekTo(duration.toMillis())
-								}}
-							/>
-
-							<NumberInput
-								className="w-20"
-								padWidth={3}
-								value={() => getTimeElapsedAsDuration().milliseconds}
-								suffix="ms"
-								onChange={(value) => {
-									const duration = getTimeElapsedAsDuration().set({
-										milliseconds: value,
-									})
-									seekTo(duration.toMillis())
-								}}
-							/>
+					<div className="mx-auto flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+						{/* time readout + seek */}
+						<div className="flex flex-col items-center gap-1">
+							<TimeReadout />
+							<div className="w-full">
+								<Timeline />
+							</div>
 						</div>
 
-						<div className="w-full">
-							<Timeline />
-						</div>
-
-						<div className="flex items-center justify-between sm:justify-center">
+						{/* transport cluster */}
+						<div className="flex items-center justify-center">
 							<IconTextButton
 								icon={<LeftIcon />}
 								text={'10s'}
+								label="Back 10 seconds"
 								onClick={() => seekBy(-10000)}
 							/>
 
 							<IconTextButton
 								icon={<LeftIcon />}
 								text={'1s'}
+								label="Back 1 second"
 								onClick={() => seekBy(-1000)}
 							/>
 
 							<IconTextButton
 								icon={<LeftIcon />}
 								text={'0.1s'}
+								label="Back 0.1 seconds"
 								onClick={() => seekBy(-100)}
 							/>
 
 							<button
-								className="flex h-10 w-10 items-center justify-center text-gray-200 hover:text-white active:text-white"
+								className="flex h-12 w-12 items-center justify-center rounded-control text-white transition-colors duration-150 hover:text-white active:text-white"
 								onClick={togglePlayback}
 								aria-label={clock.isPlaying ? 'Pause' : 'Play'}
 							>
@@ -261,43 +249,58 @@ export const Controls = observer(() => {
 							<IconTextButton
 								icon={<RightIcon />}
 								text={'0.1s'}
+								label="Forward 0.1 seconds"
 								onClick={() => seekBy(100)}
 							/>
 
 							<IconTextButton
 								icon={<RightIcon />}
 								text={'1s'}
+								label="Forward 1 second"
 								onClick={() => seekBy(1000)}
 							/>
 
 							<IconTextButton
 								icon={<RightIcon />}
 								text={'10s'}
+								label="Forward 10 seconds"
 								onClick={() => seekBy(10000)}
 							/>
 						</div>
 
-						{/* text size */}
-						<div className="flex items-center justify-between sm:justify-center">
-						<NumberInput
-							value={() => clock.playSpeed}
-							suffix="x"
-							onChange={(value) => {
-								if (Number.isFinite(value) && value > 0) {
-									setPlaySpeed(value)
-								}
-							}}
-						/>
-							<TextButton onClick={() => setTextSize(TEXT_SIZES[0])}>
+						{/* speed + text size */}
+						<div className="flex items-center justify-center">
+							<NumberInput
+								value={() => clock.playSpeed}
+								suffix="x"
+								onChange={(value) => {
+									if (Number.isFinite(value) && value > 0) {
+										setPlaySpeed(value)
+									}
+								}}
+							/>
+							<TextButton
+								label="Small text"
+								onClick={() => setTextSize(TEXT_SIZES[0])}
+							>
 								XS
 							</TextButton>
-							<TextButton onClick={() => setTextSize(TEXT_SIZES[1])}>
+							<TextButton
+								label="Medium text"
+								onClick={() => setTextSize(TEXT_SIZES[1])}
+							>
 								SM
 							</TextButton>
-							<TextButton onClick={() => setTextSize(TEXT_SIZES[2])}>
+							<TextButton
+								label="Large text"
+								onClick={() => setTextSize(TEXT_SIZES[2])}
+							>
 								MD
 							</TextButton>
-							<TextButton onClick={() => setTextSize(TEXT_SIZES[3])}>
+							<TextButton
+								label="Extra large text"
+								onClick={() => setTextSize(TEXT_SIZES[3])}
+							>
 								LG
 							</TextButton>
 						</div>

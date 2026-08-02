@@ -7,6 +7,8 @@
 export {}
 declare global {
   const Activity: typeof import('react').Activity
+  const CheckIcon: typeof import('./app/shared/icons').CheckIcon
+  const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
   const ClockStore: typeof import('./app/shared/utils').ClockStore
   const Controls: typeof import('./app/shared/controls').Controls
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
@@ -16,7 +18,10 @@ declare global {
   const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
   const LeftIcon: typeof import('./app/shared/icons').LeftIcon
   const LoadingIcon: typeof import('./app/shared/icons').LoadingIcon
+  const Menu: typeof import('./app/shared/menu').Menu
+  const MenuAction: typeof import('./app/shared/menu').MenuAction
   const MenuIcon: typeof import('./app/shared/icons').MenuIcon
+  const MoreIcon: typeof import('./app/shared/icons').MoreIcon
   const NumberInput: typeof import('./app/shared/text-input').NumberInput
   const PauseIcon: typeof import('./app/shared/icons').PauseIcon
   const PlayIcon: typeof import('./app/shared/icons').PlayIcon
@@ -32,6 +37,7 @@ declare global {
   const Timeline: typeof import('./app/shared/timeline').Timeline
   const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
   const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
+  const TrashIcon: typeof import('./app/shared/icons').TrashIcon
   const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
   const cache: typeof import('react').cache

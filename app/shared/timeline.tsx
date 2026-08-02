@@ -33,7 +33,7 @@ export const Timeline = observer(() => {
 
 	return (
 		<div className="flex w-full flex-col gap-1">
-			<div className="flex items-center justify-between text-xs text-gray-300">
+			<div className="flex items-center justify-between text-xs text-ink-300">
 				<TimeDisplay ms={elapsed} />
 				<TimeDisplay ms={duration} />
 			</div>
@@ -51,7 +51,7 @@ export const Timeline = observer(() => {
 				className="subtitle-timeline w-full cursor-pointer"
 				style={{
 					touchAction: 'none',
-					background: `linear-gradient(to right, rgb(203 213 225) 0%, rgb(203 213 225) ${percent}%, rgb(55 65 81) ${percent}%, rgb(55 65 81) 100%)`,
+					background: `linear-gradient(to right, rgb(226 232 240) 0%, rgb(226 232 240) ${percent}%, rgb(55 65 81) ${percent}%, rgb(55 65 81) 100%)`,
 				}}
 			/>
 		</div>

@@ -25,9 +25,19 @@ export default function About({}: Route.ComponentProps) {
 				}
 			/>
 			<Block className="px-4">
-				<p className="max-w-prose text-sm text-gray-600">
-					Subtitle App by{' '}
-					<a href="https://github.com/patdx" target="_blank" rel="noreferrer">
+				<p className="max-w-prose text-sm text-ink-500">
+					Subtitle App is a mobile-friendly tool for watching videos with SRT
+					and VTT subtitles. It keeps your library on-device and pairs devices
+					directly over WebRTC.
+				</p>
+				<p className="mt-2 text-sm text-ink-500">
+					Built by{' '}
+					<a
+						href="https://github.com/patdx"
+						target="_blank"
+						rel="noreferrer"
+						className="text-ember-600 hover:text-ember-700"
+					>
 						patdx
 					</a>
 					.

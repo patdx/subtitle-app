@@ -77,24 +77,21 @@ const SyncPage = observer(() => {
 				}
 			/>
 
-			<Block className="px-4">
-				<p className="max-w-prose text-sm text-gray-600">
-					Connect your own devices. Place a tablet below the TV and control it
-					from your phone. Play, pause and seek on one device control the
-					others. Up to five devices form a direct mesh, and no device needs to
-					stay in a special host role. Nothing is stored on the signaling server.
+			<Block className="px-4 pb-2">
+				<p className="max-w-prose text-sm text-ink-500">
+					Pair your own devices and control playback together.
 				</p>
 			</Block>
 
 			<Block className="px-4">
 				<label className="flex items-center gap-2 text-sm">
-					<span className="text-gray-600">Device name</span>
+					<span className="text-ink-500">Device name</span>
 					<input
 						value={syncStore.deviceName}
 						onChange={(e) => {
 							void syncStore.setDeviceName(e.target.value)
 						}}
-						className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-base sm:text-sm"
+						className="flex-1 rounded-field border border-edge bg-paper-raised px-3 py-1.5 text-base text-ink-900 placeholder:text-ink-400 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30 sm:text-sm"
 						maxLength={24}
 					/>
 				</label>
@@ -105,7 +102,7 @@ const SyncPage = observer(() => {
 			{/* ---------------------------------------------------------- */}
 			<Block className="px-4">
 				{syncStore.error && (
-					<p className="mb-3 text-sm text-red-600">{syncStore.error}</p>
+					<p className="mb-3 text-sm text-danger">{syncStore.error}</p>
 				)}
 
 				<div className="flex items-center justify-between">
@@ -113,22 +110,22 @@ const SyncPage = observer(() => {
 						className={cn(
 							'flex items-center gap-2 text-sm font-medium',
 							connected
-								? 'text-green-600'
+								? 'text-ok'
 								: syncStore.connectionState === 'error'
-									? 'text-red-600'
-									: 'text-gray-600',
+									? 'text-danger'
+									: 'text-ink-600',
 						)}
 					>
 						<span
 							className={cn(
 								'h-2.5 w-2.5 rounded-full',
 								connected
-									? 'bg-green-500'
+									? 'bg-ok'
 									: syncStore.connectionState === 'error'
-										? 'bg-red-500'
+										? 'bg-danger'
 										: syncStore.isRestoring || connecting
-											? 'bg-yellow-500'
-											: 'bg-gray-300',
+											? 'bg-warn'
+											: 'bg-ink-300',
 							)}
 						/>
 						{syncStore.isRestoring || connecting
@@ -140,7 +137,7 @@ const SyncPage = observer(() => {
 									: 'Not sharing'}
 					</span>
 					{syncStore.connectionState === 'error' && active === false && (
-						<Button onClick={() => void retry()} disabled={busy}>
+						<Button variant="secondary" onClick={() => void retry()} disabled={busy}>
 							Retry
 						</Button>
 					)}
@@ -153,41 +150,45 @@ const SyncPage = observer(() => {
 			{active && (
 				<>
 					<Block className="px-4">
-						<div className="text-center">
-							<p className="text-sm text-gray-600">Your group code</p>
-							<p className="font-mono text-4xl font-bold tracking-[0.4em]">
+						<div className="rounded-panel border border-edge bg-paper-raised p-5 text-center">
+							<p className="text-xs uppercase tracking-widest text-ink-400">
+								Your group code
+							</p>
+							<p className="mt-2 font-mono text-3xl font-bold tracking-[0.35em] text-ink-900">
 								{syncStore.roomCode}
 							</p>
-							<div className="mx-auto mt-3 w-48 bg-white p-2">
-								<QrCode value={qrValue} size={176} />
+							<div className="mx-auto mt-4 w-44 bg-white p-2">
+								<QrCode value={qrValue} size={160} />
 							</div>
-							<p className="mt-2 text-xs text-gray-500">
+							<p className="mt-3 text-xs text-ink-500">
 								Scan this once on another device to add it to this group.
 							</p>
-							<Button
-								className="mt-3"
-								onClick={() => {
-									void navigator.clipboard?.writeText(qrValue).catch(() => {})
-								}}
-							>
-								Copy link
-							</Button>
-							<Button
-								className="mt-3 ml-2"
-								onClick={() => {
-									void (syncStore.joinedGroupCode
-										? syncStore.leaveGroup()
-										: syncStore.stopSharing())
-								}}
-							>
-								Disconnect
-							</Button>
-							<Button
-								className="mt-3 ml-2"
-								onClick={() => void syncStore.createNewGroup()}
-							>
-								Create new group
-							</Button>
+							<div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+								<Button
+									variant="secondary"
+									onClick={() => {
+										void navigator.clipboard?.writeText(qrValue).catch(() => {})
+									}}
+								>
+									Copy link
+								</Button>
+								<Button
+									variant="danger"
+									onClick={() => {
+										void (syncStore.joinedGroupCode
+											? syncStore.leaveGroup()
+											: syncStore.stopSharing())
+									}}
+								>
+									Disconnect
+								</Button>
+								<Button
+									variant="text"
+									onClick={() => void syncStore.createNewGroup()}
+								>
+									Create new group
+								</Button>
+							</div>
 						</div>
 					</Block>
 
@@ -202,25 +203,25 @@ const SyncPage = observer(() => {
 			{!active && (
 				<>
 					<Block className="px-4">
-						<div className="rounded-lg border border-gray-200 p-4 text-center">
-							<p className="text-sm font-medium">This device</p>
+						<div className="rounded-panel border border-edge bg-paper-raised p-5 text-center">
+							<p className="text-sm font-medium text-ink-900">This device</p>
 							{syncStore.myGroupCode ? (
-								<p className="mt-1 font-mono text-2xl font-bold tracking-[0.3em] text-gray-700">
+								<p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-ink-900">
 									{syncStore.myGroupCode}
 								</p>
 							) : (
-								<p className="mt-1 text-sm text-gray-500">
+								<p className="mt-1 text-sm text-ink-500">
 									You'll get a permanent code when you start pairing.
 								</p>
 							)}
 							<Button
-								className="mt-3 w-full"
+								className="mt-4 w-full"
 								onClick={() => void syncStore.startSharing()}
 								disabled={busy || connecting}
 							>
 								{busy || connecting ? 'Connecting…' : 'Start pairing'}
 							</Button>
-							<p className="mt-2 text-xs text-gray-500">
+							<p className="mt-2 text-xs text-ink-500">
 								Scan this code from your other device (phone, tablet, TV box) to
 								connect it.
 							</p>
@@ -228,7 +229,7 @@ const SyncPage = observer(() => {
 					</Block>
 
 					<Block className="px-4">
-						<h2 className="text-sm font-medium text-gray-600">
+						<h2 className="text-sm font-medium text-ink-600">
 							Connect another device
 						</h2>
 					</Block>
@@ -244,7 +245,7 @@ const SyncPage = observer(() => {
 								)
 							}
 							placeholder="Enter the code shown on the other device"
-							className="w-full rounded-lg border border-gray-300 px-3 py-2 text-center font-mono text-xl tracking-widest"
+							className="w-full rounded-field border border-edge bg-paper-raised px-3 py-2 text-center font-mono text-xl tracking-widest text-ink-900 placeholder:text-ink-400 focus:border-ember-600 focus:outline-none focus:ring-2 focus:ring-ember-600/30"
 							maxLength={20}
 							autoCapitalize="characters"
 							autoCorrect="off"
@@ -274,19 +275,21 @@ const MembersList = observer(() => {
 	return (
 		<>
 			<Block className="px-4">
-				<h2 className="text-sm font-medium text-gray-600">Connected devices</h2>
+				<h2 className="text-sm font-medium text-ink-600">Connected devices</h2>
 			</Block>
-			<List className="list-strong-ios list-outline-ios">
+			<List>
 				{syncStore.roomPeers.map((peer) => (
 					<ListItem
 						key={peer.sessionId}
 						title={peer.name}
-						after="Device"
+						after={
+							<span className="text-xs text-ink-400">Device</span>
+						}
 						footer={
 							<span
 								className={cn(
 									'text-xs',
-									peer.connected ? 'text-green-600' : 'text-gray-400',
+									peer.connected ? 'text-ok' : 'text-ink-400',
 								)}
 							>
 								{peer.connected ? 'Connected' : 'Connecting…'}
@@ -312,7 +315,7 @@ const ReceivedFilesList = observer(() => {
 				<Block className="px-4">
 					<p className="text-sm font-medium">Receiving files…</p>
 					{syncStore.transfers.map((transfer) => (
-						<p key={transfer.fileName} className="text-sm text-gray-600">
+						<p key={transfer.fileName} className="text-sm text-ink-600">
 							{transfer.fileName} ({transfer.received}/{transfer.total})
 						</p>
 					))}
@@ -321,11 +324,11 @@ const ReceivedFilesList = observer(() => {
 			{syncStore.receivedFiles.length > 0 && (
 				<>
 					<Block className="px-4">
-						<h2 className="text-sm font-medium text-gray-600">
+						<h2 className="text-sm font-medium text-ink-600">
 							Received files
 						</h2>
 					</Block>
-					<List className="list-strong-ios list-outline-ios">
+					<List>
 						{syncStore.receivedFiles.map((file) => (
 							<ListItem key={file.fileId} title={file.name} asChild>
 								<RouterLink to={`/play?id=${file.fileId}`} />

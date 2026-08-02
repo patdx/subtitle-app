@@ -331,6 +331,7 @@ interface MyDB extends DBSchema {
 			length?: any
 			watched?: boolean
 			progress?: number
+			lastPlayed?: number
 		}
 	}
 	lines: {
@@ -397,6 +398,8 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 	tx.objectStore('files').add({
 		id: fileId,
 		name: fileName,
+		// duration of the subtitle track in ms (last cue's end time)
+		length: entries.length > 0 ? entries[entries.length - 1].to : 0,
 	})
 
 	const lines = tx.objectStore('lines')

@@ -65,8 +65,8 @@ export const NumberInput = observer(
 			return (
 				<button
 					className={cn(
-						'h-10 px-0 py-1 text-center tabular-nums text-gray-200 hover:text-white active:text-white',
-						'w-10',
+						'h-11 px-0 py-1 text-center tabular-nums text-ink-200 hover:text-white active:text-white',
+						'w-11',
 						props.className,
 					)}
 					onClick={() => setMode('edit')}

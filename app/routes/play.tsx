@@ -46,7 +46,7 @@ const Play = observer(() => {
 		const db = await initAndGetDb()
 		const file = await db.get('files', fileId)
 		if (!file) return
-		await db.put('files', { ...file, progress: elapsed })
+		await db.put('files', { ...file, progress: elapsed, lastPlayed: Date.now() })
 	}
 
 	useEffect(() => {
@@ -55,11 +55,10 @@ const Play = observer(() => {
 		void syncStore.restore()
 	}, [])
 
-	// Save position whenever playback is paused.
+	// Save position when playback starts and pauses, so a refresh during
+	// playback restores to near where playback began rather than the last pause.
 	useEffect(() => {
-		if (!clock.isPlaying) {
-			void saveProgress()
-		}
+		void saveProgress()
 	}, [clock.isPlaying])
 
 	// Save position when leaving the player.

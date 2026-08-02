@@ -2,6 +2,8 @@
 
 A mobile-friendly web app for watching videos with SRT/VTT subtitle files. Import subtitles (as .srt, .vtt, or .zip archives), pick a subtitle file, and use the player page to watch along — with transcript view, playback speed control, a YouTube-style timeline scrubber, and adjustable subtitle text size.
 
+Live at **https://subtitle-app.pmil.workers.dev**.
+
 Built as a React Router SPA (client-side rendering with prerendered pages), deployed to Cloudflare Workers (static assets plus a Hono API Worker for signaling).
 
 ## Device sync
