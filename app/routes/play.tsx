@@ -11,6 +11,7 @@ import {
 	setFile,
 	getFile,
 	getTimeElapsed,
+	pokeControls,
 } from '~/shared/utils'
 import type { Route } from './+types/play'
 
@@ -110,9 +111,17 @@ const Play = () => {
 			<div
 				className="player-overlay relative h-full overflow-hidden bg-black"
 				onPointerDown={() => {
-					if (controlState.isOpen && controlState.faded) {
+					if (controlState.faded) {
 						unfadeControls()
 					}
+				}}
+				onPointerMove={() => {
+					// Mouse movement reveals the controls (Netflix-style): unfade
+					// immediately and restart the auto-hide timer.
+					if (controlState.faded) {
+						unfadeControls()
+					}
+					pokeControls()
 				}}
 			>
 				<FileDisplay />

@@ -14,6 +14,18 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - `pnpm format` — runs `prettier --write .`
 - No lint or test scripts exist
 
+## UI Components (shadcn + Base UI)
+
+- This project uses **shadcn/ui with Base UI** (`style: base-nova` in `components.json`), aliases: `components` → `~/components`, `ui` → `~/components/ui`, `lib`/`hooks` → `~/shared`, `utils` → `~/shared/utils`
+- **Always generate UI components with the shadcn CLI** — do not hand-write them. Run:
+  ```sh
+  pnpx shadcn@latest add <component>
+  ```
+  (Use `pnpx shadcn@latest ...` — the bare `shadcn` binary may fail permission checks.)
+- The CLI writes to `app/components/ui/`, e.g. `app/components/ui/tooltip.tsx`. Components installed so far: `button`, `menu`, `tooltip`
+- After adding a shadcn component via the CLI, run `pnpm build` to confirm the React Compiler (`babel-plugin-react-compiler`) has no issues with the generated code — `pnpm typecheck` alone is not sufficient
+- Existing shadcn components should be composed together (e.g. `MenuTrigger` + `MenuContent`, `Tooltip` + `TooltipTrigger` + `TooltipContent`) rather than replaced with custom popovers
+
 ## Architecture Notes
 
 - React Router v8 SPA (`ssr: false`), prerendered routes `['/', '/play']` (react-router.config.ts)
@@ -37,4 +49,5 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - Quick UI iteration (no sync): `pnpm dev`
 - Test device sync locally: `pnpm build && npx wrangler dev`, open http://localhost:8787 in two tabs (use `localhost` and `127.0.0.1` for separate IndexedDB)
 - Verify changes: `pnpm typecheck` (includes route typegen — run it after adding/renaming routes)
+- **Player UI testing:** append `?keep-ui-open=1` to the player URL (e.g. `http://localhost:5173/play?id=<id>&keep-ui-open=1`) to disable the 5s controls auto-fade while iterating on the layout
 - Node 24 (`.node-version`), pnpm 11 (`packageManager`); `pnpm-workspace.yaml` sets `savePrefix: ""` (exact versions, no `^`)

@@ -148,7 +148,6 @@ export const getActiveNodes = (
 }
 
 export const controlState = proxy({
-	isOpen: true,
 	/** controls are auto-hidden after a period of inactivity */
 	faded: false,
 	/** bumped on interaction to reset the auto-fade timer */
@@ -161,9 +160,6 @@ export const controlState = proxy({
 	showTranscript: false,
 })
 
-export const toggleControls = () => {
-	controlState.isOpen = !controlState.isOpen
-}
 export const pokeControls = () => {
 	controlState.activity += 1
 }

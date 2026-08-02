@@ -26,6 +26,7 @@ declare global {
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
   const RightIcon: typeof import('./app/shared/icons').RightIcon
+  const SettingsIcon: typeof import('./app/shared/icons').SettingsIcon
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
   const SyncIcon: typeof import('./app/shared/icons').SyncIcon
