@@ -521,7 +521,7 @@ class SyncEngine {
 	/**
 	 * Make this device the active player (renders the subtitle stage): claim
 	 * coordination, then announce the file. The claim IS the player role.
-	 * `adoptFile` seeds now-playing when the group has nothing playing yet.
+	 * `adoptFile` sets (or switches) the group's now-playing file.
 	 */
 	async becomeActivePlayer(adoptFile?: PlayerFile) {
 		if (syncState.role !== 'peer' || !syncState.sessionId) return
@@ -537,7 +537,7 @@ class SyncEngine {
 			syncState.coordinationClaim = claim
 			this.send({ type: 'claim-coordinator', ...claim })
 		}
-		if (!syncState.nowPlayingFile && adoptFile) {
+		if (adoptFile) {
 			syncState.nowPlayingFile = adoptFile
 		}
 		await this.announceFile()
@@ -566,11 +566,24 @@ class SyncEngine {
 		return null
 	}
 
-	/** Re-broadcast the current file to the group (no claim). */
+	/**
+	 * Re-assert our claim (so late joiners learn who the player is) and
+	 * broadcast the current now-playing file + library list.
+	 */
 	async announceFile() {
 		if (!this.isCoordinator) return
+		// Peers that join after we claimed never saw the original
+		// claim-coordinator message; re-send it with every announce.
+		if (syncState.coordinationClaim?.claimantId === syncState.sessionId) {
+			this.send({
+				type: 'claim-coordinator',
+				...syncState.coordinationClaim,
+			})
+		}
 		const np = syncState.nowPlayingFile
-		if (np?.fileId) {
+		// Announce by hash even while the local fileId is still null (transfer
+		// in progress) so the whole group converges on the same title.
+		if (np?.hash) {
 			this.send({ type: 'now-playing', hash: np.hash, name: np.name })
 		}
 		await this.broadcastFileList()
@@ -629,8 +642,10 @@ class SyncEngine {
 
 	private async _handlePlayFile(hash: string, name: string) {
 		if (!this.isCoordinator) return
-		const found = await this.resolveNowPlayingFile(hash, name)
-		if (found) await this.announceFile()
+		await this.resolveNowPlayingFile(hash, name)
+		// Always announce — even when we're still pulling the bytes — so remotes
+		// see the cast title immediately.
+		await this.announceFile()
 	}
 
 	async broadcastFileList() {
@@ -749,6 +764,12 @@ class SyncEngine {
 				term: msg.term,
 				claimantId: msg.claimantId,
 			}
+			return
+		}
+		// Inferior claim: re-assert ours + now-playing so the peer can't stay
+		// in split-brain thinking it won (fenced claims are silent otherwise).
+		if (current.claimantId === syncState.sessionId) {
+			void this.announceFile()
 		}
 	}
 

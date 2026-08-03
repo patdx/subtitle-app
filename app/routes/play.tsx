@@ -37,9 +37,6 @@ export default function PlayPage() {
 function applyLoadedFile(data: LoadedPlayerFile) {
 	setFileFollowPaused(true)
 	try {
-		setFile(data.lines)
-		ensureProgressPagehide()
-
 		const playerFile = data.file?.hash
 			? {
 					fileId: data.fileId,
@@ -48,13 +45,27 @@ function applyLoadedFile(data: LoadedPlayerFile) {
 				}
 			: undefined
 
-		// A remote controller picks a file: cast it to the active player.
+		// Spotify-style: an online player device owns playback. Casting a
+		// different file must not load it locally as if we were the renderer.
 		if (isRemoteController(syncState)) {
-			if (playerFile) void syncStore.playFile(playerFile.hash, playerFile.name)
+			const castingDifferent =
+				!!playerFile && syncState.nowPlayingFile?.hash !== playerFile.hash
+			if (castingDifferent) {
+				void syncStore.playFile(playerFile.hash, playerFile.name)
+				return
+			}
+			// Same file as now-playing (e.g. follow navigation): load cues only.
+			setFile(data.lines)
+			ensureProgressPagehide()
 			return
 		}
 
-		// This device is (or becomes) the active player.
+		setFile(data.lines)
+		ensureProgressPagehide()
+
+		// No online player (or we are the player): play here. Opening a file
+		// never steals the stage from an online claimed player — that path
+		// is handled above via playFile.
 		if (syncState.role === 'peer') {
 			void syncStore.becomeActivePlayer(playerFile)
 		} else if (playerFile) {
