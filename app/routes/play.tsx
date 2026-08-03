@@ -12,6 +12,7 @@ import {
 } from '~/shared/sync'
 import { setFileFollowPaused } from '~/shared/sync-bootstrap'
 import { fileQueryOptions, type LoadedPlayerFile } from '~/shared/file-queries'
+import { usePlayerKeyboard } from '~/shared/player-keyboard'
 import { RemotePanel } from '~/shared/remote-panel'
 import { SyncPill } from '~/shared/sync-pill'
 import { TranscriptDisplay } from '~/shared/transcript-display'
@@ -75,6 +76,8 @@ const Play = () => {
 	const [searchParams] = useSearchParams()
 	const fileIdParam = searchParams.get('id')
 	const syncSnap = useSnapshot(syncState)
+
+	usePlayerKeyboard()
 
 	const fileQuery = useQuery({
 		...fileQueryOptions(fileIdParam ?? ''),

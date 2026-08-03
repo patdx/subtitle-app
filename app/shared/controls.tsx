@@ -19,9 +19,11 @@ import {
 	controlState,
 	getTextSize,
 	iconButtonClass,
+	PLAYBACK_SPEEDS,
 	pokeControls,
 	setTextSize,
 	TEXT_SIZES,
+	toggleFullscreen,
 	toggleTranscript,
 } from './utils'
 import {
@@ -35,8 +37,6 @@ import {
 	MenuSubTrigger,
 	MenuTrigger,
 } from '~/components/ui/menu'
-
-const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 
 type SpeedMenuProps = {
 	variant: 'submenu' | 'menu'
@@ -156,24 +156,7 @@ export const Controls = () => {
 										render={
 											<button
 												onClick={() => {
-													let elem = document.getElementById('app')
-
-													if (!elem)
-														throw new Error('cannot find #app element!')
-
-													if (!document.fullscreenElement) {
-														elem
-															.requestFullscreen({
-																navigationUI: 'hide',
-															})
-															.catch((err) => {
-																alert(
-																	`Error attempting to enable full-screen mode: ${err.message} (${err.name})`,
-																)
-															})
-													} else {
-														document.exitFullscreen()
-													}
+													void toggleFullscreen()
 												}}
 												aria-label="Toggle fullscreen"
 												className={iconButtonClass}
@@ -198,11 +181,11 @@ export const Controls = () => {
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: 12 }}
 						transition={{ duration: 0.25 }}
-						className="absolute bottom-0 left-0 right-0 z-10 bg-linear-to-t from-black to-transparent pt-16 pl-safe pr-safe pb-safe"
+						className="absolute bottom-0 left-0 right-0 z-10 bg-linear-to-t from-black to-transparent px-safe-or-6 pb-safe pt-16"
 						onPointerDown={pokeControls}
 					>
-						{/* timeline: full-width row so the scrubber spans any screen */}
-						<div className="w-full">
+						{/* timeline: inset from screen edges for easier grabbing */}
+						<div className="w-full px-2">
 							<Timeline />
 						</div>
 

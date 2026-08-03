@@ -180,6 +180,29 @@ export const toggleTranscript = () => {
 	controlState.showTranscript = !controlState.showTranscript
 }
 
+export const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
+
+/** Toggle fullscreen on `#app` (shared by the controls button and F shortcut). */
+export async function toggleFullscreen() {
+	if (!document.fullscreenEnabled && !controlState.fullScreenEnabled) return
+
+	const elem = document.getElementById('app')
+	if (!elem) throw new Error('cannot find #app element!')
+
+	if (!document.fullscreenElement) {
+		try {
+			await elem.requestFullscreen({ navigationUI: 'hide' })
+		} catch (err) {
+			const error = err as Error
+			alert(
+				`Error attempting to enable full-screen mode: ${error.message} (${error.name})`,
+			)
+		}
+	} else {
+		await document.exitFullscreen()
+	}
+}
+
 const getNoSleep = once(async () => {
 	const { default: NoSleep } = await import('nosleep.js')
 	return new NoSleep()

@@ -13,6 +13,7 @@ declare global {
   const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
   const LOCAL_DB_NAME: typeof import('./app/shared/utils').LOCAL_DB_NAME
+  const PLAYBACK_SPEEDS: typeof import('./app/shared/utils').PLAYBACK_SPEEDS
   const PlayOnDeviceButton: typeof import('./app/shared/device-picker').PlayOnDeviceButton
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
@@ -80,6 +81,7 @@ declare global {
   const startTransition: typeof import('react').startTransition
   const syncState: typeof import('./app/shared/sync').syncState
   const syncStore: typeof import('./app/shared/sync').syncStore
+  const toggleFullscreen: typeof import('./app/shared/utils').toggleFullscreen
   const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
   const togglePlayback: typeof import('./app/shared/sync').togglePlayback
   const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
@@ -99,6 +101,7 @@ declare global {
   const useLayoutEffect: typeof import('react').useLayoutEffect
   const useMemo: typeof import('react').useMemo
   const useOptimistic: typeof import('react').useOptimistic
+  const usePlayerKeyboard: typeof import('./app/shared/player-keyboard').usePlayerKeyboard
   const useReducer: typeof import('react').useReducer
   const useRef: typeof import('react').useRef
   const useState: typeof import('react').useState
