@@ -10,7 +10,7 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - `pnpm build` — production build to `build/client`; also copies `__spa-fallback.html` → `404.html` (SPA fallback)
 - `npx wrangler dev` — full local stack (Worker + Durable Object); run `pnpm build` first, then test sync at http://localhost:8787 in two tabs
 - `pnpm typecheck` — runs `react-router typegen && tsc`; typegen writes `.react-router/types` (generated, don't edit)
-- `pnpm test` — Vitest unit tests (`vitest run`); sync claim/group-state logic lives in `app/shared/sync-group.ts`
+- `pnpm test` — Vitest unit tests (`vitest run`); sync claim/group-state logic lives in `app/shared/sync-group.ts`; multi-engine bus tests use `app/shared/sync-harness.ts`
 - `npx wrangler deploy` — deploy Worker + static assets
 - `pnpm format` — runs `prettier --write .`
 

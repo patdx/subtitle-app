@@ -21,6 +21,7 @@ declare global {
   const SpeedMenu: typeof import('./app/shared/controls').SpeedMenu
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
+  const SyncEngine: typeof import('./app/shared/sync').SyncEngine
   const SyncPill: typeof import('./app/shared/sync-pill').SyncPill
   const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
   const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
@@ -42,7 +43,9 @@ declare global {
   const cn: typeof import('./app/shared/utils').cn
   const controlState: typeof import('./app/shared/utils').controlState
   const createContext: typeof import('react').createContext
+  const createEmptySyncState: typeof import('./app/shared/sync').createEmptySyncState
   const createRef: typeof import('react').createRef
+  const createSyncEngine: typeof import('./app/shared/sync').createSyncEngine
   const deleteLocalDatabase: typeof import('./app/shared/utils').deleteLocalDatabase
   const ensureProgressPagehide: typeof import('./app/shared/sync').ensureProgressPagehide
   const fileQueryOptions: typeof import('./app/shared/file-queries').fileQueryOptions
@@ -117,7 +120,7 @@ declare global {
   export type { FileTransfer } from './app/shared/file-transfer'
   import('./app/shared/file-transfer')
   // @ts-ignore
-  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, PlayerFile, DeviceLibraryEntry, GroupProposeOp, SyncMessage, SyncState, SyncSnapshot, GroupClaim, GroupClock, GroupMedia, GroupState } from './app/shared/sync'
+  export type { SyncEngine, SyncRole, ConnectionState, PeerInfo, ReceivedFile, PlayerFile, DeviceLibraryEntry, GroupProposeOp, SyncMessage, SyncState, SyncSnapshot, SyncFileRow, SyncTransport, CreateSyncEngineDeps, GroupClaim, GroupClock, GroupMedia, GroupState } from './app/shared/sync'
   import('./app/shared/sync')
   // @ts-ignore
   export type { Entry, DbLine } from './app/shared/utils'
