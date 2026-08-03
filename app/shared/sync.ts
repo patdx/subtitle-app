@@ -840,8 +840,13 @@ class SyncEngine {
 		const current = syncState.group.claim
 		if (incoming.claim) {
 			if (incoming.claim.claimantId !== peerId) return
-			if (!claimIsSuperior(incoming.claim, current) && current) {
-				// Inferior claim: re-assert ours so the peer can't stay split-brain.
+			const sameClaim =
+				!!current &&
+				current.term === incoming.claim.term &&
+				current.claimantId === incoming.claim.claimantId
+			// Equal claim = normal refresh from the current player (clock ticks,
+			// media casts). Only strictly inferior claims are rejected.
+			if (current && !sameClaim && !claimIsSuperior(incoming.claim, current)) {
 				if (current.claimantId === syncState.sessionId) {
 					void this.announceFile()
 				}
@@ -859,8 +864,19 @@ class SyncEngine {
 			return
 		}
 
-		// A peer published group media/claim — we're not taking the stage.
-		if (incoming.media || incoming.claim) {
+		// Claimless snapshot while we still have a pending file from opening
+		// before join: take the stage with OUR file. Do not adopt orphan
+		// media/clock from a departed player first.
+		if (!incoming.claim && this.pendingPlayerFile) {
+			const file = this.claimPendingPlayerFile()
+			if (file) {
+				void this.becomeActivePlayer(file)
+				return
+			}
+		}
+
+		// Someone holds the player role — don't take over with a pending file.
+		if (incoming.claim) {
 			this.pendingPlayerFile = null
 		}
 
@@ -967,10 +983,8 @@ class SyncEngine {
 			)
 		)
 			return
-		// Peer answered our join with their library. No claim yet and nothing
-		// playing => take the stage if we opened a file before connecting.
-		const file = this.claimPendingPlayerFile()
-		if (file) void this.becomeActivePlayer(file)
+		// Library gossip only — pending player takeover is armed from claimless
+		// group-state, not from peer device-state (which can arrive first).
 		void this.fileTransfer
 			.handleDeviceLibrary(msg.library)
 			.catch((err) => console.error('device-state handler failed', err))
