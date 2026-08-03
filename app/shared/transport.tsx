@@ -6,7 +6,10 @@ import {
 } from '~/components/ui/tooltip'
 import { seekBy, togglePlayback } from './sync'
 import { clock } from './utils'
-import { LeftIcon, PauseIcon, PlayIcon, RightIcon } from './icons'
+import PhCaretLeft from '~icons/ph/caret-left'
+import PhCaretRight from '~icons/ph/caret-right'
+import PhPauseCircleFill from '~icons/ph/pause-circle-fill'
+import PhPlayCircleFill from '~icons/ph/play-circle-fill'
 
 const IconTextButton = ({
 	icon,
@@ -60,7 +63,7 @@ export const TransportCluster = () => {
 			{SEEK_BACK.map((step) => (
 				<IconTextButton
 					key={step.ms}
-					icon={<LeftIcon />}
+					icon={<PhCaretLeft />}
 					text={step.text}
 					label={step.label}
 					onClick={() => seekBy(step.ms)}
@@ -73,13 +76,13 @@ export const TransportCluster = () => {
 				onClick={togglePlayback}
 				aria-label={clockSnap.isPlaying ? 'Pause' : 'Play'}
 			>
-				{clockSnap.isPlaying ? <PauseIcon /> : <PlayIcon />}
+				{clockSnap.isPlaying ? <PhPauseCircleFill /> : <PhPlayCircleFill />}
 			</button>
 
 			{SEEK_FORWARD.map((step) => (
 				<IconTextButton
 					key={step.ms}
-					icon={<RightIcon />}
+					icon={<PhCaretRight />}
 					text={step.text}
 					label={step.label}
 					onClick={() => seekBy(step.ms)}

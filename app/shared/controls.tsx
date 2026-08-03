@@ -6,13 +6,12 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
-import {
-	FullScreenIcon,
-	GoBackIcon,
-	SettingsIcon,
-	SpeakerIcon,
-	TranscriptIcon,
-} from './icons'
+import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
+import PhCheck from '~icons/ph/check'
+import PhCornersOut from '~icons/ph/corners-out'
+import PhFileText from '~icons/ph/file-text'
+import PhGearSix from '~icons/ph/gear-six'
+import PhWaveform from '~icons/ph/waveform'
 import { DevicesMenu } from './device-picker'
 import { setPlaySpeed, syncState, syncStore } from './sync'
 import { TransportCluster } from './transport'
@@ -37,7 +36,6 @@ import {
 	MenuSubTrigger,
 	MenuTrigger,
 } from '~/components/ui/menu'
-import { CheckIcon } from './icons'
 
 export const Controls = () => {
 	const controlSnap = useSnapshot(controlState)
@@ -89,7 +87,7 @@ export const Controls = () => {
 											aria-label="Back to file list"
 											className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 										>
-											<GoBackIcon />
+											<PhArrowUUpLeft />
 										</Link>
 									}
 								/>
@@ -106,7 +104,7 @@ export const Controls = () => {
 										aria-label="Play on this device"
 										className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 									>
-										<SpeakerIcon />
+										<PhWaveform />
 									</button>
 								</DevicesMenu>
 							)}
@@ -120,7 +118,7 @@ export const Controls = () => {
 											aria-label="Toggle transcript"
 											className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 										>
-											<TranscriptIcon />
+											<PhFileText />
 										</button>
 									}
 								/>
@@ -156,7 +154,7 @@ export const Controls = () => {
 												aria-label="Toggle fullscreen"
 												className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 											>
-												<FullScreenIcon />
+												<PhCornersOut />
 											</button>
 										}
 									/>
@@ -197,7 +195,7 @@ export const Controls = () => {
 												aria-label="Playback settings"
 												className="flex h-12 w-12 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 											>
-												<SettingsIcon />
+												<PhGearSix />
 											</button>
 										}
 									/>
@@ -226,7 +224,7 @@ export const Controls = () => {
 																	>
 																		<span>{speed}x</span>
 																		{clockSnap.playSpeed === speed && (
-																			<CheckIcon className="size-4 text-ink-200" />
+																			<PhCheck className="!size-4 text-ink-200" />
 																		)}
 																	</MenuItem>
 																))}
@@ -261,7 +259,7 @@ export const Controls = () => {
 																	>
 																		<span>{label}</span>
 																		{getTextSize() === TEXT_SIZES[i] && (
-																			<CheckIcon className="size-4 text-ink-200" />
+																			<PhCheck className="!size-4 text-ink-200" />
 																		)}
 																	</MenuItem>
 																))}

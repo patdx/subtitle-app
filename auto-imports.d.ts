@@ -7,42 +7,23 @@
 export {}
 declare global {
   const Activity: typeof import('react').Activity
-  const CheckIcon: typeof import('./app/shared/icons').CheckIcon
-  const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
   const Controls: typeof import('./app/shared/controls').Controls
   const DevicesMenu: typeof import('./app/shared/device-picker').DevicesMenu
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
   const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
-  const FullScreenIcon: typeof import('./app/shared/icons').FullScreenIcon
-  const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
-  const IconTextButton: typeof import('./app/shared/controls').IconTextButton
-  const LeftIcon: typeof import('./app/shared/icons').LeftIcon
-  const LoadingIcon: typeof import('./app/shared/icons').LoadingIcon
-  const Menu: typeof import('./app/shared/menu').Menu
-  const MenuAction: typeof import('./app/shared/menu').MenuAction
-  const MenuIcon: typeof import('./app/shared/icons').MenuIcon
-  const MoreIcon: typeof import('./app/shared/icons').MoreIcon
   const NumberInput: typeof import('./app/shared/text-input').NumberInput
-  const PauseIcon: typeof import('./app/shared/icons').PauseIcon
-  const PlayIcon: typeof import('./app/shared/icons').PlayIcon
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
   const RemotePanel: typeof import('./app/shared/remote-panel').RemotePanel
-  const RightIcon: typeof import('./app/shared/icons').RightIcon
-  const SettingsIcon: typeof import('./app/shared/icons').SettingsIcon
-  const SpeakerIcon: typeof import('./app/shared/icons').SpeakerIcon
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
-  const SyncIcon: typeof import('./app/shared/icons').SyncIcon
   const SyncPill: typeof import('./app/shared/sync-pill').SyncPill
   const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
   const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
   const Timeline: typeof import('./app/shared/timeline').Timeline
   const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
-  const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
   const TransportCluster: typeof import('./app/shared/transport').TransportCluster
-  const TrashIcon: typeof import('./app/shared/icons').TrashIcon
   const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
   const WebRtcTransport: typeof import('./app/shared/webrtc-transport').WebRtcTransport
   const activePlayerName: typeof import('./app/shared/sync').activePlayerName
@@ -72,7 +53,6 @@ declare global {
   const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
   const hashText: typeof import('./app/shared/utils').hashText
   const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
-  const isCoordinatorSnap: typeof import('./app/shared/sync').isCoordinatorSnap
   const isRemote: typeof import('./app/shared/sync').isRemote
   const isRemoteController: typeof import('./app/shared/sync').isRemoteController
   const isRenderer: typeof import('./app/shared/sync').isRenderer
@@ -93,7 +73,6 @@ declare global {
   const syncState: typeof import('./app/shared/sync').syncState
   const syncStore: typeof import('./app/shared/sync').syncStore
   const tick: typeof import('./app/shared/utils').tick
-  const toggleControls: typeof import('./app/shared/utils').toggleControls
   const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
   const togglePlayback: typeof import('./app/shared/sync').togglePlayback
   const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript

@@ -4,7 +4,7 @@ import {
 } from 'react'
 import clsx from 'clsx'
 import { useRender } from '@base-ui/react/use-render'
-import { ChevronRightIcon } from '~/shared/icons'
+import PhCaretRight from '~icons/ph/caret-right'
 
 export function App({
 	className,
@@ -76,7 +76,7 @@ export function ListItem(props: ListItemProps) {
 							{after && <div>{after}</div>}
 						</div>
 						{isClickable && !after && (
-							<ChevronRightIcon className="text-ink-400" />
+							<PhCaretRight className="text-ink-400" />
 						)}
 					</div>
 					{childElement?.props.children}

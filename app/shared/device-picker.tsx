@@ -9,7 +9,7 @@ import {
 } from '~/components/ui/menu'
 import { cn } from '~/shared/utils'
 import { syncState, syncStore, getActivePlayerId } from './sync'
-import { CheckIcon } from './icons'
+import PhCheck from '~icons/ph/check'
 
 /**
  * Spotify-style "play on this device" popup: lists every device in the group
@@ -77,7 +77,7 @@ export const DevicesMenu = ({
 											</span>
 										)}
 									</span>
-									{isActive && <CheckIcon className="size-4 text-ink-200" />}
+									{isActive && <PhCheck className="!size-4 text-ink-200" />}
 								</MenuItem>
 							)
 						})}

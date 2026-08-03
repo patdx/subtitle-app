@@ -3,6 +3,7 @@ import { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { defineConfig } from 'vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import Icons from 'unplugin-icons/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { qrcode } from 'vite-plugin-qrcode'
 
@@ -17,6 +18,12 @@ export default defineConfig(() => ({
 		AutoImport({
 			imports: ['react'],
 			dirs: ['./app/shared'],
+		}),
+		Icons({
+			compiler: 'jsx',
+			jsx: 'react',
+			scale: 1,
+			defaultClass: 'size-6',
 		}),
 		reactRouter(),
 		babel({

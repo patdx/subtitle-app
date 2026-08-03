@@ -15,12 +15,11 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from '~/components/ui/menu'
-import {
-	CheckIcon,
-	ChevronRightIcon,
-	MoreIcon,
-	SpeakerIcon,
-} from '~/shared/icons'
+import PhCaretRight from '~icons/ph/caret-right'
+import PhCheck from '~icons/ph/check'
+import PhCircleNotch from '~icons/ph/circle-notch'
+import PhDotsThree from '~icons/ph/dots-three'
+import PhWaveform from '~icons/ph/waveform'
 import { buttonChrome } from '~/shared/utils'
 import sampleSrtUrl from '../assets/sample.srt?url'
 import { DevicesMenu } from '~/shared/device-picker'
@@ -269,7 +268,7 @@ const EditFilesPage = () => {
 						className={buttonChrome}
 					>
 						Import SRT or ZIP
-						{isProcessing && <LoadingIcon />}
+						{isProcessing && <PhCircleNotch className="!size-5 animate-spin" />}
 					</Button>
 
 					<Button
@@ -339,7 +338,7 @@ const EditFilesPage = () => {
 														void renameFile(file, renameValue)
 													}}
 												>
-													<CheckIcon />
+													<PhCheck />
 												</button>
 												<button
 													type="button"
@@ -350,7 +349,7 @@ const EditFilesPage = () => {
 														setRenamingId(null)
 													}}
 												>
-													<MoreIcon className="rotate-90" />
+													<PhDotsThree className="rotate-90" />
 												</button>
 											</div>
 										) : (
@@ -383,7 +382,7 @@ const EditFilesPage = () => {
 													/>
 												}
 											>
-												<MoreIcon />
+												<PhDotsThree />
 											</MenuTrigger>
 											<MenuPortal>
 												<MenuPositioner>
@@ -443,7 +442,7 @@ const EditFilesPage = () => {
 								type="button"
 								className="flex flex-none items-center gap-1.5 rounded-control bg-ember-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ember-700 active:bg-ember-700"
 							>
-								<SpeakerIcon className="size-4" />
+								<PhWaveform className="!size-4" />
 								Play on this device
 							</button>
 						</DevicesMenu>
@@ -454,7 +453,7 @@ const EditFilesPage = () => {
 						className="flex items-center justify-between rounded-panel border border-ink-400 bg-paper-raised px-4 py-3 text-sm font-medium text-ink-900 hover:border-ink-600 hover:bg-ink-50"
 					>
 						Sync with another device
-						<ChevronRightIcon className="text-ink-400" />
+						<PhCaretRight className="text-ink-400" />
 					</RouterLink>
 				)}
 			</Block>

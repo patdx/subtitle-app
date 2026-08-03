@@ -24,7 +24,10 @@ import {
 import { DevicesMenu } from './device-picker'
 import { TransportCluster } from './transport'
 import { Timeline } from './timeline'
-import { CheckIcon, GoBackIcon, SettingsIcon, SpeakerIcon } from './icons'
+import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
+import PhCheck from '~icons/ph/check'
+import PhGearSix from '~icons/ph/gear-six'
+import PhWaveform from '~icons/ph/waveform'
 import { clock, initAndGetDb } from './utils'
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -64,7 +67,7 @@ export const RemotePanel = () => {
 						aria-label="Back to file list"
 						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
 					>
-						<GoBackIcon />
+						<PhArrowUUpLeft />
 					</Link>
 					<div className="min-w-0">
 						<p className="text-xs uppercase tracking-widest text-ink-400">
@@ -88,7 +91,7 @@ export const RemotePanel = () => {
 						aria-label="Play on this device"
 						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors hover:text-white active:text-white"
 					>
-						<SpeakerIcon />
+						<PhWaveform />
 					</button>
 				</DevicesMenu>
 			</div>
@@ -119,7 +122,7 @@ export const RemotePanel = () => {
 									aria-label="Playback speed"
 									className="flex h-11 w-11 items-center justify-center rounded-control text-ink-300 transition-colors hover:text-white active:text-white"
 								>
-									<SettingsIcon />
+									<PhGearSix />
 								</button>
 							}
 						/>
@@ -134,7 +137,7 @@ export const RemotePanel = () => {
 										>
 											<span>{speed}x</span>
 											{clockSnap.playSpeed === speed && (
-												<CheckIcon className="size-4 text-ink-200" />
+												<PhCheck className="!size-4 text-ink-200" />
 											)}
 										</MenuItem>
 									))}
@@ -168,7 +171,7 @@ export const RemotePanel = () => {
 								>
 									<span className="truncate">{file.name}</span>
 									{isCurrent && (
-										<CheckIcon className="size-4 flex-none text-ink-200" />
+										<PhCheck className="!size-4 flex-none text-ink-200" />
 									)}
 								</button>
 							)
