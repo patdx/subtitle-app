@@ -13,10 +13,11 @@ declare global {
   const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
   const LOCAL_DB_NAME: typeof import('./app/shared/utils').LOCAL_DB_NAME
-  const NumberInput: typeof import('./app/shared/text-input').NumberInput
+  const PlayOnDeviceButton: typeof import('./app/shared/device-picker').PlayOnDeviceButton
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
   const RemotePanel: typeof import('./app/shared/remote-panel').RemotePanel
+  const SpeedMenu: typeof import('./app/shared/controls').SpeedMenu
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
   const SyncPill: typeof import('./app/shared/sync-pill').SyncPill
@@ -25,8 +26,8 @@ declare global {
   const Timeline: typeof import('./app/shared/timeline').Timeline
   const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
   const TransportCluster: typeof import('./app/shared/transport').TransportCluster
-  const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
   const WebRtcTransport: typeof import('./app/shared/webrtc-transport').WebRtcTransport
+  const activePlayerLabel: typeof import('./app/shared/sync').activePlayerLabel
   const activePlayerName: typeof import('./app/shared/sync').activePlayerName
   const activePlayerOnline: typeof import('./app/shared/sync').activePlayerOnline
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
@@ -35,7 +36,6 @@ declare global {
   const buttonChrome: typeof import('./app/shared/utils').buttonChrome
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
-  const calculateActualTimeElapsedMs: typeof import('./app/shared/utils').calculateActualTimeElapsedMs
   const canGoBack: typeof import('./app/shared/utils').canGoBack
   const clock: typeof import('./app/shared/utils').clock
   const cn: typeof import('./app/shared/utils').cn
@@ -50,20 +50,19 @@ declare global {
   const forwardRef: typeof import('react').forwardRef
   const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
   const getActivePlayerId: typeof import('./app/shared/sync').getActivePlayerId
-  const getCoordinatorId: typeof import('./app/shared/sync').getCoordinatorId
   const getDuration: typeof import('./app/shared/utils').getDuration
-  const getFile: typeof import('./app/shared/utils').getFile
   const getSetting: typeof import('./app/shared/utils').getSetting
   const getTextSize: typeof import('./app/shared/utils').getTextSize
   const getTimeElapsed: typeof import('./app/shared/utils').getTimeElapsed
-  const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
   const hashText: typeof import('./app/shared/utils').hashText
+  const iconButtonClass: typeof import('./app/shared/utils').iconButtonClass
   const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
   const isRemote: typeof import('./app/shared/sync').isRemote
   const isRemoteController: typeof import('./app/shared/sync').isRemoteController
   const isRenderer: typeof import('./app/shared/sync').isRenderer
   const lazy: typeof import('react').lazy
   const linesToSrtText: typeof import('./app/shared/utils').linesToSrtText
+  const makeConnectionId: typeof import('./app/shared/utils').makeConnectionId
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
   const pokeControls: typeof import('./app/shared/utils').pokeControls
@@ -81,7 +80,6 @@ declare global {
   const startTransition: typeof import('react').startTransition
   const syncState: typeof import('./app/shared/sync').syncState
   const syncStore: typeof import('./app/shared/sync').syncStore
-  const tick: typeof import('./app/shared/utils').tick
   const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
   const togglePlayback: typeof import('./app/shared/sync').togglePlayback
   const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
@@ -122,6 +120,6 @@ declare global {
   export type { Entry, DbLine } from './app/shared/utils'
   import('./app/shared/utils')
   // @ts-ignore
-  export type { WebRtcTransport, TransportHost } from './app/shared/webrtc-transport'
+  export type { WebRtcTransport } from './app/shared/webrtc-transport'
   import('./app/shared/webrtc-transport')
 }

@@ -1,24 +1,24 @@
 import { useSnapshot } from 'valtio'
-import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
-import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
 import PhCheck from '~icons/ph/check'
 import PhCornersOut from '~icons/ph/corners-out'
 import PhFileText from '~icons/ph/file-text'
 import PhGearSix from '~icons/ph/gear-six'
-import PhWaveform from '~icons/ph/waveform'
-import { DevicesMenu } from './device-picker'
-import { setPlaySpeed, syncState, syncStore } from './sync'
+import { BackToLibraryLink } from '~/components'
+import { PlayOnDeviceButton } from './device-picker'
+import { setPlaySpeed, syncState } from './sync'
 import { TransportCluster } from './transport'
 import {
 	clock,
+	cn,
 	controlState,
 	getTextSize,
+	iconButtonClass,
 	pokeControls,
 	setTextSize,
 	TEXT_SIZES,
@@ -35,6 +35,57 @@ import {
 	MenuSubTrigger,
 	MenuTrigger,
 } from '~/components/ui/menu'
+
+const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
+
+type SpeedMenuProps = {
+	variant: 'submenu' | 'menu'
+	playSpeed: number
+	onSpeedChange: (speed: number) => void
+	trigger: React.ReactNode
+}
+
+/** Playback-speed picker, shared by the player controls and the remote panel. */
+export const SpeedMenu = ({
+	variant,
+	playSpeed,
+	onSpeedChange,
+	trigger,
+}: SpeedMenuProps) => {
+	const items = PLAYBACK_SPEEDS.map((speed) => (
+		<MenuItem
+			key={speed}
+			onClick={() => onSpeedChange(speed)}
+			className="justify-between"
+		>
+			<span>{speed}x</span>
+			{playSpeed === speed && <PhCheck className="!size-4 text-ink-200" />}
+		</MenuItem>
+	))
+
+	if (variant === 'submenu') {
+		return (
+			<MenuSubRoot>
+				{trigger}
+				<MenuPortal>
+					<MenuPositioner side="right" align="start">
+						<MenuPopup>{items}</MenuPopup>
+					</MenuPositioner>
+				</MenuPortal>
+			</MenuSubRoot>
+		)
+	}
+	return (
+		<MenuRoot>
+			{trigger}
+			<MenuPortal>
+				<MenuPositioner side="top" align="center">
+					<MenuPopup>{items}</MenuPopup>
+				</MenuPositioner>
+			</MenuPortal>
+		</MenuRoot>
+	)
+}
 
 export const Controls = () => {
 	const controlSnap = useSnapshot(controlState)
@@ -73,34 +124,14 @@ export const Controls = () => {
 						<div className="flex items-center">
 							{/* go back button */}
 							<Tooltip>
-								<TooltipTrigger
-									render={
-										<Link
-											to="/"
-											aria-label="Back to file list"
-											className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
-										>
-											<PhArrowUUpLeft />
-										</Link>
-									}
-								/>
+								<TooltipTrigger render={<BackToLibraryLink />} />
 								<TooltipContent>Back to file list</TooltipContent>
 							</Tooltip>
 
 							<div className="flex-1"></div>
 
 							{/* play on this device (device picker) */}
-							{syncSnap.role === 'peer' && (
-								<DevicesMenu>
-									<button
-										type="button"
-										aria-label="Play on this device"
-										className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
-									>
-										<PhWaveform />
-									</button>
-								</DevicesMenu>
-							)}
+							{syncSnap.role === 'peer' && <PlayOnDeviceButton />}
 
 							{/* transcript button */}
 							<Tooltip>
@@ -109,7 +140,7 @@ export const Controls = () => {
 										<button
 											onClick={toggleTranscript}
 											aria-label="Toggle transcript"
-											className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+											className={iconButtonClass}
 										>
 											<PhFileText />
 										</button>
@@ -145,7 +176,7 @@ export const Controls = () => {
 													}
 												}}
 												aria-label="Toggle fullscreen"
-												className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+												className={iconButtonClass}
 											>
 												<PhCornersOut />
 											</button>
@@ -186,7 +217,7 @@ export const Controls = () => {
 											<button
 												type="button"
 												aria-label="Playback settings"
-												className="flex h-12 w-12 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+												className={cn(iconButtonClass, 'h-12 w-12')}
 											>
 												<PhGearSix />
 											</button>
@@ -196,35 +227,22 @@ export const Controls = () => {
 										<MenuPositioner>
 											<MenuPopup>
 												{/* playback speed */}
-												<MenuSubRoot>
-													<MenuSubTrigger
-														label="Playback speed"
-														className="justify-between"
-													>
-														<span>Playback speed</span>
-														<span className="text-ink-300">
-															{clockSnap.playSpeed}x
-														</span>
-													</MenuSubTrigger>
-													<MenuPortal>
-														<MenuPositioner side="right" align="start">
-															<MenuPopup>
-																{[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => (
-																	<MenuItem
-																		key={speed}
-																		onClick={() => setPlaySpeed(speed)}
-																		className="justify-between"
-																	>
-																		<span>{speed}x</span>
-																		{clockSnap.playSpeed === speed && (
-																			<PhCheck className="!size-4 text-ink-200" />
-																		)}
-																	</MenuItem>
-																))}
-															</MenuPopup>
-														</MenuPositioner>
-													</MenuPortal>
-												</MenuSubRoot>
+												<SpeedMenu
+													variant="submenu"
+													playSpeed={clockSnap.playSpeed}
+													onSpeedChange={setPlaySpeed}
+													trigger={
+														<MenuSubTrigger
+															label="Playback speed"
+															className="justify-between"
+														>
+															<span>Playback speed</span>
+															<span className="text-ink-300">
+																{clockSnap.playSpeed}x
+															</span>
+														</MenuSubTrigger>
+													}
+												/>
 
 												<MenuSeparator />
 

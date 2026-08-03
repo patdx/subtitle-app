@@ -1,7 +1,9 @@
 import { useSnapshot } from 'valtio'
 import {
 	clock,
+	cn,
 	controlState,
+	iconButtonClass,
 	nodeIsActive,
 	sanitizeSubtitleHtml,
 	toggleTranscript,
@@ -22,7 +24,6 @@ export const TranscriptDisplay = () => {
 	const controlSnap = useSnapshot(controlState)
 	const uiSnap = useSnapshot(uiState)
 	const clockSnap = useSnapshot(clock)
-	const listRef = useRef<HTMLDivElement>(null)
 	const activeRef = useRef<HTMLButtonElement | null>(null)
 	const lastScrolledId = useRef<string | null>(null)
 
@@ -75,15 +76,12 @@ export const TranscriptDisplay = () => {
 						type="button"
 						onClick={toggleTranscript}
 						aria-label="Close transcript"
-						className="flex h-11 w-11 items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white"
+						className={iconButtonClass}
 					>
 						<PhX className="!size-5" />
 					</button>
 				</SheetHeader>
-				<div
-					ref={listRef}
-					className="min-h-0 flex-1 overflow-y-auto px-4 pb-safe-or-6 pt-3 pl-safe pr-safe"
-				>
+				<div className="min-h-0 flex-1 overflow-y-auto px-4 pb-safe-or-6 pt-3 pl-safe pr-safe">
 					<div className="mx-auto flex w-full max-w-xl flex-col gap-1">
 						{lines.map((node) => {
 							const isActive = node.id === activeId

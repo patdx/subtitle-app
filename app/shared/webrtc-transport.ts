@@ -1,4 +1,5 @@
 import type { SyncMessage, SyncState, PlayerFile } from './sync'
+import { makeConnectionId } from './utils'
 
 const API = '/api/sync'
 const DC_NAME = 'subtitles'
@@ -26,21 +27,16 @@ interface PeerTransport {
 }
 
 /** The subset of SyncEngine the transport talks back to. */
-export interface TransportHost {
+interface TransportHost {
 	send(msg: SyncMessage): void
 	handleMessage(value: unknown, peerId: string): void
 	readonly isCoordinator: boolean
 	handlePeerJoin(): Promise<void>
 	broadcastClockState(): void
 	becomeActivePlayer(file?: PlayerFile): Promise<void>
-	pendingPlayerFile: PlayerFile | null
+	claimPendingPlayerFile(): PlayerFile | null
 	clearConnectTimeout(): void
 }
-
-const makeConnectionId = () =>
-	[...crypto.getRandomValues(new Uint8Array(16))]
-		.map((byte) => byte.toString(16).padStart(2, '0'))
-		.join('')
 
 /**
  * The WebRTC mesh: one full-duplex data channel per peer pair, plus the
@@ -48,7 +44,6 @@ const makeConnectionId = () =>
  * SDP/ICE signaling. No payload (subtitles, clock) ever crosses the relay.
  */
 export class WebRtcTransport {
-	pc: RTCPeerConnection | null = null
 	peerTransports = new Map<string, PeerTransport>()
 	earlyIce = new Map<
 		string,
@@ -140,8 +135,6 @@ export class WebRtcTransport {
 		this.peerTransports.clear()
 		this.earlyIce.clear()
 		this.peerReconnectAttempts.clear()
-		this.pc?.close()
-		this.pc = null
 	}
 
 	private schedulePresenceReconnect() {
@@ -173,13 +166,6 @@ export class WebRtcTransport {
 				this.state.connectionState = 'connected'
 				this.presenceReconnectAttempts = 0
 				this.host.clearConnectTimeout()
-				if (this.state.sessionId && this.state.sessionId > peerId)
-					this.sendSignal({
-						type: 'ready',
-						to: peerId,
-						generation:
-							this.peerTransports.get(peerId)?.generation ?? makeConnectionId(),
-					})
 			}
 			if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
 				const transport = this.peerTransports.get(peerId)
@@ -243,7 +229,6 @@ export class WebRtcTransport {
 			transport.pendingIce.push(...early.candidates)
 		this.earlyIce.delete(peerId)
 		this.peerTransports.set(peerId, transport)
-		this.pc = pc
 		this.monitorConnection(pc, peerId)
 		pc.onicecandidate = (event) => {
 			if (event.candidate)
@@ -295,14 +280,9 @@ export class WebRtcTransport {
 				this.host.broadcastClockState()
 			}
 			// Solo group with a file open and nobody playing: take the stage.
-			if (
-				this.state.roomPeers.length === 0 &&
-				this.host.pendingPlayerFile &&
-				!this.state.coordinationClaim
-			) {
-				const file = this.host.pendingPlayerFile
-				this.host.pendingPlayerFile = null
-				void this.host.becomeActivePlayer(file)
+			if (this.state.roomPeers.length === 0) {
+				const file = this.host.claimPendingPlayerFile()
+				if (file) void this.host.becomeActivePlayer(file)
 			}
 			for (const peer of message.peers)
 				if (

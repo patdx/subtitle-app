@@ -1,13 +1,7 @@
-import { Block, Navbar, Page, List, ListItem } from '~/components'
+import { BackButton, Block, Navbar, Page, List, ListItem } from '~/components'
 import { Button } from '~/components/ui/button'
 import type { Route } from './+types/about'
-import { useNavigate } from 'react-router'
-import {
-	buttonChrome,
-	canGoBack,
-	cn,
-	deleteLocalDatabase,
-} from '~/shared/utils'
+import { buttonChrome, cn, deleteLocalDatabase } from '~/shared/utils'
 import { syncState, syncStore } from '~/shared/sync'
 
 export function meta({}: Route.MetaArgs) {
@@ -38,27 +32,9 @@ async function resetAllLocalData() {
 }
 
 export default function About({}: Route.ComponentProps) {
-	let navigate = useNavigate()
-
 	return (
 		<Page>
-			<Navbar
-				title="About"
-				left={
-					<Button
-						onClick={() => {
-							if (canGoBack()) {
-								navigate(-1)
-							} else {
-								navigate('/')
-							}
-						}}
-						className={buttonChrome}
-					>
-						Back
-					</Button>
-				}
-			/>
+			<Navbar title="About" left={<BackButton />} />
 			<Block className="px-4">
 				<p className="max-w-prose text-sm text-ink-500">
 					Subtitle App is a mobile-friendly tool for watching videos with SRT

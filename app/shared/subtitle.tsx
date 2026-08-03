@@ -1,6 +1,7 @@
 import { useSnapshot } from 'valtio'
 import {
 	clock,
+	cn,
 	nodeIsActive,
 	sanitizeSubtitleHtml,
 	uiState,
@@ -22,17 +23,11 @@ export const TimeDisplay = (props: { ms: number; className?: string }) => {
 	)
 }
 
-export const Subtitle = (props: { node: Entry; showTime?: boolean }) => {
+export const Subtitle = (props: { node: Entry }) => {
 	const uiSnap = useSnapshot(uiState)
 	const clockSnap = useSnapshot(clock)
 	return (
 		<div className="flex flex-col items-center">
-			{props.showTime && (
-				<TimeDisplay
-					ms={props.node.from}
-					className="text-xs text-gray-400 mb-1"
-				/>
-			)}
 			<div
 				className={cn(
 					`subtitle-text text-white`,

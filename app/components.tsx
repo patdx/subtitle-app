@@ -1,9 +1,10 @@
-import {
-	isValidElement,
-	type PropsWithChildren,
-} from 'react'
+import { isValidElement, type PropsWithChildren } from 'react'
 import clsx from 'clsx'
 import { useRender } from '@base-ui/react/use-render'
+import { Link, type LinkProps, useNavigate } from 'react-router'
+import { Button } from '~/components/ui/button'
+import { buttonChrome, canGoBack, iconButtonClass } from '~/shared/utils'
+import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
 import PhCaretRight from '~icons/ph/caret-right'
 
 export function App({
@@ -75,9 +76,7 @@ export function ListItem(props: ListItemProps) {
 							{title && <div className="font-medium text-ink-900">{title}</div>}
 							{after && <div>{after}</div>}
 						</div>
-						{isClickable && !after && (
-							<PhCaretRight className="text-ink-400" />
-						)}
+						{isClickable && !after && <PhCaretRight className="text-ink-400" />}
 					</div>
 					{childElement?.props.children}
 					{footer && <div className="mt-2">{footer}</div>}
@@ -87,6 +86,41 @@ export function ListItem(props: ListItemProps) {
 	})
 
 	return renderElement
+}
+
+/** Icon-only link back to the file library, shared by the player UIs. */
+export function BackToLibraryLink({
+	className,
+	...props
+}: Omit<LinkProps, 'to'>) {
+	return (
+		<Link
+			to="/"
+			aria-label="Back to file list"
+			className={clsx(iconButtonClass, className)}
+			{...props}
+		>
+			<PhArrowUUpLeft />
+		</Link>
+	)
+}
+
+export function BackButton() {
+	const navigate = useNavigate()
+	return (
+		<Button
+			onClick={() => {
+				if (canGoBack()) {
+					navigate(-1)
+				} else {
+					navigate('/')
+				}
+			}}
+			className={buttonChrome}
+		>
+			Back
+		</Button>
+	)
 }
 
 export function Navbar({

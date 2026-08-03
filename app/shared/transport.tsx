@@ -5,7 +5,7 @@ import {
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import { seekBy, togglePlayback } from './sync'
-import { clock } from './utils'
+import { clock, cn, iconButtonClass } from './utils'
 import PhCaretLeft from '~icons/ph/caret-left'
 import PhCaretRight from '~icons/ph/caret-right'
 import PhPauseCircleFill from '~icons/ph/pause-circle-fill'
@@ -28,7 +28,10 @@ const IconTextButton = ({
 				render={
 					<button
 						aria-label={label}
-						className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600 active:text-white"
+						className={cn(
+							iconButtonClass,
+							'relative focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600',
+						)}
 						onClick={onClick}
 					>
 						{icon}

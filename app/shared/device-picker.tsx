@@ -7,9 +7,10 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from '~/components/ui/menu'
-import { cn } from '~/shared/utils'
+import { cn, iconButtonClass } from '~/shared/utils'
 import { syncState, syncStore, getActivePlayerId } from './sync'
 import PhCheck from '~icons/ph/check'
+import PhWaveform from '~icons/ph/waveform'
 
 /**
  * Spotify-style "play on this device" popup: lists every device in the group
@@ -85,5 +86,20 @@ export const DevicesMenu = ({
 				</MenuPositioner>
 			</MenuPortal>
 		</MenuRoot>
+	)
+}
+
+/** Waveform trigger button that opens the "play on this device" popup. */
+export const PlayOnDeviceButton = () => {
+	return (
+		<DevicesMenu>
+			<button
+				type="button"
+				aria-label="Play on this device"
+				className={iconButtonClass}
+			>
+				<PhWaveform />
+			</button>
+		</DevicesMenu>
 	)
 }

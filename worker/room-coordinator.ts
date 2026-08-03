@@ -83,7 +83,7 @@ export class RoomCoordinator extends DurableObject<Record<string, never>> {
 			generation?: string
 		}
 		if (
-			!['offer', 'answer', 'ice', 'ready', 'cancel'].includes(msg.type ?? '') ||
+			!['offer', 'answer', 'ice'].includes(msg.type ?? '') ||
 			!ID_RE.test(msg.to ?? '') ||
 			!ID_RE.test(msg.generation ?? '') ||
 			msg.to === sender.id
@@ -99,8 +99,7 @@ export class RoomCoordinator extends DurableObject<Record<string, never>> {
 		if (!target) return ws.close(1008, 'Invalid target')
 		if (
 			(msg.type === 'offer' && sender.id > target.state.id) ||
-			((msg.type === 'answer' || msg.type === 'ready') &&
-				sender.id < target.state.id)
+			(msg.type === 'answer' && sender.id < target.state.id)
 		)
 			return ws.close(1008, 'Invalid negotiation direction')
 		target.ws.send(JSON.stringify({ ...parsed, from: sender.id }))

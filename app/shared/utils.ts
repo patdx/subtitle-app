@@ -3,7 +3,6 @@ import { openDB, type DBSchema } from 'idb'
 import { findLast, once } from 'lodash-es'
 import { parse } from '@plussub/srt-vtt-parser'
 import { nanoid } from 'nanoid'
-import { Duration } from 'luxon'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -15,11 +14,20 @@ export function cn(...inputs: ClassValue[]) {
  * is roomier. Applied to every Button via cn(). */
 export const buttonChrome = 'h-auto rounded-lg px-4 py-2 text-sm font-semibold'
 
+/** Compact icon-button chrome for the player controls and remote panel. */
+export const iconButtonClass =
+	'flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white'
+
 /** The app may be opened directly via a QR code or external link, leaving no
  * previous history entry to go back to. */
 export function canGoBack() {
 	return window.history.length > 1
 }
+
+export const makeConnectionId = () =>
+	[...crypto.getRandomValues(new Uint8Array(16))]
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('')
 
 // SRT/VTT files may contain inline HTML (b/i/u/font/br).
 // Render only a safe whitelist and strip all attributes so
@@ -124,15 +132,7 @@ export const getActiveNodes = (
 
 		// TODO: find a way to show next uppcoming node
 		// even if no active node is currently set
-		// const previous = nodes[index - 1];
-		// if (previous) {
-		//   selectedNodes.add(previous);
-		// }
 		selectedNodes.add(node)
-		// const next = nodes[index + 1];
-		// if (next) {
-		//   selectedNodes.add(next);
-		// }
 	})
 
 	if (selectedNodes.size === 0) {
@@ -205,7 +205,7 @@ export const clock = proxy({
 /** true while the requestAnimationFrame tick loop is scheduled */
 let ticking = false
 
-export const calculateActualTimeElapsedMs = () => {
+const calculateActualTimeElapsedMs = () => {
 	const timeSinceLastAction = clock.isPlaying
 		? Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
 		: 0
@@ -213,7 +213,7 @@ export const calculateActualTimeElapsedMs = () => {
 	clock.actualTimeElapsedMs = timeSinceLastAction + clock.lastTimeElapsedMs
 }
 
-export const tick = () => {
+const tick = () => {
 	calculateActualTimeElapsedMs()
 	if (clock.isPlaying) {
 		requestAnimationFrame(tick)
@@ -228,7 +228,7 @@ export const toggleIsPlaying = (isPlaying: boolean) => {
 		enableNoSleep()
 		setClock({
 			lastActionAt: Date.now(),
-			// todo: recalculate at time of action
+			// TODO: recalculate at time of action
 			// instead of using Signal
 			lastTimeElapsedMs: getTimeElapsed(),
 			isPlaying,
@@ -254,17 +254,6 @@ export const setClock = (value: Partial<typeof clock>) => {
 
 export const getTimeElapsed = () => clock.actualTimeElapsedMs
 
-export const getTimeElapsedAsDuration = (ms: number = getTimeElapsed()) => {
-	const d = Duration.fromMillis(ms).shiftTo(
-		'hours',
-		'minutes',
-		'seconds',
-		'milliseconds',
-	)
-	// console.log(d);
-	return d
-}
-
 export const TEXT_SIZES = [
 	'text-sm',
 	'text-base',
@@ -283,7 +272,7 @@ export const setTextSize = (value: TextSize) => {
 	uiState.textSize = value
 }
 
-export const getFile = () => uiState.file
+const getFile = () => uiState.file
 export const setFile = (value: DbLine[]) => {
 	uiState.file = value
 }
@@ -331,7 +320,6 @@ interface MyDB extends DBSchema {
 			hash?: string
 			/** length of file (TBD) */
 			length?: any
-			watched?: boolean
 			progress?: number
 			lastPlayed?: number
 		}
@@ -451,8 +439,6 @@ export const backfillFileHashes = once(async () => {
 })
 
 export const addFileToDatabase = async (text: string, fileName: string) => {
-	// console.log(`analyzing text for ${fileName}`, text)
-	// const text = await file.text();
 	const { entries } = parse(text)
 
 	const db = await initAndGetDb()

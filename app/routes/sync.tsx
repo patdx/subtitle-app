@@ -1,21 +1,45 @@
-import { Link as RouterLink, useNavigate } from 'react-router'
+import { Link as RouterLink } from 'react-router'
 import { useSnapshot } from 'valtio'
-import { Block, List, ListItem, Navbar, Page } from '~/components'
+import { BackButton, Block, List, ListItem, Navbar, Page } from '~/components'
 import { Alert, AlertDescription } from '~/components/ui/alert'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { QrCode } from '~/shared/qr'
 import { QrScanner } from '~/shared/qr-scanner'
-import { buttonChrome, canGoBack } from '~/shared/utils'
-import { syncState, syncStore } from '~/shared/sync'
+import { buttonChrome, cn } from '~/shared/utils'
+import { syncState, syncStore, type ConnectionState } from '~/shared/sync'
 import type { Route } from './+types/sync'
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: 'Sync - Subtitle App' }]
 }
 
+/** Dot color + status label for the connection status block. */
+const getConnectionStatus = (
+	connectionState: ConnectionState,
+	isRestoring: boolean,
+	roomCode: string | null,
+): { dot: string; label: string } => {
+	const restoring = isRestoring || connectionState === 'connecting'
+	if (connectionState === 'connected') {
+		return {
+			dot: 'bg-ok',
+			label: restoring ? 'Connecting…' : `Connected to group ${roomCode ?? ''}`,
+		}
+	}
+	if (connectionState === 'error') {
+		return {
+			dot: 'bg-danger',
+			label: restoring ? 'Connecting…' : 'Not connected',
+		}
+	}
+	if (restoring) {
+		return { dot: 'bg-warn', label: 'Connecting…' }
+	}
+	return { dot: 'bg-ink-300', label: 'Not sharing' }
+}
+
 const SyncPage = () => {
-	const navigate = useNavigate()
 	const syncSnap = useSnapshot(syncState)
 	const [codeInput, setCodeInput] = useState('')
 	const [busy, setBusy] = useState(false)
@@ -47,41 +71,29 @@ const SyncPage = () => {
 	const qrValue = syncSnap.roomCode
 		? `${location.origin}/sync?code=${syncSnap.roomCode}`
 		: ''
+	const status = getConnectionStatus(
+		syncSnap.connectionState,
+		syncSnap.isRestoring,
+		syncSnap.roomCode,
+	)
 
 	return (
 		<Page>
-			<Navbar
-				title="Sync"
-				left={
-					<Button
-						onClick={() => {
-							if (canGoBack()) {
-								navigate(-1)
-							} else {
-								navigate('/')
-							}
-						}}
-						className={buttonChrome}
-					>
-						Back
-					</Button>
-				}
-			/>
+			<Navbar title="Sync" left={<BackButton />} />
 
 			<Block className="px-4 pb-2">
 				<p className="max-w-prose text-sm text-ink-500">
 					Pair your own devices and control playback together.
 				</p>
 				<p className="mt-2 max-w-prose text-sm text-ink-500">
-					After devices connect, playback timing and subtitle files go
-					directly between them. Subtitle files stay on your devices —
-					they are never uploaded to our servers.
+					After devices connect, playback timing and subtitle files go directly
+					between them. Subtitle files stay on your devices — they are never
+					uploaded to our servers.
 				</p>
 				<p className="mt-2 max-w-prose text-sm text-ink-500">
-					Our server only relays short connection-setup messages so
-					devices can link. Subtitle files and playback timing never go
-					through it. Devices must be on networks that allow a direct
-					connection.
+					Our server only relays short connection-setup messages so devices can
+					link. Subtitle files and playback timing never go through it. Devices
+					must be on networks that allow a direct connection.
 				</p>
 			</Block>
 
@@ -120,25 +132,8 @@ const SyncPage = () => {
 									: 'text-ink-600',
 						)}
 					>
-						<span
-							className={cn(
-								'h-2.5 w-2.5 rounded-full',
-								connected
-									? 'bg-ok'
-									: syncSnap.connectionState === 'error'
-										? 'bg-danger'
-										: syncSnap.isRestoring || connecting
-											? 'bg-warn'
-											: 'bg-ink-300',
-							)}
-						/>
-						{syncSnap.isRestoring || connecting
-							? 'Connecting…'
-							: connected
-								? `Connected to group ${syncSnap.roomCode ?? ''}`
-								: syncSnap.connectionState === 'error'
-									? 'Not connected'
-									: 'Not sharing'}
+						<span className={cn('h-2.5 w-2.5 rounded-full', status.dot)} />
+						{status.label}
 					</span>
 					{syncSnap.connectionState === 'error' && active === false && (
 						<Button

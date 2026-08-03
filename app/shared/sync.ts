@@ -1,10 +1,10 @@
 import { proxy } from 'valtio'
-import { nanoid } from 'nanoid'
 import {
 	backfillFileHashes,
 	clock,
 	getTimeElapsed,
 	initAndGetDb,
+	makeConnectionId,
 	saveLocalProgress,
 	setClock,
 	setSetting,
@@ -151,7 +151,7 @@ if (typeof window !== 'undefined') {
 	w.__togglePlayback = () => syncStore.togglePlayback()
 }
 
-export const getCoordinatorId = (state: {
+const getCoordinatorId = (state: {
 	sessionId: string | null
 	roomPeers: readonly PeerInfo[]
 	coordinationClaim: { term: number; claimantId: string } | null
@@ -202,6 +202,15 @@ export const activePlayerName = (state: SyncSnapshot): string | null => {
 	return state.roomPeers.find((peer) => peer.sessionId === id)?.name ?? null
 }
 
+/** Label for the active player device ('Player offline' when absent). */
+export const activePlayerLabel = (state: SyncSnapshot): string => {
+	const playerName = activePlayerName(state)
+	if (playerName && activePlayerOnline(state)) {
+		return `Playing on ${playerName}`
+	}
+	return 'Player offline'
+}
+
 /** Shows the RemotePanel (controller UI) instead of the subtitle stage. */
 export const isRemote = (state: SyncSnapshot): boolean =>
 	state.role === 'peer' &&
@@ -222,6 +231,44 @@ export const isRemoteController = (state: SyncSnapshot): boolean =>
 	state.role === 'peer' &&
 	getActivePlayerId(state) !== state.sessionId &&
 	activePlayerOnline(state)
+
+/**
+ * Inbound message types each role accepts. Constant: never mutated, so they
+ * are safe to share across all `handleMessage` calls.
+ */
+const COORDINATOR_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
+	'cmd-play',
+	'cmd-pause',
+	'cmd-seek',
+	'cmd-speed',
+	'request-player',
+	'play-file',
+	'join',
+	'leave',
+	'request-file',
+	'file-chunk',
+	'ping',
+	'pong',
+])
+
+/** Types a follower accepts from the coordinator. */
+const FOLLOWER_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
+	'state-clock',
+	'now-playing',
+	'file-list',
+	'file-chunk',
+	'request-player',
+	'request-file',
+	'ping',
+	'pong',
+])
+
+/** Types an ordinary peer accepts from another non-coordinator peer. */
+const PEER_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
+	'request-player',
+	'ping',
+	'pong',
+])
 
 class SyncEngine {
 	/** WebRTC mesh + presence socket (relays only SDP/ICE) */
@@ -359,11 +406,6 @@ class SyncEngine {
 		await setSetting('joinedGroupCode', null)
 		await setSetting('wasSharing', true)
 		await this.connectGroup(syncState.myGroupCode)
-	}
-
-	reconnect() {
-		if (syncState.role === 'peer' && syncState.roomCode)
-			void this.connectGroup(syncState.roomCode)
 	}
 
 	send(msg: SyncMessage) {
@@ -506,6 +548,20 @@ class SyncEngine {
 		this.pendingPlayerFile = file
 	}
 
+	/**
+	 * Claim the player role if a file was opened before the device joined and
+	 * nobody is playing yet (a now-playing announcement disarms it). Clears the
+	 * pending file and returns it, or null if the role is taken.
+	 */
+	claimPendingPlayerFile(): PlayerFile | null {
+		if (this.pendingPlayerFile && !syncState.coordinationClaim) {
+			const file = this.pendingPlayerFile
+			this.pendingPlayerFile = null
+			return file
+		}
+		return null
+	}
+
 	/** Re-broadcast the current file to the group (no claim). */
 	async announceFile() {
 		if (!this.isCoordinator) return
@@ -546,18 +602,31 @@ class SyncEngine {
 		this.send({ type: 'play-file', hash, name })
 	}
 
-	private async _handlePlayFile(hash: string, name: string) {
-		if (!this.isCoordinator) return
+	/**
+	 * Resolve a file hash to the local copy when present; otherwise record it
+	 * as unavailable and ask the group to transfer it. Returns whether the
+	 * renderer had the file locally.
+	 */
+	private async resolveNowPlayingFile(
+		hash: string,
+		name: string,
+	): Promise<boolean> {
 		const db = await initAndGetDb()
 		const existing = (await db.getAll('files')).find((f) => f.hash === hash)
 		if (existing) {
 			syncState.nowPlayingFile = { fileId: existing.id, hash, name }
-			await this.announceFile()
-			return
+			return true
 		}
 		// Renderer doesn't have the file yet; pull it from the group.
 		syncState.nowPlayingFile = { fileId: null, hash, name }
 		this.send({ type: 'request-file', hash })
+		return false
+	}
+
+	private async _handlePlayFile(hash: string, name: string) {
+		if (!this.isCoordinator) return
+		const found = await this.resolveNowPlayingFile(hash, name)
+		if (found) await this.announceFile()
 	}
 
 	async broadcastFileList() {
@@ -581,17 +650,6 @@ class SyncEngine {
 		await this.broadcastFileList()
 	}
 
-	sendFile(hash: string) {
-		void this.fileTransfer.sendFile(hash)
-	}
-
-	sendFileDeleted(fileId: string, fileName: string) {
-		// Deletion stays local. A group peer must never be able to delete another
-		// device's IndexedDB content, even when it is the current coordinator.
-		void fileId
-		void fileName
-	}
-
 	broadcastClockState() {
 		if (!this.isCoordinator || syncState.connectionState !== 'connected') return
 		this.send({
@@ -610,181 +668,52 @@ class SyncEngine {
 		if (!value || typeof value !== 'object' || Array.isArray(value)) return
 		const msg = value as SyncMessage
 		if (msg.type === 'claim-coordinator') {
-			if (
-				msg.claimantId !== peerId ||
-				!Number.isSafeInteger(msg.term) ||
-				msg.term < 1 ||
-				msg.term > 1_000_000_000
-			)
-				return
-			const current = syncState.coordinationClaim
-			if (
-				!current ||
-				msg.term > current.term ||
-				(msg.term === current.term && msg.claimantId > current.claimantId)
-			) {
-				syncState.coordinationClaim = {
-					term: msg.term,
-					claimantId: msg.claimantId,
-				}
-			}
+			this._handleClaimCoordinator(msg, peerId)
 			return
 		}
 		const fromCoordinator = peerId === this.coordinatorId
-		const allowed = this.isCoordinator
-			? new Set([
-					'cmd-play',
-					'cmd-pause',
-					'cmd-seek',
-					'cmd-speed',
-					'request-player',
-					'play-file',
-					'join',
-					'leave',
-					'request-file',
-					'file-chunk',
-					'ping',
-					'pong',
-				])
+		const allowedMessageTypes = this.isCoordinator
+			? COORDINATOR_ALLOWED_MESSAGE_TYPES
 			: fromCoordinator
-				? new Set([
-						'state-clock',
-						'now-playing',
-						'file-list',
-						'file-chunk',
-						'request-player',
-						'request-file',
-						'ping',
-						'pong',
-					])
-				: new Set(['request-player', 'ping', 'pong'])
-		if (!allowed.has(msg.type)) return
+				? FOLLOWER_ALLOWED_MESSAGE_TYPES
+				: PEER_ALLOWED_MESSAGE_TYPES
+		if (!allowedMessageTypes.has(msg.type)) return
 		switch (msg.type) {
 			case 'request-player':
-				// A pure request: only the addressed device acts, and it claims
-				// through the fenced claim-coordinator message.
-				if (
-					typeof msg.sessionId !== 'string' ||
-					msg.sessionId !== syncState.sessionId
-				)
-					return
-				if (Date.now() - (this.lastPlayerRequestAt.get(peerId) ?? 0) < 2000)
-					return
-				this.lastPlayerRequestAt.set(peerId, Date.now())
-				void this.becomeActivePlayer()
+				this._handleRequestPlayer(msg, peerId)
 				return
 			case 'state-clock':
-				if (
-					typeof msg.isPlaying !== 'boolean' ||
-					!Number.isFinite(msg.positionMs) ||
-					msg.positionMs < 0 ||
-					!Number.isFinite(msg.playSpeed) ||
-					msg.playSpeed < 0.1 ||
-					msg.playSpeed > 5
-				)
-					return
-				this._applyClockState(msg)
+				this._handleClockState(msg)
 				return
 			case 'now-playing':
-				if (
-					typeof msg.hash !== 'string' ||
-					msg.hash.length > 128 ||
-					typeof msg.name !== 'string' ||
-					msg.name.length > 256
-				)
-					return
-				// A peer is already playing; we're a follower.
-				this.pendingPlayerFile = null
-				void this._handleNowPlaying(msg).catch((err) =>
-					console.error('now-playing handler failed', err),
-				)
+				this._handleNowPlayingMessage(msg)
 				return
 			case 'file-list':
-				if (
-					!Array.isArray(msg.files) ||
-					msg.files.length > 256 ||
-					msg.files.some(
-						(file) =>
-							!file ||
-							typeof file.hash !== 'string' ||
-							file.hash.length > 128 ||
-							typeof file.name !== 'string' ||
-							file.name.length > 256,
-					)
-				)
-					return
-				// The coordinator answered our join (file-list always follows
-				// any now-playing on the same channel). No player announced and
-				// none claimed => nobody is playing, so take the role.
-				if (this.pendingPlayerFile && !syncState.coordinationClaim) {
-					const file = this.pendingPlayerFile
-					this.pendingPlayerFile = null
-					void this.becomeActivePlayer(file)
-				}
-				void this._handleFileList(msg).catch((err) =>
-					console.error('file-list handler failed', err),
-				)
+				this._handleFileListMessage(msg)
 				return
 			case 'file-chunk':
 				this._handleFileChunk(msg)
 				return
 			case 'request-file':
-				if (typeof msg.hash !== 'string' || msg.hash.length > 128) return
-				if (
-					Date.now() - (this.fileTransfer.lastFileRequestAt.get(peerId) ?? 0) <
-					2000
-				)
-					return
-				this.fileTransfer.lastFileRequestAt.set(peerId, Date.now())
-				void this.fileTransfer.sendFile(msg.hash)
+				this._handleRequestFile(msg, peerId)
 				return
 			case 'ping':
-				this.send({ type: 'pong', sentAt: msg.sentAt })
+				this._handlePing(msg)
 				return
-		}
-
-		if (!this.isCoordinator) return
-
-		switch (msg.type) {
 			case 'play-file':
-				if (
-					typeof msg.hash !== 'string' ||
-					msg.hash.length > 128 ||
-					typeof msg.name !== 'string' ||
-					msg.name.length > 256
-				)
-					return
-				void this._handlePlayFile(msg.hash, msg.name)
+				this._handlePlayFileMessage(msg)
 				return
 			case 'cmd-play':
-				if (!clock.isPlaying) {
-					toggleIsPlaying(true)
-					this.broadcastClockState()
-				}
+				this._handleCmdPlay()
 				return
 			case 'cmd-pause':
-				if (clock.isPlaying) {
-					toggleIsPlaying(false)
-					this.broadcastClockState()
-				}
+				this._handleCmdPause()
 				return
 			case 'cmd-seek':
-				if (!Number.isFinite(msg.positionMs) || msg.positionMs < 0) return
-				setClock({
-					lastActionAt: Date.now(),
-					lastTimeElapsedMs: msg.positionMs,
-				})
-				this.broadcastClockState()
+				this._handleCmdSeek(msg)
 				return
 			case 'cmd-speed':
-				if (!Number.isFinite(msg.speed) || msg.speed < 0.1 || msg.speed > 5)
-					return
-				setClock({
-					playSpeed: msg.speed,
-					lastActionAt: Date.now(),
-					lastTimeElapsedMs: getTimeElapsed(),
-				})
-				this.broadcastClockState()
+				this._handleCmdSpeed(msg)
 				return
 			case 'join':
 				void this.handlePeerJoin()
@@ -793,6 +722,168 @@ class SyncEngine {
 				this._handlePeerLeave(msg.deviceName)
 				return
 		}
+	}
+
+	private _handleClaimCoordinator(
+		msg: Extract<SyncMessage, { type: 'claim-coordinator' }>,
+		peerId: string,
+	) {
+		if (
+			msg.claimantId !== peerId ||
+			!Number.isSafeInteger(msg.term) ||
+			msg.term < 1 ||
+			msg.term > 1_000_000_000
+		)
+			return
+		const current = syncState.coordinationClaim
+		if (
+			!current ||
+			msg.term > current.term ||
+			(msg.term === current.term && msg.claimantId > current.claimantId)
+		) {
+			syncState.coordinationClaim = {
+				term: msg.term,
+				claimantId: msg.claimantId,
+			}
+		}
+	}
+
+	private _handleRequestPlayer(
+		msg: Extract<SyncMessage, { type: 'request-player' }>,
+		peerId: string,
+	) {
+		// A pure request: only the addressed device acts, and it claims
+		// through the fenced claim-coordinator message.
+		if (
+			typeof msg.sessionId !== 'string' ||
+			msg.sessionId !== syncState.sessionId
+		)
+			return
+		if (Date.now() - (this.lastPlayerRequestAt.get(peerId) ?? 0) < 2000) return
+		this.lastPlayerRequestAt.set(peerId, Date.now())
+		void this.becomeActivePlayer()
+	}
+
+	private _handleClockState(
+		msg: Extract<SyncMessage, { type: 'state-clock' }>,
+	) {
+		if (
+			typeof msg.isPlaying !== 'boolean' ||
+			!Number.isFinite(msg.positionMs) ||
+			msg.positionMs < 0 ||
+			!Number.isFinite(msg.playSpeed) ||
+			msg.playSpeed < 0.1 ||
+			msg.playSpeed > 5
+		)
+			return
+		this._applyClockState(msg)
+	}
+
+	private _handleNowPlayingMessage(
+		msg: Extract<SyncMessage, { type: 'now-playing' }>,
+	) {
+		if (
+			typeof msg.hash !== 'string' ||
+			msg.hash.length > 128 ||
+			typeof msg.name !== 'string' ||
+			msg.name.length > 256
+		)
+			return
+		// A peer is already playing; we're a follower.
+		this.pendingPlayerFile = null
+		void this._handleNowPlaying(msg).catch((err) =>
+			console.error('now-playing handler failed', err),
+		)
+	}
+
+	private _handleFileListMessage(
+		msg: Extract<SyncMessage, { type: 'file-list' }>,
+	) {
+		if (
+			!Array.isArray(msg.files) ||
+			msg.files.length > 256 ||
+			msg.files.some(
+				(file) =>
+					!file ||
+					typeof file.hash !== 'string' ||
+					file.hash.length > 128 ||
+					typeof file.name !== 'string' ||
+					file.name.length > 256,
+			)
+		)
+			return
+		// The coordinator answered our join (file-list always follows
+		// any now-playing on the same channel). No player announced and
+		// none claimed => nobody is playing, so take the role.
+		const file = this.claimPendingPlayerFile()
+		if (file) void this.becomeActivePlayer(file)
+		void this._handleFileList(msg).catch((err) =>
+			console.error('file-list handler failed', err),
+		)
+	}
+
+	private _handleRequestFile(
+		msg: Extract<SyncMessage, { type: 'request-file' }>,
+		peerId: string,
+	) {
+		if (typeof msg.hash !== 'string' || msg.hash.length > 128) return
+		if (
+			Date.now() - (this.fileTransfer.lastFileRequestAt.get(peerId) ?? 0) <
+			2000
+		)
+			return
+		this.fileTransfer.lastFileRequestAt.set(peerId, Date.now())
+		void this.fileTransfer.sendFile(msg.hash)
+	}
+
+	private _handlePing(msg: Extract<SyncMessage, { type: 'ping' }>) {
+		this.send({ type: 'pong', sentAt: msg.sentAt })
+	}
+
+	private _handlePlayFileMessage(
+		msg: Extract<SyncMessage, { type: 'play-file' }>,
+	) {
+		if (
+			typeof msg.hash !== 'string' ||
+			msg.hash.length > 128 ||
+			typeof msg.name !== 'string' ||
+			msg.name.length > 256
+		)
+			return
+		void this._handlePlayFile(msg.hash, msg.name)
+	}
+
+	private _handleCmdPlay() {
+		if (!clock.isPlaying) {
+			toggleIsPlaying(true)
+			this.broadcastClockState()
+		}
+	}
+
+	private _handleCmdPause() {
+		if (clock.isPlaying) {
+			toggleIsPlaying(false)
+			this.broadcastClockState()
+		}
+	}
+
+	private _handleCmdSeek(msg: Extract<SyncMessage, { type: 'cmd-seek' }>) {
+		if (!Number.isFinite(msg.positionMs) || msg.positionMs < 0) return
+		setClock({
+			lastActionAt: Date.now(),
+			lastTimeElapsedMs: msg.positionMs,
+		})
+		this.broadcastClockState()
+	}
+
+	private _handleCmdSpeed(msg: Extract<SyncMessage, { type: 'cmd-speed' }>) {
+		if (!Number.isFinite(msg.speed) || msg.speed < 0.1 || msg.speed > 5) return
+		setClock({
+			playSpeed: msg.speed,
+			lastActionAt: Date.now(),
+			lastTimeElapsedMs: getTimeElapsed(),
+		})
+		this.broadcastClockState()
 	}
 
 	private _applyClockState(msg: Extract<SyncMessage, { type: 'state-clock' }>) {
@@ -809,11 +900,8 @@ class SyncEngine {
 	async handlePeerJoin() {
 		// A peer joined while we're the idle coordinator with a file open and
 		// nobody playing: take the stage so the newcomer has something to see.
-		if (this.pendingPlayerFile && !syncState.coordinationClaim) {
-			const file = this.pendingPlayerFile
-			this.pendingPlayerFile = null
-			await this.becomeActivePlayer(file)
-		}
+		const file = this.claimPendingPlayerFile()
+		if (file) await this.becomeActivePlayer(file)
 		// Push current state so a newly joined device catches up.
 		await this.announceFile()
 		this.broadcastClockState()
@@ -828,18 +916,7 @@ class SyncEngine {
 	private async _handleNowPlaying(
 		msg: Extract<SyncMessage, { type: 'now-playing' }>,
 	) {
-		const db = await initAndGetDb()
-		const existing = (await db.getAll('files')).find((f) => f.hash === msg.hash)
-		if (existing) {
-			syncState.nowPlayingFile = {
-				fileId: existing.id,
-				hash: msg.hash,
-				name: msg.name,
-			}
-			return
-		}
-		syncState.nowPlayingFile = { fileId: null, hash: msg.hash, name: msg.name }
-		this.send({ type: 'request-file', hash: msg.hash })
+		await this.resolveNowPlayingFile(msg.hash, msg.name)
 	}
 
 	private _handleFileList(msg: Extract<SyncMessage, { type: 'file-list' }>) {
@@ -943,15 +1020,6 @@ class SyncEngine {
 }
 
 export const syncStore = new SyncEngine()
-
-// ----------------------------------------------------------------------
-// Direct WebRTC helpers
-// ----------------------------------------------------------------------
-
-const makeConnectionId = () =>
-	[...crypto.getRandomValues(new Uint8Array(16))]
-		.map((byte) => byte.toString(16).padStart(2, '0'))
-		.join('')
 
 // ----------------------------------------------------------------------
 // Playback helpers (exported for the controls UI)

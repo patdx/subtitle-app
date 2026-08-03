@@ -50,6 +50,7 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - Quick UI iteration (no sync): `pnpm dev`
 - Test device sync locally: `pnpm build && npx wrangler dev`, open http://localhost:8787 in two tabs (use `localhost` and `127.0.0.1` for separate IndexedDB)
 - Verify changes: `pnpm typecheck` (includes route typegen — run it after adding/renaming routes)
+- **Formatting:** always run `prettier --write` (`npx prettier --write <files>`, or `pnpm format` for everything), never `prettier --check`. Checking first just adds an extra pass — if you'd reach for `--check`, `--write` is the efficient move.
 - **Player UI testing:** append `?keep-ui-open=1` to the player URL (e.g. `http://localhost:5173/play?id=<id>&keep-ui-open=1`) to disable the 5s controls auto-fade while iterating on the layout
 - **Sync debug hooks:** `app/shared/sync.ts` exposes `window.__syncState` (the live Valtio sync store), `window.__seek(ms)`, and `window.__togglePlayback()` for manual inspection from the browser console. Read a tab's role/claim/peers via `window.__syncState` when debugging the sync flows. These are intentional, kept in the codebase.
 - Node 24 (`.node-version`), pnpm 11 (`packageManager`); `pnpm-workspace.yaml` sets `savePrefix: ""` (exact versions, no `^`)

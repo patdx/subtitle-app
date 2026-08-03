@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useSnapshot } from 'valtio'
 import {
 	Sheet,
@@ -7,39 +7,32 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from '~/components/ui/sheet'
-import {
-	MenuItem,
-	MenuPopup,
-	MenuPortal,
-	MenuPositioner,
-	MenuRoot,
-	MenuTrigger,
-} from '~/components/ui/menu'
+import { MenuTrigger } from '~/components/ui/menu'
 import {
 	activePlayerName,
 	activePlayerOnline,
 	setPlaySpeed,
 	syncState,
 } from './sync'
-import { DevicesMenu } from './device-picker'
+import { BackToLibraryLink } from '~/components'
+import { PlayOnDeviceButton } from './device-picker'
+import { SpeedMenu } from './controls'
 import { filesQueryOptions } from './file-queries'
 import { TransportCluster } from './transport'
 import { Timeline } from './timeline'
 import { Subtitle } from './subtitle'
-import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
 import PhCheck from '~icons/ph/check'
 import PhFileText from '~icons/ph/file-text'
 import PhGearSix from '~icons/ph/gear-six'
-import PhWaveform from '~icons/ph/waveform'
 import {
 	clock,
+	cn,
 	controlState,
 	getActiveNodes,
+	iconButtonClass,
 	toggleTranscript,
 	uiState,
 } from './utils'
-
-const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 
 /**
  * Full-screen controller UI for every non-active device in a group:
@@ -74,13 +67,7 @@ export const RemotePanel = () => {
 			{/* header (below the persistent sync pill) */}
 			<div className="flex items-start justify-between gap-3 pt-safe-or-12">
 				<div className="flex min-w-0 items-start gap-3">
-					<Link
-						to="/"
-						aria-label="Back to file list"
-						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
-					>
-						<PhArrowUUpLeft />
-					</Link>
+					<BackToLibraryLink />
 					<div className="min-w-0">
 						<p className="text-xs uppercase tracking-widest text-ink-400">
 							Now playing
@@ -103,19 +90,11 @@ export const RemotePanel = () => {
 						onClick={toggleTranscript}
 						aria-label="Toggle transcript"
 						disabled={!loadedMatchesNowPlaying}
-						className="flex h-11 w-11 items-center justify-center rounded-control text-ink-300 transition-colors hover:text-white active:text-white disabled:opacity-40"
+						className={cn(iconButtonClass, 'disabled:opacity-40')}
 					>
 						<PhFileText />
 					</button>
-					<DevicesMenu>
-						<button
-							type="button"
-							aria-label="Play on this device"
-							className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors hover:text-white active:text-white"
-						>
-							<PhWaveform />
-						</button>
-					</DevicesMenu>
+					<PlayOnDeviceButton />
 				</div>
 			</div>
 
@@ -148,37 +127,24 @@ export const RemotePanel = () => {
 						Play another file
 					</button>
 
-					<MenuRoot>
-						<MenuTrigger
-							render={
-								<button
-									type="button"
-									aria-label="Playback speed"
-									className="flex h-11 w-11 items-center justify-center rounded-control text-ink-300 transition-colors hover:text-white active:text-white"
-								>
-									<PhGearSix />
-								</button>
-							}
-						/>
-						<MenuPortal>
-							<MenuPositioner side="top" align="center">
-								<MenuPopup>
-									{SPEEDS.map((speed) => (
-										<MenuItem
-											key={speed}
-											onClick={() => setPlaySpeed(speed)}
-											className="justify-between"
-										>
-											<span>{speed}x</span>
-											{clockSnap.playSpeed === speed && (
-												<PhCheck className="!size-4 text-ink-200" />
-											)}
-										</MenuItem>
-									))}
-								</MenuPopup>
-							</MenuPositioner>
-						</MenuPortal>
-					</MenuRoot>
+					<SpeedMenu
+						variant="menu"
+						playSpeed={clockSnap.playSpeed}
+						onSpeedChange={setPlaySpeed}
+						trigger={
+							<MenuTrigger
+								render={
+									<button
+										type="button"
+										aria-label="Playback speed"
+										className={iconButtonClass}
+									>
+										<PhGearSix />
+									</button>
+								}
+							/>
+						}
+					/>
 				</div>
 			</div>
 

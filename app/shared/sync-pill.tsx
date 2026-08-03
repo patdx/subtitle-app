@@ -5,6 +5,7 @@ import {
 	syncState,
 	activePlayerName,
 	activePlayerOnline,
+	activePlayerLabel,
 	isRenderer,
 	isRemote,
 } from './sync'
@@ -27,14 +28,10 @@ export const SyncPill = () => {
 				: 'Ready to play'
 			dot = 'bg-ok'
 		} else if (isRemote(syncSnap)) {
-			const playerName = activePlayerName(syncSnap)
-			if (playerName && activePlayerOnline(syncSnap)) {
-				label = `Playing on ${playerName}`
-				dot = 'bg-ok'
-			} else {
-				label = 'Player offline'
-				dot = 'bg-warn'
-			}
+			const playerOnline =
+				!!activePlayerName(syncSnap) && activePlayerOnline(syncSnap)
+			label = activePlayerLabel(syncSnap)
+			dot = playerOnline ? 'bg-ok' : 'bg-warn'
 		} else {
 			const count =
 				syncSnap.roomPeers.filter((peer) => peer.connected).length + 1

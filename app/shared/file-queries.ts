@@ -7,7 +7,6 @@ export type FileRecord = {
 	name: string
 	hash?: string
 	length?: number
-	watched?: boolean
 	progress?: number
 	lastPlayed?: number
 }

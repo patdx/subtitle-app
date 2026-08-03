@@ -31,10 +31,10 @@ import {
 import {
 	syncState,
 	syncStore,
-	activePlayerName,
-	activePlayerOnline,
+	activePlayerLabel,
 	type SyncSnapshot,
 } from '~/shared/sync'
+import { cn } from '~/shared/utils'
 import type { Route } from './+types/_index'
 
 const parseVideoPromise = once(() =>
@@ -94,16 +94,6 @@ const matchesNowPlayingHash = (
 	nowPlayingHash: string | null | undefined,
 ): boolean => !!nowPlayingHash && file.hash === nowPlayingHash
 
-/** Thin strip copy for the Spotify-style now-playing chrome. */
-const playingOnLabel = (snap: SyncSnapshot): string => {
-	if (snap.nowPlayingFile) {
-		const name = activePlayerName(snap)
-		if (name && activePlayerOnline(snap)) return `Playing on ${name}`
-		return 'Player offline'
-	}
-	return 'Not playing'
-}
-
 /** Deterministic warm cover art from a title/hash seed (no purple drift). */
 const posterCoverStyle = (seed: string): React.CSSProperties => {
 	let hash = 2166136261
@@ -133,10 +123,27 @@ const posterInitials = (name: string): string => {
 	return base.slice(0, 2).toUpperCase() || 'SR'
 }
 
+const hasHistory = (file: FileRecord) =>
+	typeof file.progress === 'number' && file.progress > 0
+
+const progressPercent = (file: FileRecord) => {
+	const duration = file.length ?? 0
+	const progress = file.progress ?? 0
+	if (!duration || duration <= 0) return 0
+	return Math.min(100, Math.round((progress / duration) * 100))
+}
+
+const formatTime = (ms: number) => {
+	const totalSeconds = Math.floor(ms / 1000)
+	const minutes = Math.floor(totalSeconds / 60)
+	const seconds = totalSeconds % 60
+	return `${minutes}m ${seconds.toString().padStart(2, '0')}s`
+}
+
 const NowPlayingBar = ({ snap }: { snap: SyncSnapshot }) => {
 	const navigate = useNavigate()
 	const title = snap.nowPlayingFile?.name ?? 'Nothing playing'
-	const strip = playingOnLabel(snap)
+	const strip = snap.nowPlayingFile ? activePlayerLabel(snap) : 'Not playing'
 	const hasTitle = !!snap.nowPlayingFile
 
 	const openPlayer = () => {
@@ -159,9 +166,7 @@ const NowPlayingBar = ({ snap }: { snap: SyncSnapshot }) => {
 				aria-label={hasTitle ? `Open player: ${title}` : undefined}
 				className={cn(
 					'block w-full bg-ember-600 px-3 py-1 text-center text-[11px] font-medium tracking-wide text-white',
-					hasTitle
-						? 'cursor-pointer hover:bg-ember-500'
-						: 'cursor-default',
+					hasTitle ? 'cursor-pointer hover:bg-ember-500' : 'cursor-default',
 				)}
 			>
 				{strip}
@@ -212,6 +217,274 @@ const NowPlayingBar = ({ snap }: { snap: SyncSnapshot }) => {
 				</DevicesMenu>
 			</div>
 		</div>
+	)
+}
+
+const FilePosterCard = ({
+	file,
+	isNowPlaying,
+	parseVideo,
+	isRenaming,
+	renameValue,
+	onRenameValueChange,
+	onRenameCancel,
+	onRenameSave,
+	onRenameStart,
+	onClearProgress,
+	onDelete,
+}: {
+	file: FileRecord
+	isNowPlaying: boolean
+	parseVideo: (name: string) => VideoMetadata | undefined
+	isRenaming: boolean
+	renameValue: string
+	onRenameValueChange: (value: string) => void
+	onRenameCancel: () => void
+	onRenameSave: (file: FileRecord, value: string) => void
+	onRenameStart: (file: FileRecord) => void
+	onClearProgress: (file: FileRecord) => void
+	onDelete: (file: FileRecord) => void
+}) => {
+	const percent = progressPercent(file)
+	const showHistory = hasHistory(file)
+	const seed = file.hash ?? file.name
+
+	return (
+		<div
+			className={cn(
+				'relative flex aspect-2/3 flex-col overflow-hidden rounded-panel transition-[filter] duration-200',
+				'hover:brightness-110',
+				isNowPlaying && 'stage-poster-now-playing ring-2 ring-ember-500',
+			)}
+		>
+			{isRenaming ? (
+				<div className="flex h-full flex-col gap-2 bg-stage-raised p-3">
+					<Input
+						autoFocus
+						value={renameValue}
+						onChange={(e) => onRenameValueChange(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								void onRenameSave(file, renameValue)
+							} else if (e.key === 'Escape') {
+								onRenameCancel()
+							}
+						}}
+						className="rounded-field border-stage-edge bg-stage px-3 py-1.5 text-sm text-stage-fg"
+					/>
+					<div className="flex gap-2">
+						<button
+							type="button"
+							aria-label="Save rename"
+							className="flex h-9 w-9 items-center justify-center rounded-control text-ok hover:bg-ok/15"
+							onClick={() => {
+								void onRenameSave(file, renameValue)
+							}}
+						>
+							<PhCheck />
+						</button>
+						<button
+							type="button"
+							aria-label="Cancel rename"
+							className="flex h-9 w-9 items-center justify-center rounded-control text-stage-muted hover:bg-stage-elevated hover:text-stage-fg"
+							onClick={onRenameCancel}
+						>
+							<PhDotsThree className="rotate-90" />
+						</button>
+					</div>
+				</div>
+			) : (
+				<>
+					<RouterLink
+						to={`/play?id=${file.id}`}
+						className="relative min-h-0 flex-1 outline-offset-[-2px]"
+						style={posterCoverStyle(seed)}
+					>
+						<div className="absolute inset-0 flex items-center justify-center">
+							<span className="font-display text-3xl font-bold text-white/85 drop-shadow-md sm:text-4xl">
+								{posterInitials(file.name)}
+							</span>
+						</div>
+
+						{showHistory && (
+							<div className="absolute inset-x-0 bottom-0 h-1 bg-black/45">
+								<div
+									className="stage-progress-fill h-full bg-ember-500"
+									style={{ width: `${percent}%` }}
+								/>
+							</div>
+						)}
+
+						<div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 via-black/40 to-transparent px-2.5 pb-2.5 pt-10">
+							{isNowPlaying && (
+								<p className="text-[10px] font-medium tracking-wide text-ember-500 uppercase">
+									Now playing
+								</p>
+							)}
+							<p className="line-clamp-2 text-sm font-medium text-white">
+								{file.name}
+							</p>
+							{showHistory ? (
+								<p className="mt-0.5 text-[11px] text-white/65">
+									{percent}% · {formatTime(file.progress ?? 0)}
+								</p>
+							) : (
+								<div className="mt-0.5 [&_span]:text-white/55">
+									{metadataChips(file, parseVideo)}
+								</div>
+							)}
+						</div>
+					</RouterLink>
+
+					<div className="absolute top-1.5 right-1.5 z-10">
+						<MenuRoot>
+							<MenuTrigger
+								render={
+									<button
+										type="button"
+										aria-label="File actions"
+										className="flex h-9 w-9 items-center justify-center rounded-control bg-black/45 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/65"
+										onClick={(e) => {
+											e.preventDefault()
+											e.stopPropagation()
+										}}
+									/>
+								}
+							>
+								<PhDotsThree />
+							</MenuTrigger>
+							<MenuPortal>
+								<MenuPositioner>
+									<MenuPopup>
+										<MenuItem
+											onClick={() => {
+												void onClearProgress(file)
+											}}
+										>
+											Clear watch progress
+										</MenuItem>
+										<MenuItem onClick={() => onRenameStart(file)}>
+											Rename
+										</MenuItem>
+										<MenuItem
+											className="text-destructive focus:text-destructive"
+											onClick={() => {
+												void onDelete(file)
+											}}
+										>
+											Delete
+										</MenuItem>
+									</MenuPopup>
+								</MenuPositioner>
+							</MenuPortal>
+						</MenuRoot>
+					</div>
+				</>
+			)}
+		</div>
+	)
+}
+
+const toolbarActionClass = cn(
+	'inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors',
+	'hover:border-ember-500/70 hover:text-ember-500',
+)
+
+const ToolbarActions = ({
+	isProcessing,
+	canSync,
+	onImport,
+	onLoadSample,
+}: {
+	isProcessing: boolean
+	canSync: boolean
+	onImport: () => void
+	onLoadSample: () => void
+}) => (
+	<div className="mb-4 flex flex-wrap items-center gap-2">
+		<button
+			type="button"
+			onClick={onImport}
+			disabled={isProcessing}
+			className={cn(toolbarActionClass, isProcessing && 'opacity-70')}
+		>
+			{isProcessing ? (
+				<PhCircleNotch className="!size-4 animate-spin" />
+			) : (
+				<PhPlus className="!size-4" />
+			)}
+			Import
+		</button>
+		<button
+			type="button"
+			onClick={onLoadSample}
+			disabled={isProcessing}
+			className={cn(toolbarActionClass, isProcessing && 'opacity-70')}
+		>
+			<PhFileAudio className="!size-4" />
+			Sample
+		</button>
+		{canSync && (
+			<RouterLink to="/sync" className={toolbarActionClass}>
+				<PhBroadcast className="!size-4" />
+				Sync
+			</RouterLink>
+		)}
+	</div>
+)
+
+const actionTileClass = cn(
+	'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
+	'hover:border-ember-500/70 hover:bg-stage-elevated/80',
+)
+
+const ActionTile = ({
+	icon,
+	label,
+	description,
+	disabled,
+	dashed,
+	onClick,
+	to,
+}: {
+	icon: React.ReactNode
+	label: string
+	description: string
+	disabled?: boolean
+	dashed?: boolean
+	onClick?: () => void
+	to?: string
+}) => {
+	const className = cn(
+		actionTileClass,
+		dashed && 'border-dashed',
+		disabled && 'opacity-70',
+	)
+	const content = (
+		<>
+			<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
+				{icon}
+			</span>
+			<span className="text-sm font-medium text-stage-fg">{label}</span>
+			<span className="text-xs text-stage-muted">{description}</span>
+		</>
+	)
+	if (to) {
+		return (
+			<RouterLink to={to} className={className}>
+				{content}
+			</RouterLink>
+		)
+	}
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			disabled={disabled}
+			className={className}
+		>
+			{content}
+		</button>
 	)
 }
 
@@ -269,9 +542,6 @@ const EditFilesPage = () => {
 
 	const isEmpty = () => !data() || data()!.length === 0
 
-	const hasHistory = (file: FileRecord) =>
-		typeof file.progress === 'number' && file.progress > 0
-
 	const nowPlayingHash = syncSnap.nowPlayingFile?.hash
 
 	/** Now-playing (by hash) pinned first, then most recently played, then alpha. */
@@ -298,20 +568,6 @@ const EditFilesPage = () => {
 	const hasShelfContent = !isEmpty() || showSyntheticNowPlaying
 	const showEmptyActionPosters = !hasShelfContent
 
-	const progressPercent = (file: FileRecord) => {
-		const duration = file.length ?? 0
-		const progress = file.progress ?? 0
-		if (!duration || duration <= 0) return 0
-		return Math.min(100, Math.round((progress / duration) * 100))
-	}
-
-	const formatTime = (ms: number) => {
-		const totalSeconds = Math.floor(ms / 1000)
-		const minutes = Math.floor(totalSeconds / 60)
-		const seconds = totalSeconds % 60
-		return `${minutes}m ${seconds.toString().padStart(2, '0')}s`
-	}
-
 	const deleteFile = async (file: FileRecord) => {
 		const db = await initAndGetDb()
 		const tx = db.transaction(['files', 'lines'], 'readwrite')
@@ -325,7 +581,6 @@ const EditFilesPage = () => {
 		}
 		await tx.done
 		void invalidateFiles()
-		syncStore.sendFileDeleted(file.id, file.name)
 	}
 
 	const clearProgress = async (file: FileRecord) => {
@@ -409,49 +664,12 @@ const EditFilesPage = () => {
 				</header>
 
 				{hasShelfContent && (
-					<div className="mb-4 flex flex-wrap items-center gap-2">
-						<button
-							type="button"
-							onClick={() => inputRef.current?.click()}
-							disabled={isProcessing}
-							className={cn(
-								'inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors',
-								'hover:border-ember-500/70 hover:text-ember-500',
-								isProcessing && 'opacity-70',
-							)}
-						>
-							{isProcessing ? (
-								<PhCircleNotch className="!size-4 animate-spin" />
-							) : (
-								<PhPlus className="!size-4" />
-							)}
-							Import
-						</button>
-						<button
-							type="button"
-							onClick={() => {
-								void loadSample()
-							}}
-							disabled={isProcessing}
-							className={cn(
-								'inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors',
-								'hover:border-ember-500/70 hover:text-ember-500',
-								isProcessing && 'opacity-70',
-							)}
-						>
-							<PhFileAudio className="!size-4" />
-							Sample
-						</button>
-						{syncSnap.role !== 'peer' && (
-							<RouterLink
-								to="/sync"
-								className="inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors hover:border-ember-500/70 hover:text-ember-500"
-							>
-								<PhBroadcast className="!size-4" />
-								Sync
-							</RouterLink>
-						)}
-					</div>
+					<ToolbarActions
+						isProcessing={isProcessing}
+						canSync={syncSnap.role !== 'peer'}
+						onImport={() => inputRef.current?.click()}
+						onLoadSample={() => void loadSample()}
+					/>
 				)}
 
 				{showEmptyActionPosters && (
@@ -463,75 +681,34 @@ const EditFilesPage = () => {
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 					{showEmptyActionPosters && (
 						<>
-							{/* Action: Import */}
-							<button
-								type="button"
-								onClick={() => inputRef.current?.click()}
-								disabled={isProcessing}
-								className={cn(
-									'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-dashed border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-									'hover:border-ember-500/70 hover:bg-stage-elevated/80',
-									isProcessing && 'opacity-70',
-								)}
-							>
-								<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-									{isProcessing ? (
+							<ActionTile
+								icon={
+									isProcessing ? (
 										<PhCircleNotch className="!size-6 animate-spin" />
 									) : (
 										<PhPlus className="!size-6" />
-									)}
-								</span>
-								<span className="text-sm font-medium text-stage-fg">
-									Import SRT or ZIP
-								</span>
-								<span className="text-xs text-stage-muted">
-									Add to your shelf
-								</span>
-							</button>
-
-							{/* Action: Sample */}
-							<button
-								type="button"
-								onClick={() => {
-									void loadSample()
-								}}
+									)
+								}
+								label="Import SRT or ZIP"
+								description="Add to your shelf"
+								dashed
 								disabled={isProcessing}
-								className={cn(
-									'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-									'hover:border-ember-500/70 hover:bg-stage-elevated/80',
-									isProcessing && 'opacity-70',
-								)}
-							>
-								<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-									<PhFileAudio className="!size-6" />
-								</span>
-								<span className="text-sm font-medium text-stage-fg">
-									Try sample file
-								</span>
-								<span className="text-xs text-stage-muted">
-									See the player
-								</span>
-							</button>
-
-							{/* Action: Sync (solo only) */}
+								onClick={() => inputRef.current?.click()}
+							/>
+							<ActionTile
+								icon={<PhFileAudio className="!size-6" />}
+								label="Try sample file"
+								description="See the player"
+								disabled={isProcessing}
+								onClick={() => void loadSample()}
+							/>
 							{syncSnap.role !== 'peer' && (
-								<RouterLink
+								<ActionTile
+									icon={<PhBroadcast className="!size-6" />}
+									label="Sync devices"
+									description="Play together nearby"
 									to="/sync"
-									className={cn(
-										'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-										'hover:border-ember-500/70 hover:bg-stage-elevated/80',
-									)}
-								>
-									<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-										<PhBroadcast className="!size-6" />
-									</span>
-									<span className="text-sm font-medium text-stage-fg">
-										Sync devices
-									</span>
-									<span className="text-xs text-stage-muted">
-										Play together nearby
-									</span>
-								</RouterLink>
+								/>
 							)}
 						</>
 					)}
@@ -565,156 +742,25 @@ const EditFilesPage = () => {
 					)}
 
 					{/* File posters */}
-					{files().map((file) => {
-						const percent = progressPercent(file)
-						const showHistory = hasHistory(file)
-						const isNowPlaying = matchesNowPlayingHash(file, nowPlayingHash)
-						const seed = file.hash ?? file.name
-
-						return (
-							<div
-								key={file.id}
-								className={cn(
-									'relative flex aspect-2/3 flex-col overflow-hidden rounded-panel transition-[filter] duration-200',
-									'hover:brightness-110',
-									isNowPlaying &&
-										'stage-poster-now-playing ring-2 ring-ember-500',
-								)}
-							>
-								{renamingId === file.id ? (
-									<div className="flex h-full flex-col gap-2 bg-stage-raised p-3">
-										<Input
-											autoFocus
-											value={renameValue}
-											onChange={(e) => setRenameValue(e.target.value)}
-											onKeyDown={(e) => {
-												if (e.key === 'Enter') {
-													void renameFile(file, renameValue)
-												} else if (e.key === 'Escape') {
-													setRenamingId(null)
-												}
-											}}
-											className="rounded-field border-stage-edge bg-stage px-3 py-1.5 text-sm text-stage-fg"
-										/>
-										<div className="flex gap-2">
-											<button
-												type="button"
-												aria-label="Save rename"
-												className="flex h-9 w-9 items-center justify-center rounded-control text-ok hover:bg-ok/15"
-												onClick={() => {
-													void renameFile(file, renameValue)
-												}}
-											>
-												<PhCheck />
-											</button>
-											<button
-												type="button"
-												aria-label="Cancel rename"
-												className="flex h-9 w-9 items-center justify-center rounded-control text-stage-muted hover:bg-stage-elevated hover:text-stage-fg"
-												onClick={() => {
-													setRenamingId(null)
-												}}
-											>
-												<PhDotsThree className="rotate-90" />
-											</button>
-										</div>
-									</div>
-								) : (
-									<>
-										<RouterLink
-											to={`/play?id=${file.id}`}
-											className="relative min-h-0 flex-1 outline-offset-[-2px]"
-											style={posterCoverStyle(seed)}
-										>
-											<div className="absolute inset-0 flex items-center justify-center">
-												<span className="font-display text-3xl font-bold text-white/85 drop-shadow-md sm:text-4xl">
-													{posterInitials(file.name)}
-												</span>
-											</div>
-
-											{showHistory && (
-												<div className="absolute inset-x-0 bottom-0 h-1 bg-black/45">
-													<div
-														className="stage-progress-fill h-full bg-ember-500"
-														style={{ width: `${percent}%` }}
-													/>
-												</div>
-											)}
-
-											<div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 via-black/40 to-transparent px-2.5 pb-2.5 pt-10">
-												{isNowPlaying && (
-													<p className="text-[10px] font-medium tracking-wide text-ember-500 uppercase">
-														Now playing
-													</p>
-												)}
-												<p className="line-clamp-2 text-sm font-medium text-white">
-													{file.name}
-												</p>
-												{showHistory ? (
-													<p className="mt-0.5 text-[11px] text-white/65">
-														{percent}% · {formatTime(file.progress ?? 0)}
-													</p>
-												) : (
-													<div className="mt-0.5 [&_span]:text-white/55">
-														{metadataChips(file, parseVideo)}
-													</div>
-												)}
-											</div>
-										</RouterLink>
-
-										<div className="absolute top-1.5 right-1.5 z-10">
-											<MenuRoot>
-												<MenuTrigger
-													render={
-														<button
-															type="button"
-															aria-label="File actions"
-															className="flex h-9 w-9 items-center justify-center rounded-control bg-black/45 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/65"
-															onClick={(e) => {
-																e.preventDefault()
-																e.stopPropagation()
-															}}
-														/>
-													}
-												>
-													<PhDotsThree />
-												</MenuTrigger>
-												<MenuPortal>
-													<MenuPositioner>
-														<MenuPopup>
-															<MenuItem
-																onClick={() => {
-																	void clearProgress(file)
-																}}
-															>
-																Clear watch progress
-															</MenuItem>
-															<MenuItem
-																onClick={() => {
-																	setRenameValue(file.name)
-																	setRenamingId(file.id)
-																}}
-															>
-																Rename
-															</MenuItem>
-															<MenuItem
-																className="text-destructive focus:text-destructive"
-																onClick={() => {
-																	void deleteFile(file)
-																}}
-															>
-																Delete
-															</MenuItem>
-														</MenuPopup>
-													</MenuPositioner>
-												</MenuPortal>
-											</MenuRoot>
-										</div>
-									</>
-								)}
-							</div>
-						)
-					})}
+					{files().map((file) => (
+						<FilePosterCard
+							key={file.id}
+							file={file}
+							isNowPlaying={matchesNowPlayingHash(file, nowPlayingHash)}
+							parseVideo={parseVideo}
+							isRenaming={renamingId === file.id}
+							renameValue={renameValue}
+							onRenameValueChange={setRenameValue}
+							onRenameCancel={() => setRenamingId(null)}
+							onRenameSave={renameFile}
+							onRenameStart={(f) => {
+								setRenameValue(f.name)
+								setRenamingId(f.id)
+							}}
+							onClearProgress={clearProgress}
+							onDelete={deleteFile}
+						/>
+					))}
 				</div>
 			</div>
 
