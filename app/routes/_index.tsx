@@ -392,12 +392,10 @@ const toolbarActionClass = cn(
 
 const ToolbarActions = ({
 	isProcessing,
-	canSync,
 	onImport,
 	onLoadSample,
 }: {
 	isProcessing: boolean
-	canSync: boolean
 	onImport: () => void
 	onLoadSample: () => void
 }) => (
@@ -424,12 +422,10 @@ const ToolbarActions = ({
 			<PhFileAudio className="!size-4" />
 			Sample
 		</button>
-		{canSync && (
-			<RouterLink to="/sync" className={toolbarActionClass}>
-				<PhBroadcast className="!size-4" />
-				Sync
-			</RouterLink>
-		)}
+		<RouterLink to="/sync" className={toolbarActionClass}>
+			<PhBroadcast className="!size-4" />
+			Sync
+		</RouterLink>
 	</div>
 )
 
@@ -666,7 +662,6 @@ const EditFilesPage = () => {
 				{hasShelfContent && (
 					<ToolbarActions
 						isProcessing={isProcessing}
-						canSync={syncSnap.role !== 'peer'}
 						onImport={() => inputRef.current?.click()}
 						onLoadSample={() => void loadSample()}
 					/>
@@ -702,14 +697,12 @@ const EditFilesPage = () => {
 								disabled={isProcessing}
 								onClick={() => void loadSample()}
 							/>
-							{syncSnap.role !== 'peer' && (
-								<ActionTile
-									icon={<PhBroadcast className="!size-6" />}
-									label="Sync devices"
-									description="Play together nearby"
-									to="/sync"
-								/>
-							)}
+							<ActionTile
+								icon={<PhBroadcast className="!size-6" />}
+								label="Sync devices"
+								description="Play together nearby"
+								to="/sync"
+							/>
 						</>
 					)}
 
