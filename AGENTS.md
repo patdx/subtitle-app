@@ -36,6 +36,7 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - `worker/room-coordinator.ts` — hibernatable Durable Object (`ROOMS` binding, sqlite migration v1), max 5 connections, strict message validation
 - Privacy invariant: subtitle content and playback data only travel over direct WebRTC data channels; the server relays only bounded SDP/ICE signaling — do not break this
 - `wrangler.json` serves assets from `./build/client` — build before `wrangler dev`/`deploy` or you serve stale/absent assets
+- **No backwards compat for local state:** prefer breaking cleanly and resetting over migrations, fallbacks, or shims for old IndexedDB records / data shapes (e.g. missing content hashes). Do not add `fileId` fallbacks when hash is the identity. Ship or use **Reset all local data** (About page) — or instruct a force-clear — instead of compatibility branches.
 
 ## Code Style Guidelines
 

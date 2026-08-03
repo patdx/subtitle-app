@@ -12,6 +12,7 @@ declare global {
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
   const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
+  const LOCAL_DB_NAME: typeof import('./app/shared/utils').LOCAL_DB_NAME
   const NumberInput: typeof import('./app/shared/text-input').NumberInput
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
@@ -41,6 +42,7 @@ declare global {
   const controlState: typeof import('./app/shared/utils').controlState
   const createContext: typeof import('react').createContext
   const createRef: typeof import('react').createRef
+  const deleteLocalDatabase: typeof import('./app/shared/utils').deleteLocalDatabase
   const ensureProgressPagehide: typeof import('./app/shared/sync').ensureProgressPagehide
   const fileQueryOptions: typeof import('./app/shared/file-queries').fileQueryOptions
   const filesQueryKey: typeof import('./app/shared/file-queries').filesQueryKey

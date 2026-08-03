@@ -349,8 +349,10 @@ interface MyDB extends DBSchema {
 	}
 }
 
+export const LOCAL_DB_NAME = 'subtitle-app'
+
 export const initAndGetDb = once(async () => {
-	const db = await openDB<MyDB>('subtitle-app', 2, {
+	const db = await openDB<MyDB>(LOCAL_DB_NAME, 2, {
 		async upgrade(db, oldVersion, newVersion, transaction) {
 			let currentVersion = oldVersion
 
@@ -374,6 +376,20 @@ export const initAndGetDb = once(async () => {
 
 	return db
 })
+
+/** Close and wipe IndexedDB. Caller must reload — initAndGetDb is once()-wrapped. */
+export async function deleteLocalDatabase(): Promise<void> {
+	const db = await initAndGetDb()
+	db.close()
+	await new Promise<void>((resolve, reject) => {
+		const request = indexedDB.deleteDatabase(LOCAL_DB_NAME)
+		request.onsuccess = () => resolve()
+		request.onerror = () =>
+			reject(request.error ?? new Error('Failed to delete local database'))
+		// Other tabs may hold the DB open; reload still recovers a clean slate.
+		request.onblocked = () => resolve()
+	})
+}
 
 export const getSetting = async <T>(key: string): Promise<T | undefined> => {
 	const db = await initAndGetDb()

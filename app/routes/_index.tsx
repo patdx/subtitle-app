@@ -89,6 +89,12 @@ const compareByLastPlayed = (a: FileRecord, b: FileRecord): number => {
 	return byTime || a.name.localeCompare(b.name)
 }
 
+/** Hash is the only cross-device file identity — no fileId fallback. */
+const matchesNowPlayingHash = (
+	file: FileRecord,
+	nowPlayingHash: string | null | undefined,
+): boolean => !!nowPlayingHash && file.hash === nowPlayingHash
+
 /** One-line status for the group card on the home page. */
 const playerStatus = (snap: SyncSnapshot): string => {
 	if (snap.nowPlayingFile) {
@@ -98,6 +104,22 @@ const playerStatus = (snap: SyncSnapshot): string => {
 	}
 	return 'Group ready'
 }
+
+const PlayOnThisDeviceButton = () => (
+	<DevicesMenu>
+		<button
+			type="button"
+			className="flex flex-none items-center gap-1.5 rounded-control bg-ember-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ember-700 active:bg-ember-700"
+			onClick={(e) => {
+				e.preventDefault()
+				e.stopPropagation()
+			}}
+		>
+			<PhWaveform className="!size-4" />
+			Play on this device
+		</button>
+	</DevicesMenu>
+)
 
 const EditFilesPage = () => {
 	const id = useId()
@@ -157,8 +179,27 @@ const EditFilesPage = () => {
 	const hasHistory = (file: FileRecord) =>
 		typeof file.progress === 'number' && file.progress > 0
 
-	/** One unified list: most recently played first, then alphabetically. */
-	const files = () => (data() ?? []).slice().sort(compareByLastPlayed)
+	const nowPlayingHash = syncSnap.nowPlayingFile?.hash
+
+	/** Now-playing (by hash) pinned first, then most recently played, then alpha. */
+	const files = () =>
+		(data() ?? []).slice().sort((a, b) => {
+			const aPlaying = matchesNowPlayingHash(a, nowPlayingHash)
+			const bPlaying = matchesNowPlayingHash(b, nowPlayingHash)
+			if (aPlaying !== bPlaying) return aPlaying ? -1 : 1
+			return compareByLastPlayed(a, b)
+		})
+
+	const hasLocalNowPlaying = () =>
+		!!nowPlayingHash &&
+		(data() ?? []).some((file) => matchesNowPlayingHash(file, nowPlayingHash))
+
+	const showSyntheticNowPlaying =
+		syncSnap.role === 'peer' &&
+		!!syncSnap.nowPlayingFile &&
+		!hasLocalNowPlaying()
+
+	const showFileList = !isEmpty() || showSyntheticNowPlaying
 
 	const progressPercent = (file: FileRecord) => {
 		const duration = file.length ?? 0
@@ -277,7 +318,7 @@ const EditFilesPage = () => {
 			</Block>
 
 			{/* Empty state teaches the space. */}
-			{isEmpty() && (
+			{isEmpty() && !showSyntheticNowPlaying && (
 				<Block className="px-4 pt-8">
 					<p className="text-base font-medium text-ink-900">
 						No subtitle files yet
@@ -289,20 +330,44 @@ const EditFilesPage = () => {
 				</Block>
 			)}
 
-			{/* One unified card list — most recently watched first */}
-			{!isEmpty() && (
+			{/* Now-playing pinned first (by hash); remote-only file as synthetic card */}
+			{showFileList && (
 				<div className="flex flex-col gap-3 px-4 pt-6">
+					{showSyntheticNowPlaying && (
+						<div className="rounded-panel border border-ink-400 bg-paper-raised p-4">
+							<div className="flex items-start justify-between gap-3">
+								<div className="min-w-0 flex-1">
+									<p className="text-xs text-ink-400">
+										{playerStatus(syncSnap)}
+									</p>
+									<p className="mt-0.5 truncate font-medium text-ink-900">
+										{syncSnap.nowPlayingFile?.name}
+									</p>
+								</div>
+								<PlayOnThisDeviceButton />
+							</div>
+						</div>
+					)}
 					{files().map((file) => {
 						const percent = progressPercent(file)
 						const showHistory = hasHistory(file)
+						const isNowPlaying = matchesNowPlayingHash(file, nowPlayingHash)
 						return (
 							<RouterLink
 								key={file.id}
 								to={`/play?id=${file.id}`}
-								className="block rounded-panel border border-edge bg-paper-raised p-4 hover:border-ink-400"
+								className={cn(
+									'block rounded-panel border bg-paper-raised p-4 hover:border-ink-400',
+									isNowPlaying ? 'border-ink-400' : 'border-edge',
+								)}
 							>
 								<div className="flex items-start justify-between gap-3">
 									<div className="min-w-0 flex-1">
+										{isNowPlaying && (
+											<p className="text-xs text-ink-400">
+												{playerStatus(syncSnap)}
+											</p>
+										)}
 										{renamingId === file.id ? (
 											<div className="flex items-center gap-2">
 												<Input
@@ -342,7 +407,12 @@ const EditFilesPage = () => {
 												</button>
 											</div>
 										) : (
-											<p className="truncate font-medium text-ink-900">
+											<p
+												className={cn(
+													'truncate font-medium text-ink-900',
+													isNowPlaying && 'mt-0.5',
+												)}
+											>
 												{file.name}
 											</p>
 										)}
@@ -357,6 +427,7 @@ const EditFilesPage = () => {
 										className="flex flex-none items-center gap-1"
 										onClick={(e) => e.stopPropagation()}
 									>
+										{isNowPlaying && <PlayOnThisDeviceButton />}
 										<MenuRoot>
 											<MenuTrigger
 												render={
@@ -416,36 +487,29 @@ const EditFilesPage = () => {
 				</div>
 			)}
 
-			<Block className="px-4 pt-4">
-				{syncSnap.role === 'peer' ? (
-					<div className="flex items-center justify-between gap-3 rounded-panel border border-ink-400 bg-paper-raised px-4 py-3">
-						<div className="min-w-0">
-							<p className="text-xs text-ink-400">{playerStatus(syncSnap)}</p>
-							<p className="truncate text-sm font-medium text-ink-900">
-								{syncSnap.nowPlayingFile?.name ??
-									'Not playing — pick a device, then choose a file'}
-							</p>
+			{(syncSnap.role !== 'peer' || !syncSnap.nowPlayingFile) && (
+				<Block className="px-4 pt-4">
+					{syncSnap.role === 'peer' ? (
+						<div className="flex items-center justify-between gap-3 rounded-panel border border-ink-400 bg-paper-raised px-4 py-3">
+							<div className="min-w-0">
+								<p className="text-xs text-ink-400">{playerStatus(syncSnap)}</p>
+								<p className="truncate text-sm font-medium text-ink-900">
+									Not playing — pick a device, then choose a file
+								</p>
+							</div>
+							<PlayOnThisDeviceButton />
 						</div>
-						<DevicesMenu>
-							<button
-								type="button"
-								className="flex flex-none items-center gap-1.5 rounded-control bg-ember-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ember-700 active:bg-ember-700"
-							>
-								<PhWaveform className="!size-4" />
-								Play on this device
-							</button>
-						</DevicesMenu>
-					</div>
-				) : (
-					<RouterLink
-						to="/sync"
-						className="flex items-center justify-between rounded-panel border border-ink-400 bg-paper-raised px-4 py-3 text-sm font-medium text-ink-900 hover:border-ink-600 hover:bg-ink-50"
-					>
-						Sync with another device
-						<PhCaretRight className="text-ink-400" />
-					</RouterLink>
-				)}
-			</Block>
+					) : (
+						<RouterLink
+							to="/sync"
+							className="flex items-center justify-between rounded-panel border border-ink-400 bg-paper-raised px-4 py-3 text-sm font-medium text-ink-900 hover:border-ink-600 hover:bg-ink-50"
+						>
+							Sync with another device
+							<PhCaretRight className="text-ink-400" />
+						</RouterLink>
+					)}
+				</Block>
+			)}
 
 			<Block className="px-4 mt-4 text-center">
 				<RouterLink
