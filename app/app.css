@@ -2,17 +2,30 @@
 @import 'tailwindcss-safe-area';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import '@fontsource/syne/600.css';
+@import '@fontsource/syne/700.css';
+@import '@fontsource/syne/800.css';
 
 /* ── Design tokens ────────────────────────────────────────────
    The Subtitle App language: ink on paper. Warm near-black, paper
    whites, and one restrained ember accent. Everything the player
-   does on black and the tool does on paper shares this world. */
+   does on black and the tool does on paper shares this world.
+   Stage tokens power the dark home library (Netflix × Spotify). */
 @theme {
 	--font-family-sans:
 		system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial,
 		Noto Sans, sans-serif;
+	--font-family-display: 'Syne', var(--font-family-sans);
 	--font-family-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+	/* Stage — dark home / media shelf canvas */
+	--color-stage: oklch(0.14 0.01 35);
+	--color-stage-raised: oklch(0.19 0.012 35);
+	--color-stage-elevated: oklch(0.24 0.014 35);
+	--color-stage-fg: oklch(0.96 0.004 35);
+	--color-stage-muted: oklch(0.68 0.012 35);
+	--color-stage-edge: oklch(0.32 0.012 35);
 
 	/* Ink scale — warm near-black neutrals (canvas / surfaces / text) */
 	--color-ink-950: oklch(0.16 0.008 35);
@@ -150,6 +163,54 @@ html {
 	letter-spacing: 0.01em;
 }
 
+/* ── Home stage: library shelf + now-playing ───────────────── */
+@keyframes stage-now-playing-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-ember-500) 45%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 0 4px color-mix(in oklch, var(--color-ember-500) 28%, transparent);
+	}
+}
+
+@keyframes stage-bar-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.stage-poster {
+	transition:
+		transform var(--transition-base),
+		box-shadow var(--transition-base);
+}
+
+.stage-poster:hover {
+	transform: scale(1.03);
+}
+
+.stage-poster:active {
+	transform: scale(0.98);
+}
+
+.stage-poster-now-playing {
+	animation: stage-now-playing-pulse 2.4s var(--ease-out) infinite;
+}
+
+.stage-now-playing-bar {
+	animation: stage-bar-in var(--transition-base) both;
+}
+
+.stage-progress-fill {
+	transition: width var(--transition-base);
+}
+
 .player-overlay .subtitle-text.text-sm {
 	line-height: 1.5;
 }
@@ -225,7 +286,8 @@ body {
 }
 
 @theme inline {
-	--font-heading: var(--font-sans);
+	--font-heading: var(--font-family-display);
+	--font-display: var(--font-family-display);
 	--font-sans: var(--font-family-sans);
 	--font-mono: var(--font-family-mono);
 	--color-sidebar-ring: var(--sidebar-ring);
