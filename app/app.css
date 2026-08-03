@@ -185,17 +185,19 @@ html {
 	}
 }
 
-.stage-poster {
-	transition:
-		transform var(--transition-base),
-		box-shadow var(--transition-base);
+/* Lift only tiles that don't own a floating menu — transform on a menu
+   trigger's ancestor nudges Floating UI when hover scales/unscales. */
+.stage-poster-lift {
+	transition: transform var(--transition-base);
 }
 
-.stage-poster:hover {
-	transform: scale(1.03);
+@media (hover: hover) {
+	.stage-poster-lift:hover {
+		transform: scale(1.03);
+	}
 }
 
-.stage-poster:active {
+.stage-poster-lift:active {
 	transform: scale(0.98);
 }
 

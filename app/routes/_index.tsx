@@ -258,6 +258,9 @@ const EditFilesPage = () => {
 
 	const showPeerBar = syncSnap.role === 'peer'
 	const contentPad = showPeerBar ? 'pb-28' : 'pb-10'
+	/** When the shelf has titles, actions collapse to a toolbar so posters lead. */
+	const hasShelfContent = !isEmpty() || showSyntheticNowPlaying
+	const showEmptyActionPosters = !hasShelfContent
 
 	const progressPercent = (file: FileRecord) => {
 		const duration = file.length ?? 0
@@ -337,19 +340,28 @@ const EditFilesPage = () => {
 					'bg-[radial-gradient(ellipse_90%_55%_at_10%_-10%,oklch(0.32_0.08_35/0.55),transparent_55%),radial-gradient(ellipse_70%_45%_at_95%_5%,oklch(0.28_0.06_45/0.35),transparent_50%),var(--color-stage)]',
 				)}
 			>
-				<header className="relative mb-8">
+				<header className={cn('relative', hasShelfContent ? 'mb-4' : 'mb-8')}>
 					<div className="flex items-start justify-between gap-4">
 						<div className="min-w-0">
 							<p className="text-xs font-medium tracking-[0.18em] text-ember-500 uppercase">
 								Your library
 							</p>
-							<h1 className="font-display mt-1 text-4xl font-extrabold tracking-tight text-stage-fg sm:text-5xl">
+							<h1
+								className={cn(
+									'font-display mt-1 font-extrabold tracking-tight text-stage-fg',
+									hasShelfContent
+										? 'text-2xl sm:text-3xl'
+										: 'text-4xl sm:text-5xl',
+								)}
+							>
 								Subtitle App
 							</h1>
-							<p className="mt-2 max-w-md text-sm text-stage-muted">
-								Import subtitles, pick up where you left off, sync playback
-								across your devices.
-							</p>
+							{!hasShelfContent && (
+								<p className="mt-2 max-w-md text-sm text-stage-muted">
+									Import subtitles, pick up where you left off, sync playback
+									across your devices.
+								</p>
+							)}
 						</div>
 						<RouterLink
 							to="/about"
@@ -360,85 +372,139 @@ const EditFilesPage = () => {
 					</div>
 				</header>
 
-				{isEmpty() && !showSyntheticNowPlaying && (
+				{hasShelfContent && (
+					<div className="mb-4 flex flex-wrap items-center gap-2">
+						<button
+							type="button"
+							onClick={() => inputRef.current?.click()}
+							disabled={isProcessing}
+							className={cn(
+								'inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors',
+								'hover:border-ember-500/70 hover:text-ember-500',
+								isProcessing && 'opacity-70',
+							)}
+						>
+							{isProcessing ? (
+								<PhCircleNotch className="!size-4 animate-spin" />
+							) : (
+								<PhPlus className="!size-4" />
+							)}
+							Import
+						</button>
+						<button
+							type="button"
+							onClick={() => {
+								void loadSample()
+							}}
+							disabled={isProcessing}
+							className={cn(
+								'inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors',
+								'hover:border-ember-500/70 hover:text-ember-500',
+								isProcessing && 'opacity-70',
+							)}
+						>
+							<PhFileAudio className="!size-4" />
+							Sample
+						</button>
+						{syncSnap.role !== 'peer' && (
+							<RouterLink
+								to="/sync"
+								className="inline-flex items-center gap-1.5 rounded-control border border-stage-edge bg-stage-raised px-3 py-2 text-sm font-medium text-stage-fg transition-colors hover:border-ember-500/70 hover:text-ember-500"
+							>
+								<PhBroadcast className="!size-4" />
+								Sync
+							</RouterLink>
+						)}
+					</div>
+				)}
+
+				{showEmptyActionPosters && (
 					<p className="mb-5 text-sm text-stage-muted">
 						No files yet — use the import tile, or try the sample.
 					</p>
 				)}
 
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-					{/* Action: Import */}
-					<button
-						type="button"
-						onClick={() => inputRef.current?.click()}
-						disabled={isProcessing}
-						className={cn(
-							'stage-poster group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-dashed border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-							'hover:border-ember-500/70 hover:bg-stage-elevated/80',
-							isProcessing && 'opacity-70',
-						)}
-					>
-						<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-							{isProcessing ? (
-								<PhCircleNotch className="!size-6 animate-spin" />
-							) : (
-								<PhPlus className="!size-6" />
-							)}
-						</span>
-						<span className="text-sm font-medium text-stage-fg">
-							Import SRT or ZIP
-						</span>
-						<span className="text-xs text-stage-muted">Add to your shelf</span>
-					</button>
+					{showEmptyActionPosters && (
+						<>
+							{/* Action: Import */}
+							<button
+								type="button"
+								onClick={() => inputRef.current?.click()}
+								disabled={isProcessing}
+								className={cn(
+									'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-dashed border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
+									'hover:border-ember-500/70 hover:bg-stage-elevated/80',
+									isProcessing && 'opacity-70',
+								)}
+							>
+								<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
+									{isProcessing ? (
+										<PhCircleNotch className="!size-6 animate-spin" />
+									) : (
+										<PhPlus className="!size-6" />
+									)}
+								</span>
+								<span className="text-sm font-medium text-stage-fg">
+									Import SRT or ZIP
+								</span>
+								<span className="text-xs text-stage-muted">
+									Add to your shelf
+								</span>
+							</button>
 
-					{/* Action: Sample */}
-					<button
-						type="button"
-						onClick={() => {
-							void loadSample()
-						}}
-						disabled={isProcessing}
-						className={cn(
-							'stage-poster group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-							'hover:border-ember-500/70 hover:bg-stage-elevated/80',
-							isProcessing && 'opacity-70',
-						)}
-					>
-						<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-							<PhFileAudio className="!size-6" />
-						</span>
-						<span className="text-sm font-medium text-stage-fg">
-							Try sample file
-						</span>
-						<span className="text-xs text-stage-muted">See the player</span>
-					</button>
+							{/* Action: Sample */}
+							<button
+								type="button"
+								onClick={() => {
+									void loadSample()
+								}}
+								disabled={isProcessing}
+								className={cn(
+									'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
+									'hover:border-ember-500/70 hover:bg-stage-elevated/80',
+									isProcessing && 'opacity-70',
+								)}
+							>
+								<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
+									<PhFileAudio className="!size-6" />
+								</span>
+								<span className="text-sm font-medium text-stage-fg">
+									Try sample file
+								</span>
+								<span className="text-xs text-stage-muted">
+									See the player
+								</span>
+							</button>
 
-					{/* Action: Sync (solo only) */}
-					{syncSnap.role !== 'peer' && (
-						<RouterLink
-							to="/sync"
-							className={cn(
-								'stage-poster group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
-								'hover:border-ember-500/70 hover:bg-stage-elevated/80',
+							{/* Action: Sync (solo only) */}
+							{syncSnap.role !== 'peer' && (
+								<RouterLink
+									to="/sync"
+									className={cn(
+										'stage-poster-lift group flex aspect-2/3 flex-col items-center justify-center gap-3 rounded-panel border border-stage-edge bg-stage-raised/60 px-3 text-center transition-colors',
+										'hover:border-ember-500/70 hover:bg-stage-elevated/80',
+									)}
+								>
+									<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
+										<PhBroadcast className="!size-6" />
+									</span>
+									<span className="text-sm font-medium text-stage-fg">
+										Sync devices
+									</span>
+									<span className="text-xs text-stage-muted">
+										Play together nearby
+									</span>
+								</RouterLink>
 							)}
-						>
-							<span className="flex h-12 w-12 items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors group-hover:border-ember-500 group-hover:text-ember-500">
-								<PhBroadcast className="!size-6" />
-							</span>
-							<span className="text-sm font-medium text-stage-fg">
-								Sync devices
-							</span>
-							<span className="text-xs text-stage-muted">
-								Play together nearby
-							</span>
-						</RouterLink>
+						</>
 					)}
 
 					{/* Synthetic remote now-playing poster */}
 					{showSyntheticNowPlaying && syncSnap.nowPlayingFile && (
 						<div
 							className={cn(
-								'stage-poster stage-poster-now-playing relative flex aspect-2/3 flex-col overflow-hidden rounded-panel ring-2 ring-ember-500',
+								'stage-poster-now-playing relative flex aspect-2/3 flex-col overflow-hidden rounded-panel ring-2 ring-ember-500',
 							)}
 						>
 							<div
@@ -473,7 +539,8 @@ const EditFilesPage = () => {
 							<div
 								key={file.id}
 								className={cn(
-									'stage-poster relative flex aspect-2/3 flex-col overflow-hidden rounded-panel',
+									'relative flex aspect-2/3 flex-col overflow-hidden rounded-panel transition-[filter] duration-200',
+									'hover:brightness-110',
 									isNowPlaying &&
 										'stage-poster-now-playing ring-2 ring-ember-500',
 								)}
