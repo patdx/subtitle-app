@@ -13,7 +13,19 @@ import {
 } from './utils'
 import { FileTransfer } from './file-transfer'
 import { WebRtcTransport } from './webrtc-transport'
+import {
+	emptyGroupState,
+	planGroupStateApply,
+	type GroupClock,
+	type GroupState,
+} from './sync-group'
 
+export type {
+	GroupClaim,
+	GroupClock,
+	GroupMedia,
+	GroupState,
+} from './sync-group'
 /**
  * Multi-device sync over direct, bidirectional WebRTC data channels.
  * A hibernatable Durable Object relays only temporary SDP/ICE signaling;
@@ -54,35 +66,6 @@ export interface PlayerFile {
 	fileId: string
 	hash: string
 	name: string
-}
-
-/** Cross-device media identity (group-scoped — only one at a time). */
-export interface GroupMedia {
-	hash: string
-	name: string
-}
-
-/** Fenced player/coordinator claim. */
-export interface GroupClaim {
-	term: number
-	claimantId: string
-}
-
-/** Playback clock carried in group snapshots. */
-export interface GroupClock {
-	isPlaying: boolean
-	positionMs: number
-	playSpeed: number
-}
-
-/**
- * Authoritative shared group document. Single writer = claim claimant
- * (or the default lowest-id coordinator before anyone claims).
- */
-export interface GroupState {
-	media: GroupMedia | null
-	claim: GroupClaim | null
-	clock: GroupClock
 }
 
 export interface DeviceLibraryEntry {
@@ -129,65 +112,6 @@ const makeRoomCode = (): string => {
 	}
 	return code
 }
-
-const emptyGroupClock = (): GroupClock => ({
-	isPlaying: false,
-	positionMs: 0,
-	playSpeed: 1,
-})
-
-const emptyGroupState = (): GroupState => ({
-	media: null,
-	claim: null,
-	clock: emptyGroupClock(),
-})
-
-const isValidClaim = (
-	claim: GroupClaim | null | undefined,
-): claim is GroupClaim =>
-	!!claim &&
-	Number.isSafeInteger(claim.term) &&
-	claim.term >= 1 &&
-	claim.term <= 1_000_000_000 &&
-	typeof claim.claimantId === 'string' &&
-	claim.claimantId.length > 0 &&
-	claim.claimantId.length <= 128
-
-/** True when `next` beats `current` under term/id fencing. */
-const claimIsSuperior = (
-	next: GroupClaim | null,
-	current: GroupClaim | null,
-): boolean => {
-	if (!next) return false
-	if (!current) return true
-	return (
-		next.term > current.term ||
-		(next.term === current.term && next.claimantId > current.claimantId)
-	)
-}
-
-const isValidGroupMedia = (
-	media: GroupMedia | null | undefined,
-): media is GroupMedia | null => {
-	if (media === null || media === undefined) return media === null
-	return (
-		typeof media.hash === 'string' &&
-		media.hash.length > 0 &&
-		media.hash.length <= 128 &&
-		typeof media.name === 'string' &&
-		media.name.length <= 256
-	)
-}
-
-const isValidGroupClock = (c: GroupClock | null | undefined): c is GroupClock =>
-	!!c &&
-	typeof c.isPlaying === 'boolean' &&
-	Number.isFinite(c.positionMs) &&
-	c.positionMs >= 0 &&
-	Number.isFinite(c.playSpeed) &&
-	c.playSpeed >= 0.1 &&
-	c.playSpeed <= 5
-
 export interface SyncState {
 	role: SyncRole
 	sessionId: string | null
@@ -828,57 +752,27 @@ class SyncEngine {
 		peerId: string,
 	) {
 		const incoming = msg.state
-		if (
-			!incoming ||
-			typeof incoming !== 'object' ||
-			!isValidGroupMedia(incoming.media) ||
-			!isValidGroupClock(incoming.clock) ||
-			(incoming.claim !== null && !isValidClaim(incoming.claim))
-		)
-			return
+		const plan = planGroupStateApply({
+			incoming,
+			currentClaim: syncState.group.claim,
+			peerId,
+			sessionId: syncState.sessionId,
+			hasPendingPlayerFile: !!this.pendingPlayerFile,
+		})
 
-		const current = syncState.group.claim
-		if (incoming.claim) {
-			if (incoming.claim.claimantId !== peerId) return
-			const sameClaim =
-				!!current &&
-				current.term === incoming.claim.term &&
-				current.claimantId === incoming.claim.claimantId
-			// Equal claim = normal refresh from the current player (clock ticks,
-			// media casts). Only strictly inferior claims are rejected.
-			if (current && !sameClaim && !claimIsSuperior(incoming.claim, current)) {
-				if (current.claimantId === syncState.sessionId) {
-					void this.announceFile()
-				}
-				return
-			}
-			syncState.group.claim = {
-				term: incoming.claim.term,
-				claimantId: incoming.claim.claimantId,
-			}
-		} else if (current) {
-			// Claimed group ignores claimless snapshots.
-			if (current.claimantId === syncState.sessionId) {
-				void this.announceFile()
-			}
+		if (plan.type === 'ignore') return
+		if (plan.type === 'reassert') {
+			void this.announceFile()
 			return
 		}
-
-		// Claimless snapshot while we still have a pending file from opening
-		// before join: take the stage with OUR file. Do not adopt orphan
-		// media/clock from a departed player first.
-		if (!incoming.claim && this.pendingPlayerFile) {
+		if (plan.type === 'take-pending') {
 			const file = this.claimPendingPlayerFile()
-			if (file) {
-				void this.becomeActivePlayer(file)
-				return
-			}
+			if (file) void this.becomeActivePlayer(file)
+			return
 		}
 
-		// Someone holds the player role — don't take over with a pending file.
-		if (incoming.claim) {
-			this.pendingPlayerFile = null
-		}
+		syncState.group.claim = plan.nextClaim
+		if (plan.clearPending) this.pendingPlayerFile = null
 
 		const mediaChanged =
 			(incoming.media?.hash ?? null) !==
