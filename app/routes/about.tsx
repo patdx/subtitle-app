@@ -92,7 +92,7 @@ export default function About({}: Route.ComponentProps) {
 				</ListItem>
 			</List>
 
-			<Block className="px-4 pt-8">
+			<Block className="px-4 pt-8 pb-safe-or-8">
 				<p className="text-base font-medium text-ink-900">Local data</p>
 				<p className="mt-1 max-w-prose text-sm text-ink-500">
 					Clears the on-device library, settings, and sync membership. Prefer

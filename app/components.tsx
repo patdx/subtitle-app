@@ -101,7 +101,7 @@ export function Navbar({
 	return (
 		<nav
 			className={clsx(
-				'sticky top-0 z-10 bg-paper px-4 py-3 flex items-center gap-4 border-b border-edge',
+				'sticky top-0 z-10 bg-paper px-4 py-3 pt-safe flex items-center gap-4 border-b border-edge',
 				className,
 			)}
 		>

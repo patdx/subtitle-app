@@ -257,7 +257,7 @@ const EditFilesPage = () => {
 		!hasLocalNowPlaying()
 
 	const showPeerBar = syncSnap.role === 'peer'
-	const contentPad = showPeerBar ? 'pb-28' : 'pb-10'
+	const contentPad = showPeerBar ? 'pb-safe-or-28' : 'pb-safe-or-10'
 	/** When the shelf has titles, actions collapse to a toolbar so posters lead. */
 	const hasShelfContent = !isEmpty() || showSyntheticNowPlaying
 	const showEmptyActionPosters = !hasShelfContent
@@ -334,7 +334,7 @@ const EditFilesPage = () => {
 
 			<div
 				className={cn(
-					'relative min-h-full bg-stage px-4 pt-8',
+					'relative min-h-full bg-stage px-4 pt-safe-or-8',
 					contentPad,
 					// Atmospheric wash behind the brand — not flat black.
 					'bg-[radial-gradient(ellipse_90%_55%_at_10%_-10%,oklch(0.32_0.08_35/0.55),transparent_55%),radial-gradient(ellipse_70%_45%_at_95%_5%,oklch(0.28_0.06_45/0.35),transparent_50%),var(--color-stage)]',

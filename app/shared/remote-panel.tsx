@@ -56,9 +56,9 @@ export const RemotePanel = () => {
 	}
 
 	return (
-		<div className="absolute inset-0 z-10 flex flex-col bg-black px-4 pb-6 text-white">
+		<div className="absolute inset-0 z-10 flex flex-col bg-black px-4 pb-safe-or-6 text-white">
 			{/* header (below the persistent sync pill) */}
-			<div className="flex items-start justify-between gap-3 pt-12">
+			<div className="flex items-start justify-between gap-3 pt-safe-or-12">
 				<div className="flex min-w-0 items-start gap-3">
 					<Link
 						to="/"
@@ -152,7 +152,7 @@ export const RemotePanel = () => {
 					<SheetHeader>
 						<SheetTitle>Play another file</SheetTitle>
 					</SheetHeader>
-					<div className="flex flex-col overflow-y-auto px-4 pb-6">
+					<div className="flex flex-col overflow-y-auto px-4 pb-safe-or-6">
 						{files.length === 0 && (
 							<p className="px-1 text-sm text-muted-foreground">
 								No files yet — import an SRT from the library.

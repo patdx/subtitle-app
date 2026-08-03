@@ -248,7 +248,7 @@ const SyncPage = () => {
 							Connect another device
 						</h2>
 					</Block>
-					<Block className="flex flex-col gap-3 px-4">
+					<Block className="flex flex-col gap-3 px-4 pb-safe-or-8">
 						<Input
 							value={codeInput}
 							onChange={(e) =>
@@ -294,7 +294,7 @@ const MembersList = () => {
 			<Block className="px-4">
 				<h2 className="text-sm font-medium text-ink-600">Connected devices</h2>
 			</Block>
-			<List>
+			<List className="pb-safe-or-8">
 				{syncSnap.roomPeers.map((peer) => (
 					<ListItem
 						key={peer.sessionId}
@@ -339,7 +339,7 @@ const ReceivedFilesList = () => {
 					<Block className="px-4">
 						<h2 className="text-sm font-medium text-ink-600">Received files</h2>
 					</Block>
-					<List>
+					<List className="pb-safe-or-8">
 						{syncSnap.receivedFiles.map((file) => (
 							<ListItem key={file.fileId} title={file.name} asChild>
 								<RouterLink to={`/play?id=${file.fileId}`} />

@@ -3,6 +3,9 @@
 /.opencode/
 /.commandcode/
 
+# Python tooling
+/scripts/__pycache__/
+
 # React Router
 /.react-router/
 /build/
