@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Icons from 'unplugin-icons/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { qrcode } from 'vite-plugin-qrcode'
+import { autoImportOptions } from './scripts/auto-import-options.js'
 
 export default defineConfig(() => ({
 	server: {
@@ -15,10 +16,7 @@ export default defineConfig(() => ({
 		tsconfigPaths: true,
 	},
 	plugins: [
-		AutoImport({
-			imports: ['react'],
-			dirs: ['./app/shared'],
-		}),
+		AutoImport(autoImportOptions),
 		Icons({
 			compiler: 'jsx',
 			jsx: 'react',

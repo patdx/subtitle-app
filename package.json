@@ -7,7 +7,8 @@
     "build": "NODE_ENV=production react-router build && cp build/client/__spa-fallback.html build/client/404.html",
     "dev": "NODE_ENV=development react-router dev",
     "start": "NODE_ENV=production react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
+    "typecheck": "node scripts/regen-auto-imports.js && react-router typegen && tsc",
+    "regen:auto-imports": "node scripts/regen-auto-imports.js",
     "format": "prettier --write ."
   },
   "dependencies": {
