@@ -22,13 +22,14 @@ import {
 	syncState,
 } from './sync'
 import { DevicesMenu } from './device-picker'
+import { filesQueryOptions } from './file-queries'
 import { TransportCluster } from './transport'
 import { Timeline } from './timeline'
 import PhArrowUUpLeft from '~icons/ph/arrow-u-up-left'
 import PhCheck from '~icons/ph/check'
 import PhGearSix from '~icons/ph/gear-six'
 import PhWaveform from '~icons/ph/waveform'
-import { clock, initAndGetDb } from './utils'
+import { clock } from './utils'
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 
@@ -42,10 +43,7 @@ export const RemotePanel = () => {
 	const syncSnap = useSnapshot(syncState)
 	const clockSnap = useSnapshot(clock)
 	const [pickerOpen, setPickerOpen] = useState(false)
-	const filesQuery = useQuery({
-		queryKey: ['files'],
-		queryFn: () => initAndGetDb().then((db) => db.getAll('files')),
-	})
+	const filesQuery = useQuery(filesQueryOptions)
 
 	const playerName = activePlayerName(syncSnap)
 	const playerOnline = activePlayerOnline(syncSnap)

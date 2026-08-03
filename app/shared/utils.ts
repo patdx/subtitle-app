@@ -163,8 +163,8 @@ export const controlState = proxy({
 	/** bumped on interaction to reset the auto-fade timer */
 	activity: 0,
 	/**
-	 * fullscreen support is client-only; set after hydration so the
-	 * prerendered HTML matches the client's first render
+	 * fullscreen support is client-only; starts false so prerendered HTML
+	 * matches the first client render, then sync-bootstrap flips it on
 	 */
 	fullScreenEnabled: false,
 	showTranscript: false,
@@ -175,9 +175,6 @@ export const pokeControls = () => {
 }
 export const unfadeControls = () => {
 	controlState.faded = false
-}
-export const enableFullScreenButton = () => {
-	controlState.fullScreenEnabled = true
 }
 export const toggleTranscript = () => {
 	controlState.showTranscript = !controlState.showTranscript
@@ -289,6 +286,23 @@ export const setTextSize = (value: TextSize) => {
 export const getFile = () => uiState.file
 export const setFile = (value: DbLine[]) => {
 	uiState.file = value
+}
+
+/** Persist playback position for the currently loaded file. */
+export async function saveLocalProgress() {
+	const lines = getFile()
+	const fileId = lines?.[0]?.fileId
+	if (!fileId) return
+	const elapsed = getTimeElapsed()
+	if (elapsed <= 0) return
+	const db = await initAndGetDb()
+	const file = await db.get('files', fileId)
+	if (!file) return
+	await db.put('files', {
+		...file,
+		progress: elapsed,
+		lastPlayed: Date.now(),
+	})
 }
 
 export const getDuration = (

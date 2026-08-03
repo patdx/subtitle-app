@@ -1,29 +1,27 @@
+import { useQuery } from '@tanstack/react-query'
 import { Page } from '~/components'
-import { sortBy } from 'lodash-es'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { useSnapshot } from 'valtio'
 import {
 	syncState,
 	syncStore,
 	isRemote,
 	isRemoteController,
-	getActivePlayerId,
 	seekTo,
+	ensureProgressPagehide,
 } from '~/shared/sync'
+import { setFileFollowPaused } from '~/shared/sync-bootstrap'
+import { fileQueryOptions, type LoadedPlayerFile } from '~/shared/file-queries'
 import { RemotePanel } from '~/shared/remote-panel'
 import { SyncPill } from '~/shared/sync-pill'
 import { TranscriptDisplay } from '~/shared/transcript-display'
 import {
-	clock,
 	controlState,
 	unfadeControls,
 	setFile,
-	getFile,
-	getTimeElapsed,
 	pokeControls,
-	uiState,
+	saveLocalProgress,
 } from '~/shared/utils'
-import type { Route } from './+types/play'
 
 // TODO: update the whole page bg to black when this page is open
 
@@ -35,38 +33,23 @@ export default function PlayPage() {
 	)
 }
 
-const Play = () => {
-	const navigate = useNavigate()
-	const [searchParams] = useSearchParams()
-	const fileIdParam = searchParams.get('id')
-	const syncSnap = useSnapshot(syncState)
-	const clockSnap = useSnapshot(clock)
-	const uiSnap = useSnapshot(uiState)
+function applyLoadedFile(data: LoadedPlayerFile) {
+	setFileFollowPaused(true)
+	try {
+		setFile(data.lines)
+		ensureProgressPagehide()
 
-	/** Set while a file is loading so the renderer-follow doesn't yank a manual load. */
-	const isLoadingRef = useRef(false)
-
-	async function loadFile() {
-		isLoadingRef.current = true
-		if (!fileIdParam) {
-			isLoadingRef.current = false
-			console.warn(`No id provided, waiting for file id...`)
-			return
-		}
-		const db = await initAndGetDb()
-		let lines = await db.getAllFromIndex('lines', 'by-file-id', fileIdParam)
-		lines = sortBy(lines, (line) => line.from)
-		setFile(lines)
-
-		const file = await db.get('files', fileIdParam)
-		const playerFile = file?.hash
-			? { fileId: fileIdParam, hash: file.hash, name: file.name ?? '' }
+		const playerFile = data.file?.hash
+			? {
+					fileId: data.fileId,
+					hash: data.file.hash,
+					name: data.file.name ?? '',
+				}
 			: undefined
 
 		// A remote controller picks a file: cast it to the active player.
-		if (isRemoteController(syncSnap)) {
+		if (isRemoteController(syncState)) {
 			if (playerFile) void syncStore.playFile(playerFile.hash, playerFile.name)
-			isLoadingRef.current = false
 			return
 		}
 
@@ -80,59 +63,35 @@ const Play = () => {
 		}
 
 		// Resume from the last saved position (unless synced to another device).
-		if (file?.progress && syncState.role === 'none') {
-			seekTo(file.progress)
+		if (data.file?.progress && syncState.role === 'none') {
+			seekTo(data.file.progress)
 		}
-		isLoadingRef.current = false
+	} finally {
+		setFileFollowPaused(false)
 	}
+}
 
-	async function saveProgress() {
-		const lines = getFile()
-		const fileId = lines?.[0]?.fileId
-		if (!fileId || syncState.role !== 'none') return
-		const elapsed = getTimeElapsed()
-		if (elapsed <= 0) return
-		const db = await initAndGetDb()
-		const file = await db.get('files', fileId)
-		if (!file) return
-		await db.put('files', {
-			...file,
-			progress: elapsed,
-			lastPlayed: Date.now(),
-		})
-	}
+const Play = () => {
+	const [searchParams] = useSearchParams()
+	const fileIdParam = searchParams.get('id')
+	const syncSnap = useSnapshot(syncState)
 
+	const fileQuery = useQuery({
+		...fileQueryOptions(fileIdParam ?? ''),
+		enabled: Boolean(fileIdParam),
+	})
+
+	// Sync query result → Valtio / sync roles (external systems).
 	useEffect(() => {
-		void loadFile()
-	}, [fileIdParam])
+		const data = fileQuery.data
+		if (!data || data.fileId !== fileIdParam) return
+		applyLoadedFile(data)
+	}, [fileQuery.data, fileIdParam])
 
-	// The renderer follows the group's cast file: when this device is the
-	// player and the announced file differs from what's loaded, open it.
-	useEffect(() => {
-		if (getActivePlayerId(syncSnap) !== syncSnap.sessionId) return
-		const np = syncSnap.nowPlayingFile
-		if (!np?.fileId) return
-		const currentId = uiSnap.file?.[0]?.fileId
-		if (currentId !== np.fileId && !isLoadingRef.current) {
-			navigate(`/play?id=${np.fileId}`)
-		}
-	}, [
-		syncSnap.coordinationClaim,
-		syncSnap.sessionId,
-		syncSnap.nowPlayingFile,
-		uiSnap.file,
-	])
-
-	// Save position when playback starts and pauses, so a refresh during
-	// playback restores to near where playback began rather than the last pause.
-	useEffect(() => {
-		void saveProgress()
-	}, [clockSnap.isPlaying])
-
-	// Save position when leaving the player.
+	// Save when leaving the player route (in-app navigations).
 	useEffect(() => {
 		return () => {
-			void saveProgress()
+			if (syncState.role === 'none') void saveLocalProgress()
 		}
 	}, [])
 

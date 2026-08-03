@@ -5,6 +5,7 @@ import {
 	clock,
 	getTimeElapsed,
 	initAndGetDb,
+	saveLocalProgress,
 	setClock,
 	setSetting,
 	getSetting,
@@ -444,6 +445,8 @@ class SyncEngine {
 			this.broadcastClockState()
 		} else if (syncState.role !== 'none') {
 			this.send({ type: isPlaying ? 'cmd-play' : 'cmd-pause' })
+		} else {
+			void saveLocalProgress()
 		}
 	}
 
@@ -958,3 +961,15 @@ export const seekBy = (deltaMs: number) => syncStore.seekBy(deltaMs)
 export const seekTo = (positionMs: number) => syncStore.seekTo(positionMs)
 export const togglePlayback = () => syncStore.togglePlayback()
 export const setPlaySpeed = (speed: number) => syncStore.setPlaySpeed(speed)
+
+let pagehideBound = false
+
+/** Save solo progress when the tab is closing / backgrounded. */
+export function ensureProgressPagehide() {
+	if (pagehideBound || typeof window === 'undefined') return
+	pagehideBound = true
+	window.addEventListener('pagehide', () => {
+		if (syncState.role !== 'none') return
+		void saveLocalProgress()
+	})
+}

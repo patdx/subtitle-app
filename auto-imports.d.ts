@@ -30,6 +30,7 @@ declare global {
   const activePlayerOnline: typeof import('./app/shared/sync').activePlayerOnline
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
   const backfillFileHashes: typeof import('./app/shared/utils').backfillFileHashes
+  const bootstrapSync: typeof import('./app/shared/sync-bootstrap').bootstrapSync
   const buttonChrome: typeof import('./app/shared/utils').buttonChrome
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
@@ -40,7 +41,10 @@ declare global {
   const controlState: typeof import('./app/shared/utils').controlState
   const createContext: typeof import('react').createContext
   const createRef: typeof import('react').createRef
-  const enableFullScreenButton: typeof import('./app/shared/utils').enableFullScreenButton
+  const ensureProgressPagehide: typeof import('./app/shared/sync').ensureProgressPagehide
+  const fileQueryOptions: typeof import('./app/shared/file-queries').fileQueryOptions
+  const filesQueryKey: typeof import('./app/shared/file-queries').filesQueryKey
+  const filesQueryOptions: typeof import('./app/shared/file-queries').filesQueryOptions
   const forwardRef: typeof import('react').forwardRef
   const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
   const getActivePlayerId: typeof import('./app/shared/sync').getActivePlayerId
@@ -62,10 +66,13 @@ declare global {
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
   const pokeControls: typeof import('./app/shared/utils').pokeControls
   const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
+  const saveLocalProgress: typeof import('./app/shared/utils').saveLocalProgress
   const seekBy: typeof import('./app/shared/sync').seekBy
   const seekTo: typeof import('./app/shared/sync').seekTo
+  const setAppNavigate: typeof import('./app/shared/sync-bootstrap').setAppNavigate
   const setClock: typeof import('./app/shared/utils').setClock
   const setFile: typeof import('./app/shared/utils').setFile
+  const setFileFollowPaused: typeof import('./app/shared/sync-bootstrap').setFileFollowPaused
   const setPlaySpeed: typeof import('./app/shared/sync').setPlaySpeed
   const setSetting: typeof import('./app/shared/utils').setSetting
   const setTextSize: typeof import('./app/shared/utils').setTextSize
@@ -100,6 +107,9 @@ declare global {
 }
 // for type re-export
 declare global {
+  // @ts-ignore
+  export type { FileRecord, LoadedPlayerFile } from './app/shared/file-queries'
+  import('./app/shared/file-queries')
   // @ts-ignore
   export type { FileTransfer } from './app/shared/file-transfer'
   import('./app/shared/file-transfer')

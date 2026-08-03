@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { once } from 'lodash-es'
 import { Link as RouterLink } from 'react-router'
 import { useSnapshot } from 'valtio'
@@ -23,6 +23,11 @@ import PhWaveform from '~icons/ph/waveform'
 import { buttonChrome } from '~/shared/utils'
 import sampleSrtUrl from '../assets/sample.srt?url'
 import { DevicesMenu } from '~/shared/device-picker'
+import {
+	filesQueryKey,
+	filesQueryOptions,
+	type FileRecord,
+} from '~/shared/file-queries'
 import {
 	syncState,
 	syncStore,
@@ -77,16 +82,6 @@ export default function Home() {
 	)
 }
 
-interface FileRecord {
-	id: string
-	name: string
-	hash?: string
-	length?: number
-	watched?: boolean
-	progress?: number
-	lastPlayed?: number
-}
-
 /** Most recently played first, then alphabetically. Lives at module scope so
  * React Compiler does not need to lower the logical expressions inside. */
 const compareByLastPlayed = (a: FileRecord, b: FileRecord): number => {
@@ -106,24 +101,18 @@ const playerStatus = (snap: SyncSnapshot): string => {
 
 const EditFilesPage = () => {
 	const id = useId()
+	const queryClient = useQueryClient()
 	const [isProcessing, setProcessing] = useState(false)
 	const [renamingId, setRenamingId] = useState<string | null>(null)
 	const [renameValue, setRenameValue] = useState('')
 	const syncSnap = useSnapshot(syncState)
 
-	const result = useQuery({
-		queryKey: ['files'],
-		queryFn: async () => {
-			const db = await initAndGetDb()
-			const files = (await db.getAll('files')) as FileRecord[]
-			return files
-		},
-	})
+	const result = useQuery(filesQueryOptions)
 
 	const data = () => result.data
-	const handler = {
-		refetch: result.refetch,
-	}
+
+	const invalidateFiles = () =>
+		queryClient.invalidateQueries({ queryKey: filesQueryKey })
 
 	const handleFile = async (file: File) => {
 		// Check for supported file types
@@ -150,7 +139,7 @@ const EditFilesPage = () => {
 			} else {
 				await addFileToDatabase(await file.text(), file.name)
 			}
-			handler.refetch()
+			void invalidateFiles()
 			await syncStore.onFilesChanged()
 		} catch (err) {
 			setProcessing(false)
@@ -198,7 +187,7 @@ const EditFilesPage = () => {
 			tx.objectStore('lines').delete(key)
 		}
 		await tx.done
-		handler.refetch()
+		void invalidateFiles()
 		syncStore.sendFileDeleted(file.id, file.name)
 	}
 
@@ -206,7 +195,7 @@ const EditFilesPage = () => {
 	const clearProgress = async (file: FileRecord) => {
 		const db = await initAndGetDb()
 		await db.put('files', { ...file, progress: 0, lastPlayed: 0 })
-		handler.refetch()
+		void invalidateFiles()
 	}
 
 	/** Rename a file. */
@@ -219,7 +208,7 @@ const EditFilesPage = () => {
 		const db = await initAndGetDb()
 		await db.put('files', { ...file, name: trimmed })
 		setRenamingId(null)
-		handler.refetch()
+		void invalidateFiles()
 	}
 
 	const ProgressBar = ({

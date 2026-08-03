@@ -1,12 +1,6 @@
 import { Link as RouterLink, useNavigate } from 'react-router'
 import { useSnapshot } from 'valtio'
-import {
-	Block,
-	List,
-	ListItem,
-	Navbar,
-	Page,
-} from '~/components'
+import { Block, List, ListItem, Navbar, Page } from '~/components'
 import { Alert, AlertDescription } from '~/components/ui/alert'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
@@ -46,25 +40,6 @@ const SyncPage = () => {
 			await syncStore.startSharing()
 		}
 	}
-
-	useEffect(() => {
-		const codeParam = new URL(location.href).searchParams.get('code')
-		void (async () => {
-			await syncStore.init()
-			if (codeParam) window.history.replaceState(null, '', location.pathname)
-			if (codeParam && codeParam.toUpperCase() !== syncState.myGroupCode) {
-				setCodeInput(
-					codeParam
-						.toUpperCase()
-						.replace(/[^A-Z0-9]/g, '')
-						.slice(0, 20),
-				)
-				await join(codeParam)
-			} else {
-				await syncStore.restore()
-			}
-		})()
-	}, [])
 
 	const connecting = syncSnap.connectionState === 'connecting'
 	const connected = syncSnap.connectionState === 'connected'

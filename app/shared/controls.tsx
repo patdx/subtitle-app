@@ -18,7 +18,6 @@ import { TransportCluster } from './transport'
 import {
 	clock,
 	controlState,
-	enableFullScreenButton,
 	getTextSize,
 	pokeControls,
 	setTextSize,
@@ -41,12 +40,6 @@ export const Controls = () => {
 	const controlSnap = useSnapshot(controlState)
 	const clockSnap = useSnapshot(clock)
 	const syncSnap = useSnapshot(syncState)
-
-	useEffect(() => {
-		if (document.fullscreenEnabled) {
-			enableFullScreenButton()
-		}
-	}, [])
 
 	useEffect(() => {
 		// Test/debug hook: ?keep-ui-open=1 disables the auto-fade so the

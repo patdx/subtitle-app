@@ -7,8 +7,9 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useNavigate,
 } from 'react-router'
-import { syncStore } from '~/shared/sync'
+import { setAppNavigate } from '~/shared/sync-bootstrap'
 import type { Route } from './+types/root'
 import stylesheet from './app.css?url'
 
@@ -73,11 +74,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	// Reconnect the last active group once per app launch; the play page owns
-	// the renderer file-follow.
-	useEffect(() => {
-		void syncStore.restore()
-	}, [])
+	const navigate = useNavigate()
+	// Latest navigate ref for vanilla sync-bootstrap (no effect).
+	setAppNavigate(navigate)
 
 	return <Outlet />
 }
