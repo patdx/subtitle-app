@@ -1,24 +1,21 @@
 import { useSnapshot } from 'valtio'
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '~/components/ui/tooltip'
 import {
 	FullScreenIcon,
 	GoBackIcon,
-	LeftIcon,
-	PauseIcon,
-	PlayIcon,
-	RightIcon,
 	SettingsIcon,
+	SpeakerIcon,
 	TranscriptIcon,
 } from './icons'
-import {
-	seekBy,
-	seekTo,
-	setPlaySpeed,
-	syncStore,
-	togglePlayback,
-} from './sync'
+import { DevicesMenu } from './device-picker'
+import { setPlaySpeed, syncState, syncStore } from './sync'
+import { TransportCluster } from './transport'
 import {
 	clock,
 	controlState,
@@ -42,41 +39,10 @@ import {
 } from '~/components/ui/menu'
 import { CheckIcon } from './icons'
 
-const IconTextButton = ({
-	icon,
-	text,
-	onClick,
-	label,
-}: {
-	icon: React.ReactNode
-	text: string
-	onClick?: () => void
-	label: string
-}) => {
-	return (
-		<Tooltip>
-			<TooltipTrigger
-				render={
-					<button
-						aria-label={label}
-						className="relative flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600 active:text-white"
-						onClick={onClick}
-					>
-						{icon}
-						<span className="absolute bottom-0.5 left-0 right-0 text-center text-[10px] leading-none">
-							{text}
-						</span>
-					</button>
-				}
-			/>
-			<TooltipContent>{label}</TooltipContent>
-		</Tooltip>
-	)
-}
-
 export const Controls = () => {
 	const controlSnap = useSnapshot(controlState)
 	const clockSnap = useSnapshot(clock)
+	const syncSnap = useSnapshot(syncState)
 
 	useEffect(() => {
 		if (document.fullscreenEnabled) {
@@ -87,7 +53,8 @@ export const Controls = () => {
 	useEffect(() => {
 		// Test/debug hook: ?keep-ui-open=1 disables the auto-fade so the
 		// controls stay visible while iterating on the layout.
-		const keepOpen = new URL(location.href).searchParams.get('keep-ui-open') === '1'
+		const keepOpen =
+			new URL(location.href).searchParams.get('keep-ui-open') === '1'
 		if (keepOpen || controlSnap.faded) return
 		const timer = window.setTimeout(() => {
 			controlState.faded = true
@@ -131,6 +98,19 @@ export const Controls = () => {
 
 							<div className="flex-1"></div>
 
+							{/* play on this device (device picker) */}
+							{syncSnap.role === 'peer' && (
+								<DevicesMenu>
+									<button
+										type="button"
+										aria-label="Play on this device"
+										className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-300 transition-colors duration-150 hover:text-white active:text-white"
+									>
+										<SpeakerIcon />
+									</button>
+								</DevicesMenu>
+							)}
+
 							{/* transcript button */}
 							<Tooltip>
 								<TooltipTrigger
@@ -156,7 +136,8 @@ export const Controls = () => {
 												onClick={() => {
 													let elem = document.getElementById('app')
 
-													if (!elem) throw new Error('cannot find #app element!')
+													if (!elem)
+														throw new Error('cannot find #app element!')
 
 													if (!document.fullscreenElement) {
 														elem
@@ -204,73 +185,7 @@ export const Controls = () => {
 						</div>
 
 						<div className="mx-auto mt-2 flex max-w-sm flex-col flex-wrap items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-							{/* transport cluster */}
-							<div className="flex items-center justify-center">
-								<IconTextButton
-									icon={<LeftIcon />}
-									text={'10s'}
-									label="Back 10 seconds"
-									onClick={() => seekBy(-10000)}
-								/>
-
-								<IconTextButton
-									icon={<LeftIcon />}
-									text={'5s'}
-									label="Back 5 seconds"
-									onClick={() => seekBy(-5000)}
-								/>
-
-								<IconTextButton
-									icon={<LeftIcon />}
-									text={'1s'}
-									label="Back 1 second"
-									onClick={() => seekBy(-1000)}
-								/>
-
-								<Tooltip>
-									<TooltipTrigger
-										render={
-											<button
-												className="flex h-12 w-12 items-center justify-center rounded-control text-white transition-colors duration-150 hover:text-white active:text-white"
-												onClick={togglePlayback}
-												aria-label={
-													clockSnap.isPlaying ? 'Pause' : 'Play'
-												}
-											>
-												{clockSnap.isPlaying ? (
-													<PauseIcon />
-												) : (
-													<PlayIcon />
-												)}
-											</button>
-										}
-									/>
-									<TooltipContent>
-										{clockSnap.isPlaying ? 'Pause' : 'Play'}
-									</TooltipContent>
-								</Tooltip>
-
-								<IconTextButton
-									icon={<RightIcon />}
-									text={'1s'}
-									label="Forward 1 second"
-									onClick={() => seekBy(1000)}
-								/>
-
-								<IconTextButton
-									icon={<RightIcon />}
-									text={'5s'}
-									label="Forward 5 seconds"
-									onClick={() => seekBy(5000)}
-								/>
-
-								<IconTextButton
-									icon={<RightIcon />}
-									text={'10s'}
-									label="Forward 10 seconds"
-									onClick={() => seekBy(10000)}
-								/>
-							</div>
+							<TransportCluster />
 
 							{/* settings: speed + subtitle size */}
 							<div className="flex items-center justify-center">
@@ -303,14 +218,7 @@ export const Controls = () => {
 													<MenuPortal>
 														<MenuPositioner side="right" align="start">
 															<MenuPopup>
-																{[
-																	0.5,
-																	0.75,
-																	1,
-																	1.25,
-																	1.5,
-																	2,
-																].map((speed) => (
+																{[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => (
 																	<MenuItem
 																		key={speed}
 																		onClick={() => setPlaySpeed(speed)}
@@ -340,22 +248,23 @@ export const Controls = () => {
 													<MenuPortal>
 														<MenuPositioner side="right" align="start">
 															<MenuPopup>
-																{['Small', 'Medium', 'Large', 'Extra large'].map(
-																	(label, i) => (
-																		<MenuItem
-																			key={label}
-																			onClick={() =>
-																				setTextSize(TEXT_SIZES[i])
-																			}
-																			className="justify-between"
-																		>
-																			<span>{label}</span>
-																			{getTextSize() === TEXT_SIZES[i] && (
-																				<CheckIcon className="size-4 text-ink-200" />
-																			)}
-																		</MenuItem>
-																	),
-																)}
+																{[
+																	'Small',
+																	'Medium',
+																	'Large',
+																	'Extra large',
+																].map((label, i) => (
+																	<MenuItem
+																		key={label}
+																		onClick={() => setTextSize(TEXT_SIZES[i])}
+																		className="justify-between"
+																	>
+																		<span>{label}</span>
+																		{getTextSize() === TEXT_SIZES[i] && (
+																			<CheckIcon className="size-4 text-ink-200" />
+																		)}
+																	</MenuItem>
+																))}
 															</MenuPopup>
 														</MenuPositioner>
 													</MenuPortal>

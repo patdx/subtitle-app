@@ -50,4 +50,16 @@ See @README.md for project overview and @package.json for available npm/pnpm com
 - Test device sync locally: `pnpm build && npx wrangler dev`, open http://localhost:8787 in two tabs (use `localhost` and `127.0.0.1` for separate IndexedDB)
 - Verify changes: `pnpm typecheck` (includes route typegen — run it after adding/renaming routes)
 - **Player UI testing:** append `?keep-ui-open=1` to the player URL (e.g. `http://localhost:5173/play?id=<id>&keep-ui-open=1`) to disable the 5s controls auto-fade while iterating on the layout
+- **Sync debug hooks:** `app/shared/sync.ts` exposes `window.__syncState` (the live Valtio sync store), `window.__seek(ms)`, and `window.__togglePlayback()` for manual inspection from the browser console. Read a tab's role/claim/peers via `window.__syncState` when debugging the sync flows. These are intentional, kept in the codebase.
 - Node 24 (`.node-version`), pnpm 11 (`packageManager`); `pnpm-workspace.yaml` sets `savePrefix: ""` (exact versions, no `^`)
+
+### wrangler dev gotchas
+
+- **Rebuild → restart:** `wrangler dev` serves `build/client` at startup; a `pnpm build` while it's running can leave it serving 404s for everything. After any `pnpm build`, kill wrangler and start it fresh.
+- **Never kill by process name in the same command that launches it.** A command like `pkill -f "wrangler dev"; npx wrangler dev &` self-matches: the shell's own command line contains "wrangler dev", so `pkill -f`/`pgrep -f` kills the shell running the command, which hangs the tool until timeout. Kill by **port** instead:
+  ```sh
+  pid=$(ss -ltnp 2>/dev/null | grep ':8787' | grep -oP 'pid=\K[0-9]+' | head -1)
+  [ -n "$pid" ] && kill -9 "$pid"
+  ```
+  Then launch with `setsid nohup npx wrangler dev > /tmp/opencode/wrangler-dev.log 2>&1 < /dev/null & disown` and poll `curl` until `200`.
+- A stale `workerd` from a killed session can keep the port in a 404 state; check `ss -ltnp | grep 8787` and kill by that pid if needed.

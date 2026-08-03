@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { once } from 'lodash-es'
 import { Link as RouterLink } from 'react-router'
+import { useSnapshot } from 'valtio'
 import { Block, Navbar, Page } from '~/components'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
@@ -14,10 +15,22 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from '~/components/ui/menu'
-import { CheckIcon, ChevronRightIcon, MoreIcon } from '~/shared/icons'
+import {
+	CheckIcon,
+	ChevronRightIcon,
+	MoreIcon,
+	SpeakerIcon,
+} from '~/shared/icons'
 import { buttonChrome } from '~/shared/utils'
 import sampleSrtUrl from '../assets/sample.srt?url'
-import { syncStore } from '~/shared/sync'
+import { DevicesMenu } from '~/shared/device-picker'
+import {
+	syncState,
+	syncStore,
+	activePlayerName,
+	activePlayerOnline,
+	type SyncSnapshot,
+} from '~/shared/sync'
 import type { Route } from './+types/_index'
 
 const parseVideoPromise = once(() =>
@@ -68,6 +81,7 @@ export default function Home() {
 interface FileRecord {
 	id: string
 	name: string
+	hash?: string
 	length?: number
 	watched?: boolean
 	progress?: number
@@ -81,11 +95,22 @@ const compareByLastPlayed = (a: FileRecord, b: FileRecord): number => {
 	return byTime || a.name.localeCompare(b.name)
 }
 
+/** One-line status for the group card on the home page. */
+const playerStatus = (snap: SyncSnapshot): string => {
+	if (snap.nowPlayingFile) {
+		const name = activePlayerName(snap)
+		if (name && activePlayerOnline(snap)) return `Now playing on ${name}`
+		return 'Player offline'
+	}
+	return 'Group ready'
+}
+
 const EditFilesPage = () => {
 	const id = useId()
 	const [isProcessing, setProcessing] = useState(false)
 	const [renamingId, setRenamingId] = useState<string | null>(null)
 	const [renameValue, setRenameValue] = useState('')
+	const syncSnap = useSnapshot(syncState)
 
 	const result = useQuery({
 		queryKey: ['files'],
@@ -127,7 +152,7 @@ const EditFilesPage = () => {
 				await addFileToDatabase(await file.text(), file.name)
 			}
 			handler.refetch()
-			await syncStore.broadcastFileList()
+			await syncStore.onFilesChanged()
 		} catch (err) {
 			setProcessing(false)
 			throw err
@@ -363,29 +388,29 @@ const EditFilesPage = () => {
 											<MenuPortal>
 												<MenuPositioner>
 													<MenuPopup>
-													<MenuItem
-														onClick={() => {
-															void clearProgress(file)
-														}}
-													>
-														Clear watch progress
-													</MenuItem>
-													<MenuItem
-														onClick={() => {
-															setRenameValue(file.name)
-															setRenamingId(file.id)
-														}}
-													>
-														Rename
-													</MenuItem>
-													<MenuItem
-														className="text-destructive focus:text-destructive"
-														onClick={() => {
-															void deleteFile(file)
-														}}
-													>
-														Delete
-													</MenuItem>
+														<MenuItem
+															onClick={() => {
+																void clearProgress(file)
+															}}
+														>
+															Clear watch progress
+														</MenuItem>
+														<MenuItem
+															onClick={() => {
+																setRenameValue(file.name)
+																setRenamingId(file.id)
+															}}
+														>
+															Rename
+														</MenuItem>
+														<MenuItem
+															className="text-destructive focus:text-destructive"
+															onClick={() => {
+																void deleteFile(file)
+															}}
+														>
+															Delete
+														</MenuItem>
 													</MenuPopup>
 												</MenuPositioner>
 											</MenuPortal>
@@ -404,13 +429,34 @@ const EditFilesPage = () => {
 			)}
 
 			<Block className="px-4 pt-4">
-				<RouterLink
-					to="/sync"
-					className="flex items-center justify-between rounded-panel border border-ink-400 bg-paper-raised px-4 py-3 text-sm font-medium text-ink-900 hover:border-ink-600 hover:bg-ink-50"
-				>
-					Sync with another device
-					<ChevronRightIcon className="text-ink-400" />
-				</RouterLink>
+				{syncSnap.role === 'peer' ? (
+					<div className="flex items-center justify-between gap-3 rounded-panel border border-ink-400 bg-paper-raised px-4 py-3">
+						<div className="min-w-0">
+							<p className="text-xs text-ink-400">{playerStatus(syncSnap)}</p>
+							<p className="truncate text-sm font-medium text-ink-900">
+								{syncSnap.nowPlayingFile?.name ??
+									'Not playing — pick a device, then choose a file'}
+							</p>
+						</div>
+						<DevicesMenu>
+							<button
+								type="button"
+								className="flex flex-none items-center gap-1.5 rounded-control bg-ember-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ember-700 active:bg-ember-700"
+							>
+								<SpeakerIcon className="size-4" />
+								Play on this device
+							</button>
+						</DevicesMenu>
+					</div>
+				) : (
+					<RouterLink
+						to="/sync"
+						className="flex items-center justify-between rounded-panel border border-ink-400 bg-paper-raised px-4 py-3 text-sm font-medium text-ink-900 hover:border-ink-600 hover:bg-ink-50"
+					>
+						Sync with another device
+						<ChevronRightIcon className="text-ink-400" />
+					</RouterLink>
+				)}
 			</Block>
 
 			<Block className="px-4 mt-4 text-center">
@@ -448,7 +494,11 @@ function metadataChips(
 				</Badge>
 			)}
 			{metadata?.episode?.map((item) => (
-				<Badge key={item} variant="ghost" className="h-auto px-0 py-0 text-ink-400">
+				<Badge
+					key={item}
+					variant="ghost"
+					className="h-auto px-0 py-0 text-ink-400"
+				>
 					Episode {item}
 				</Badge>
 			))}

@@ -163,6 +163,23 @@ export const SyncIcon = () => (
 	</svg>
 )
 
+export const SpeakerIcon = ({ className }: { className?: string }) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		className={cn('h-6 w-6', className)}
+		fill="none"
+		viewBox="0 0 24 24"
+		stroke="currentColor"
+	>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="2"
+			d="M3.75 8.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0v-6a.75.75 0 01.75-.75zm3 1.5a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zM9.75 6a.75.75 0 01.75.75v10.5a.75.75 0 01-1.5 0V6.75a.75.75 0 01.75-.75zM13.5 3.75a.75.75 0 01.75.75v15a.75.75 0 01-1.5 0v-15a.75.75 0 01.75-.75zM17.25 6a.75.75 0 01.75.75v10.5a.75.75 0 01-1.5 0V6.75a.75.75 0 01.75-.75zM21 8.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0v-6a.75.75 0 01.75-.75z"
+		/>
+	</svg>
+)
+
 export const ChevronRightIcon = ({ className }: { className?: string }) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"

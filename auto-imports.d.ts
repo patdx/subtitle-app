@@ -10,10 +10,13 @@ declare global {
   const CheckIcon: typeof import('./app/shared/icons').CheckIcon
   const ChevronRightIcon: typeof import('./app/shared/icons').ChevronRightIcon
   const Controls: typeof import('./app/shared/controls').Controls
+  const DevicesMenu: typeof import('./app/shared/device-picker').DevicesMenu
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
+  const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
   const FullScreenIcon: typeof import('./app/shared/icons').FullScreenIcon
   const GoBackIcon: typeof import('./app/shared/icons').GoBackIcon
+  const IconTextButton: typeof import('./app/shared/controls').IconTextButton
   const LeftIcon: typeof import('./app/shared/icons').LeftIcon
   const LoadingIcon: typeof import('./app/shared/icons').LoadingIcon
   const Menu: typeof import('./app/shared/menu').Menu
@@ -25,19 +28,27 @@ declare global {
   const PlayIcon: typeof import('./app/shared/icons').PlayIcon
   const QrCode: typeof import('./app/shared/qr').QrCode
   const QrScanner: typeof import('./app/shared/qr-scanner').QrScanner
+  const RemotePanel: typeof import('./app/shared/remote-panel').RemotePanel
   const RightIcon: typeof import('./app/shared/icons').RightIcon
   const SettingsIcon: typeof import('./app/shared/icons').SettingsIcon
+  const SpeakerIcon: typeof import('./app/shared/icons').SpeakerIcon
   const Subtitle: typeof import('./app/shared/subtitle').Subtitle
   const Suspense: typeof import('react').Suspense
   const SyncIcon: typeof import('./app/shared/icons').SyncIcon
+  const SyncPill: typeof import('./app/shared/sync-pill').SyncPill
   const TEXT_SIZES: typeof import('./app/shared/utils').TEXT_SIZES
   const TimeDisplay: typeof import('./app/shared/subtitle').TimeDisplay
   const Timeline: typeof import('./app/shared/timeline').Timeline
   const TranscriptDisplay: typeof import('./app/shared/transcript-display').TranscriptDisplay
   const TranscriptIcon: typeof import('./app/shared/icons').TranscriptIcon
+  const TransportCluster: typeof import('./app/shared/transport').TransportCluster
   const TrashIcon: typeof import('./app/shared/icons').TrashIcon
   const ValueWithPlaceholder: typeof import('./app/shared/text-input').ValueWithPlaceholder
+  const WebRtcTransport: typeof import('./app/shared/webrtc-transport').WebRtcTransport
+  const activePlayerName: typeof import('./app/shared/sync').activePlayerName
+  const activePlayerOnline: typeof import('./app/shared/sync').activePlayerOnline
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
+  const backfillFileHashes: typeof import('./app/shared/utils').backfillFileHashes
   const buttonChrome: typeof import('./app/shared/utils').buttonChrome
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
@@ -51,6 +62,7 @@ declare global {
   const enableFullScreenButton: typeof import('./app/shared/utils').enableFullScreenButton
   const forwardRef: typeof import('react').forwardRef
   const getActiveNodes: typeof import('./app/shared/utils').getActiveNodes
+  const getActivePlayerId: typeof import('./app/shared/sync').getActivePlayerId
   const getCoordinatorId: typeof import('./app/shared/sync').getCoordinatorId
   const getDuration: typeof import('./app/shared/utils').getDuration
   const getFile: typeof import('./app/shared/utils').getFile
@@ -58,9 +70,14 @@ declare global {
   const getTextSize: typeof import('./app/shared/utils').getTextSize
   const getTimeElapsed: typeof import('./app/shared/utils').getTimeElapsed
   const getTimeElapsedAsDuration: typeof import('./app/shared/utils').getTimeElapsedAsDuration
+  const hashText: typeof import('./app/shared/utils').hashText
   const initAndGetDb: typeof import('./app/shared/utils').initAndGetDb
+  const isCoordinatorSnap: typeof import('./app/shared/sync').isCoordinatorSnap
+  const isRemote: typeof import('./app/shared/sync').isRemote
+  const isRemoteController: typeof import('./app/shared/sync').isRemoteController
+  const isRenderer: typeof import('./app/shared/sync').isRenderer
   const lazy: typeof import('react').lazy
-  const linesToSrtText: typeof import('./app/shared/sync').linesToSrtText
+  const linesToSrtText: typeof import('./app/shared/utils').linesToSrtText
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
   const pokeControls: typeof import('./app/shared/utils').pokeControls
@@ -105,9 +122,15 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, SyncMessage, SyncState } from './app/shared/sync'
+  export type { FileTransfer } from './app/shared/file-transfer'
+  import('./app/shared/file-transfer')
+  // @ts-ignore
+  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, PlayerFile, SyncMessage, SyncState, SyncSnapshot } from './app/shared/sync'
   import('./app/shared/sync')
   // @ts-ignore
   export type { Entry, DbLine } from './app/shared/utils'
   import('./app/shared/utils')
+  // @ts-ignore
+  export type { WebRtcTransport, TransportHost } from './app/shared/webrtc-transport'
+  import('./app/shared/webrtc-transport')
 }

@@ -1,8 +1,17 @@
 import { Page } from '~/components'
 import { sortBy } from 'lodash-es'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { useSnapshot } from 'valtio'
-import { syncState, syncStore, getCoordinatorId, seekTo } from '~/shared/sync'
+import {
+	syncState,
+	syncStore,
+	isRemote,
+	isRemoteController,
+	getActivePlayerId,
+	seekTo,
+} from '~/shared/sync'
+import { RemotePanel } from '~/shared/remote-panel'
+import { SyncPill } from '~/shared/sync-pill'
 import { TranscriptDisplay } from '~/shared/transcript-display'
 import {
 	clock,
@@ -12,6 +21,7 @@ import {
 	getFile,
 	getTimeElapsed,
 	pokeControls,
+	uiState,
 } from '~/shared/utils'
 import type { Route } from './+types/play'
 
@@ -27,26 +37,53 @@ export default function PlayPage() {
 
 const Play = () => {
 	const navigate = useNavigate()
+	const [searchParams] = useSearchParams()
+	const fileIdParam = searchParams.get('id')
 	const syncSnap = useSnapshot(syncState)
 	const clockSnap = useSnapshot(clock)
+	const uiSnap = useSnapshot(uiState)
+
+	/** Set while a file is loading so the renderer-follow doesn't yank a manual load. */
+	const isLoadingRef = useRef(false)
 
 	async function loadFile() {
-		const fileId = new URL(location.href).searchParams.get('id')
-		if (!fileId) {
+		isLoadingRef.current = true
+		if (!fileIdParam) {
+			isLoadingRef.current = false
 			console.warn(`No id provided, waiting for file id...`)
 			return
 		}
 		const db = await initAndGetDb()
-		let lines = await db.getAllFromIndex('lines', 'by-file-id', fileId)
+		let lines = await db.getAllFromIndex('lines', 'by-file-id', fileIdParam)
 		lines = sortBy(lines, (line) => line.from)
 		setFile(lines)
-		void syncStore.onFileLoaded()
+
+		const file = await db.get('files', fileIdParam)
+		const playerFile = file?.hash
+			? { fileId: fileIdParam, hash: file.hash, name: file.name ?? '' }
+			: undefined
+
+		// A remote controller picks a file: cast it to the active player.
+		if (isRemoteController(syncSnap)) {
+			if (playerFile) void syncStore.playFile(playerFile.hash, playerFile.name)
+			isLoadingRef.current = false
+			return
+		}
+
+		// This device is (or becomes) the active player.
+		if (syncState.role === 'peer') {
+			void syncStore.becomeActivePlayer(playerFile)
+		} else if (playerFile) {
+			// Not connected yet: claim once the group settles, unless a peer
+			// is already playing (the engine resolves that deterministically).
+			syncStore.requestPlayerRole(playerFile)
+		}
 
 		// Resume from the last saved position (unless synced to another device).
-		const file = await db.get('files', fileId)
 		if (file?.progress && syncState.role === 'none') {
 			seekTo(file.progress)
 		}
+		isLoadingRef.current = false
 	}
 
 	async function saveProgress() {
@@ -66,10 +103,25 @@ const Play = () => {
 	}
 
 	useEffect(() => {
-		loadFile()
-		// Reconnect any previously active pairing (own device or joined one).
-		void syncStore.restore()
-	}, [])
+		void loadFile()
+	}, [fileIdParam])
+
+	// The renderer follows the group's cast file: when this device is the
+	// player and the announced file differs from what's loaded, open it.
+	useEffect(() => {
+		if (getActivePlayerId(syncSnap) !== syncSnap.sessionId) return
+		const np = syncSnap.nowPlayingFile
+		if (!np?.fileId) return
+		const currentId = uiSnap.file?.[0]?.fileId
+		if (currentId !== np.fileId && !isLoadingRef.current) {
+			navigate(`/play?id=${np.fileId}`)
+		}
+	}, [
+		syncSnap.coordinationClaim,
+		syncSnap.sessionId,
+		syncSnap.nowPlayingFile,
+		uiSnap.file,
+	])
 
 	// Save position when playback starts and pauses, so a refresh during
 	// playback restores to near where playback began rather than the last pause.
@@ -84,27 +136,7 @@ const Play = () => {
 		}
 	}, [])
 
-	// When becoming the internal coordinator with a file already loaded,
-	// announce it to the rest of the group.
-	const isCoordinator =
-		syncSnap.role === 'peer' &&
-		getCoordinatorId(syncSnap) === syncSnap.sessionId
-	useEffect(() => {
-		if (isCoordinator) {
-			void syncStore.onFileLoaded()
-		}
-	}, [isCoordinator])
-
-	// When the group coordinator announces a file, open it if needed.
-	useEffect(() => {
-		const pending = syncSnap.pendingNowPlaying
-		if (!pending) return
-		const lines = getFile()
-		if (!lines || lines.length === 0) {
-			syncStore.consumePendingNowPlaying()
-			navigate(`/play?id=${pending.fileId}`)
-		}
-	}, [syncSnap.pendingNowPlaying])
+	const remote = isRemote(syncSnap)
 
 	return (
 		<>
@@ -124,9 +156,16 @@ const Play = () => {
 					pokeControls()
 				}}
 			>
-				<FileDisplay />
-				<TranscriptDisplay />
-				<Controls />
+				{remote ? (
+					<RemotePanel />
+				) : (
+					<>
+						<FileDisplay />
+						<TranscriptDisplay />
+						<Controls />
+					</>
+				)}
+				<SyncPill />
 			</div>
 		</>
 	)

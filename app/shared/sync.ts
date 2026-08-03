@@ -1,17 +1,17 @@
 import { proxy } from 'valtio'
 import { nanoid } from 'nanoid'
 import {
-	addFileToDatabase,
+	backfillFileHashes,
 	clock,
-	getFile,
 	getTimeElapsed,
 	initAndGetDb,
 	setClock,
 	setSetting,
 	getSetting,
 	toggleIsPlaying,
-	type DbLine,
 } from './utils'
+import { FileTransfer } from './file-transfer'
+import { WebRtcTransport } from './webrtc-transport'
 
 /**
  * Multi-device sync over direct, bidirectional WebRTC data channels.
@@ -25,16 +25,9 @@ import {
  * Topology is hub-and-spoke, with one full-duplex data channel per pair.
  */
 
-const API = '/api/sync'
-const DC_NAME = 'subtitles'
-const CHUNK_SIZE = 32 * 1024
-const MAX_DATA_MESSAGE_CHARS = 64 * 1024
 const BROADCAST_INTERVAL_MS = 100
 const PING_INTERVAL_MS = 5000
 const CONNECT_TIMEOUT_MS = 15000
-const MAX_PRESENCE_RECONNECT_ATTEMPTS = 6
-const MAX_CONCURRENT_TRANSFERS = 4
-const MAX_TRANSFER_CHUNKS = 1024
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export type SyncRole = 'none' | 'peer'
@@ -49,28 +42,15 @@ export interface PeerInfo {
 
 export interface ReceivedFile {
 	fileId: string
+	hash: string
 	name: string
 }
 
-type SignalMessage =
-	| { type: 'peers'; peers: { id: string; name: string }[] }
-	| {
-			type: 'offer' | 'answer'
-			from: string
-			generation: string
-			sdp: RTCSessionDescriptionInit
-	  }
-	| {
-			type: 'ice'
-			from: string
-			generation: string
-			candidates: RTCIceCandidateInit[]
-	  }
-
-interface PeerTransport {
-	pc: RTCPeerConnection
-	generation: string
-	pendingIce: RTCIceCandidateInit[]
+/** A file this device wants to play, by its local copy. */
+export interface PlayerFile {
+	fileId: string
+	hash: string
+	name: string
 }
 
 export type SyncMessage =
@@ -78,6 +58,8 @@ export type SyncMessage =
 	| { type: 'cmd-pause' }
 	| { type: 'cmd-seek'; positionMs: number }
 	| { type: 'cmd-speed'; speed: number }
+	| { type: 'request-player'; sessionId: string }
+	| { type: 'play-file'; hash: string; name: string }
 	| { type: 'claim-coordinator'; term: number; claimantId: string }
 	| {
 			type: 'state-clock'
@@ -87,15 +69,16 @@ export type SyncMessage =
 	  }
 	| { type: 'join'; deviceName: string }
 	| { type: 'leave'; deviceName: string }
-	| { type: 'now-playing'; fileId: string; name: string }
-	| { type: 'file-list'; files: { id: string; name: string }[] }
-	| { type: 'request-file'; fileName: string }
+	| { type: 'now-playing'; hash: string; name: string }
+	| { type: 'file-list'; files: { hash: string; name: string }[] }
+	| { type: 'request-file'; hash: string }
 	| {
 			type: 'file-chunk'
 			transferId: string
 			chunkIndex: number
 			totalChunks: number
-			fileName: string
+			hash: string
+			name: string
 			data: string
 	  }
 	| { type: 'ping'; sentAt: number }
@@ -111,24 +94,6 @@ const makeRoomCode = (): string => {
 	return code
 }
 
-const formatTimestamp = (ms: number): string => {
-	const pad = (n: number, width = 2) => String(n).padStart(width, '0')
-	const hours = Math.floor(ms / 3_600_000)
-	const minutes = Math.floor((ms % 3_600_000) / 60_000)
-	const seconds = Math.floor((ms % 60_000) / 1000)
-	const millis = ms % 1000
-	return `${pad(hours)}:${pad(minutes)}:${pad(seconds)},${pad(millis, 3)}`
-}
-
-/** Raw SRT text is not stored, only parsed lines; rebuild it for transfer. */
-export const linesToSrtText = (lines: DbLine[]): string =>
-	lines
-		.map(
-			(line, index) =>
-				`${index + 1}\n${formatTimestamp(line.from)} --> ${formatTimestamp(line.to)}\n${line.text}\n`,
-		)
-		.join('\n')
-
 export interface SyncState {
 	role: SyncRole
 	sessionId: string | null
@@ -140,7 +105,12 @@ export interface SyncState {
 	coordinationClaim: { term: number; claimantId: string } | null
 	receivedFiles: ReceivedFile[]
 	transfers: { fileName: string; received: number; total: number }[]
-	pendingNowPlaying: ReceivedFile | null
+	/**
+	 * The file the group is currently playing, mapped to this device's local
+	 * copy. fileId is null until a local copy exists (incoming transfer).
+	 * hash is the content hash — the cross-device file identity.
+	 */
+	nowPlayingFile: { fileId: string | null; hash: string; name: string } | null
 	myGroupCode: string | null
 	/** group code we joined (null = our own group) */
 	joinedGroupCode: string | null
@@ -161,12 +131,24 @@ export const syncState = proxy<SyncState>({
 	coordinationClaim: null,
 	receivedFiles: [],
 	transfers: [],
-	pendingNowPlaying: null,
+	nowPlayingFile: null,
 	myGroupCode: null,
 	joinedGroupCode: null,
 	wasSharing: false,
 	isRestoring: false,
 })
+
+// Debug hooks (kept for manual inspection in the browser console).
+if (typeof window !== 'undefined') {
+	const w = window as unknown as {
+		__syncState: SyncState
+		__seek: (ms: number) => void
+		__togglePlayback: () => void
+	}
+	w.__syncState = syncState
+	w.__seek = (ms) => syncStore.seekTo(ms)
+	w.__togglePlayback = () => syncStore.togglePlayback()
+}
 
 export const getCoordinatorId = (state: {
 	sessionId: string | null
@@ -186,37 +168,79 @@ export const getCoordinatorId = (state: {
 	return online.sort()[0]
 }
 
+/**
+ * The device that renders is always the coordination claimant (the claim is
+ * the sole authority transition — see the claim-coordinator handler). This
+ * derives that id, so the two concepts can never drift apart.
+ */
+export const getActivePlayerId = (
+	state: Pick<SyncState, 'coordinationClaim'>,
+): string | null => state.coordinationClaim?.claimantId ?? null
+
+/** Readonly snapshot shape (from useSnapshot) accepted by the helpers. */
+export type SyncSnapshot = Readonly<{
+	role: SyncState['role']
+	sessionId: SyncState['sessionId']
+	deviceName: SyncState['deviceName']
+	roomPeers: readonly PeerInfo[]
+	coordinationClaim: SyncState['coordinationClaim']
+	nowPlayingFile: SyncState['nowPlayingFile']
+}>
+
+export const activePlayerOnline = (state: SyncSnapshot): boolean => {
+	const id = getActivePlayerId(state)
+	if (!id) return false
+	if (id === state.sessionId) return true
+	return state.roomPeers.some((peer) => peer.sessionId === id && peer.connected)
+}
+
+export const activePlayerName = (state: SyncSnapshot): string | null => {
+	const id = getActivePlayerId(state)
+	if (!id) return null
+	if (id === state.sessionId) return state.deviceName
+	return state.roomPeers.find((peer) => peer.sessionId === id)?.name ?? null
+}
+
+/** Shows the RemotePanel (controller UI) instead of the subtitle stage. */
+export const isRemote = (state: SyncSnapshot): boolean =>
+	state.role === 'peer' &&
+	state.nowPlayingFile !== null &&
+	getActivePlayerId(state) !== state.sessionId
+
+/** Renders the subtitle stage as the active player. */
+export const isRenderer = (state: SyncSnapshot): boolean =>
+	state.role === 'peer' && getActivePlayerId(state) === state.sessionId
+
+/**
+ * Should a freshly opened file be cast to the existing player rather than
+ * played here? True when a live player exists and it isn't this device.
+ * (Distinct from `isRemote`: that answers "show the remote panel", which also
+ * holds when the player is offline.)
+ */
+export const isRemoteController = (state: SyncSnapshot): boolean =>
+	state.role === 'peer' &&
+	getActivePlayerId(state) !== state.sessionId &&
+	activePlayerOnline(state)
+
 class SyncEngine {
-	/** non-observable WebRTC state */
-	pc: RTCPeerConnection | null = null
-	peerTransports = new Map<string, PeerTransport>()
-	earlyIce = new Map<
-		string,
-		{ generation: string; candidates: RTCIceCandidateInit[] }
-	>()
-	inboundDcs: Map<string, RTCDataChannel> = new Map()
-	presenceSocket: WebSocket | null = null
-	presenceReconnectTimer: number | null = null
-	presenceReconnectAttempts = 0
-	presenceIntentionalClose = false
+	/** WebRTC mesh + presence socket (relays only SDP/ICE) */
+	rtc = new WebRtcTransport(this, syncState)
 	broadcastTimer: number | null = null
 	pingTimer: number | null = null
 	connectTimeout: number | null = null
-	receiveBuffers = new Map<
-		string,
-		{
-			fileName: string
-			total: number
-			chunks: (string | null)[]
-			timeout: number
-		}
-	>()
-	pendingNowPlayingRequests = new Map<string, { name: string }>()
-	lastFileRequestAt = new Map<string, number>()
-	peerReconnectAttempts = new Map<string, number>()
+	/** file-sharing protocol (chunked transfer, keyed by content hash) */
+	fileTransfer = new FileTransfer(this, syncState)
+	lastPlayerRequestAt = new Map<string, number>()
 
-	/** true while the next file announcement is swallowed (internal only) */
-	suppressNextFileAnnouncement = false
+	/** true while the local timeline scrubber is being dragged (suppress clock) */
+	isScrubbing = false
+
+	/**
+	 * Set by the player page when a file is opened before the device has
+	 * joined a group: claim the player role once the group settles, unless a
+	 * peer is already playing (a now-playing announcement disarms this).
+	 */
+	pendingPlayerFile: PlayerFile | null = null
 
 	get coordinatorId(): string | null {
 		return getCoordinatorId(syncState)
@@ -243,6 +267,9 @@ class SyncEngine {
 		} else {
 			await setSetting('deviceName', syncState.deviceName)
 		}
+		// Files imported before hashing existed need a content hash before they
+		// can be announced or matched across devices.
+		await backfillFileHashes()
 	}
 
 	/** Bring back the previously active group when opening the app. */
@@ -307,6 +334,7 @@ class SyncEngine {
 	async stopSharing() {
 		this.send({ type: 'leave', deviceName: syncState.deviceName })
 		this.reset()
+		this.pendingPlayerFile = null
 		syncState.wasSharing = false
 		await setSetting('wasSharing', false)
 	}
@@ -315,6 +343,7 @@ class SyncEngine {
 	async leaveGroup() {
 		this.send({ type: 'leave', deviceName: syncState.deviceName })
 		this.reset()
+		this.pendingPlayerFile = null
 		syncState.joinedGroupCode = null
 		await setSetting('joinedGroupCode', null)
 	}
@@ -336,22 +365,16 @@ class SyncEngine {
 			void this.connectGroup(syncState.roomCode)
 	}
 
-	/** Consume the announced now-playing file (cleared after opening it). */
-	consumePendingNowPlaying() {
-		syncState.pendingNowPlaying = null
-		this.suppressNextFileAnnouncement = true
-	}
-
 	send(msg: SyncMessage) {
 		const raw = JSON.stringify(msg)
-		for (const dc of this.inboundDcs.values()) {
+		for (const dc of this.rtc.inboundDcs.values()) {
 			if (dc.readyState === 'open') dc.send(raw)
 		}
 	}
 
-	private async _sendWithBackpressure(msg: SyncMessage) {
+	async sendWithBackpressure(msg: SyncMessage) {
 		const raw = JSON.stringify(msg)
-		for (const dc of this.inboundDcs.values()) {
+		for (const dc of this.rtc.inboundDcs.values()) {
 			if (dc.readyState !== 'open') continue
 			if (dc.bufferedAmount > 512 * 1024) {
 				dc.bufferedAmountLowThreshold = 256 * 1024
@@ -383,13 +406,12 @@ class SyncEngine {
 			syncState.sessionId = makeConnectionId()
 			syncState.roomCode = code.toUpperCase()
 			this._startConnectTimeout()
-			await this._connectPresence()
+			await this.rtc.connectPresence()
 			this._startBroadcastTimer()
 			this._startPing()
 
 			syncState.connectionState = 'connected'
-			this._clearConnectTimeout()
-			void this.onFileLoaded()
+			this.clearConnectTimeout()
 		} catch (err) {
 			this._fail(
 				err,
@@ -438,17 +460,27 @@ class SyncEngine {
 		}
 	}
 
+	/** While true, incoming state-clock messages are ignored (timeline drag). */
+	setScrubbing(scrubbing: boolean) {
+		this.isScrubbing = scrubbing
+	}
+
 	// ------------------------------------------------------------------
-	// Coordinator broadcasts
+	// Active player / coordinator broadcasts
 	// ------------------------------------------------------------------
 
-	async onFileLoaded() {
-		if (this.suppressNextFileAnnouncement) {
-			this.suppressNextFileAnnouncement = false
-			return
-		}
+	/**
+	 * Make this device the active player (renders the subtitle stage): claim
+	 * coordination, then announce the file. The claim IS the player role.
+	 * `adoptFile` seeds now-playing when the group has nothing playing yet.
+	 */
+	async becomeActivePlayer(adoptFile?: PlayerFile) {
 		if (syncState.role !== 'peer' || !syncState.sessionId) return
-		if (!this.isCoordinator) {
+		// Claim unless we already hold the claim. Guarding on the claim (not on
+		// `isCoordinator`) matters: the default coordinator (lowest id, no claim
+		// yet) must still claim, or the derived player id stays null and this
+		// device would render the remote panel instead of the player.
+		if (syncState.coordinationClaim?.claimantId !== syncState.sessionId) {
 			const claim = {
 				term: (syncState.coordinationClaim?.term ?? 0) + 1,
 				claimantId: syncState.sessionId,
@@ -456,18 +488,73 @@ class SyncEngine {
 			syncState.coordinationClaim = claim
 			this.send({ type: 'claim-coordinator', ...claim })
 		}
-		await this.broadcastNowPlaying()
+		if (!syncState.nowPlayingFile && adoptFile) {
+			syncState.nowPlayingFile = adoptFile
+		}
+		await this.announceFile()
+	}
+
+	/**
+	 * Request to take the player role once the group settles, used when a file
+	 * is opened before the device has connected. Completes deterministically
+	 * (see the takeover triggers); a peer already playing disarms it.
+	 */
+	requestPlayerRole(file: PlayerFile) {
+		this.pendingPlayerFile = file
+	}
+
+	/** Re-broadcast the current file to the group (no claim). */
+	async announceFile() {
+		if (!this.isCoordinator) return
+		const np = syncState.nowPlayingFile
+		if (np?.fileId) {
+			this.send({ type: 'now-playing', hash: np.hash, name: np.name })
+		}
 		await this.broadcastFileList()
 	}
 
-	async broadcastNowPlaying() {
+	/**
+	 * Pick which device renders. Selecting "this device" claims locally;
+	 * selecting a peer asks it to claim (a pure request — only the fenced
+	 * claim-coordinator message changes who the player is).
+	 */
+	setPlayer(sessionId: string) {
+		if (syncState.role !== 'peer') return
+		if (sessionId === syncState.sessionId) {
+			void this.becomeActivePlayer()
+			return
+		}
+		if (!syncState.roomPeers.some((peer) => peer.sessionId === sessionId))
+			return
+		this.send({ type: 'request-player', sessionId })
+	}
+
+	/**
+	 * Play a file by content hash. From a remote this routes to the
+	 * coordinator (which, by the claim invariant, is always the active player);
+	 * from the renderer itself it loads the file directly.
+	 */
+	playFile(hash: string, name: string) {
+		if (syncState.role !== 'peer') return
+		if (this.isCoordinator) {
+			void this._handlePlayFile(hash, name)
+			return
+		}
+		this.send({ type: 'play-file', hash, name })
+	}
+
+	private async _handlePlayFile(hash: string, name: string) {
 		if (!this.isCoordinator) return
-		const lines = getFile()
-		const fileId = lines?.[0]?.fileId
-		if (!fileId) return
 		const db = await initAndGetDb()
-		const file = await db.get('files', fileId)
-		this.send({ type: 'now-playing', fileId, name: file?.name ?? 'Subtitle' })
+		const existing = (await db.getAll('files')).find((f) => f.hash === hash)
+		if (existing) {
+			syncState.nowPlayingFile = { fileId: existing.id, hash, name }
+			await this.announceFile()
+			return
+		}
+		// Renderer doesn't have the file yet; pull it from the group.
+		syncState.nowPlayingFile = { fileId: null, hash, name }
+		this.send({ type: 'request-file', hash })
 	}
 
 	async broadcastFileList() {
@@ -477,38 +564,22 @@ class SyncEngine {
 		this.send({
 			type: 'file-list',
 			files: files
+				.filter((file) => file.hash)
 				.slice(0, 256)
-				.map((file) => ({ id: file.id, name: file.name.slice(0, 256) })),
+				.map((file) => ({
+					hash: file.hash as string,
+					name: file.name.slice(0, 256),
+				})),
 		})
 	}
 
-	async sendFile(fileName: string) {
-		if (!this.isCoordinator) return
-		const db = await initAndGetDb()
-		const file = (await db.getAll('files')).find((f) => f.name === fileName)
-		if (!file) return
-		const lines = await db.getAllFromIndex('lines', 'by-file-id', file.id)
-		lines.sort((a, b) => a.from - b.from)
-		if (lines.length === 0) return
+	/** Domain hook for "the local library changed" (e.g. after an import). */
+	async onFilesChanged() {
+		await this.broadcastFileList()
+	}
 
-		const text = linesToSrtText(lines)
-		const transferId = nanoid()
-		const totalChunks = Math.max(1, Math.ceil(text.length / CHUNK_SIZE))
-		if (totalChunks > MAX_TRANSFER_CHUNKS) {
-			syncState.error = 'This subtitle file is too large to sync directly'
-			return
-		}
-
-		for (let i = 0; i < totalChunks; i++) {
-			await this._sendWithBackpressure({
-				type: 'file-chunk',
-				transferId,
-				chunkIndex: i,
-				totalChunks,
-				fileName,
-				data: text.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
-			})
-		}
+	sendFile(hash: string) {
+		void this.fileTransfer.sendFile(hash)
 	}
 
 	sendFileDeleted(fileId: string, fileName: string) {
@@ -532,7 +603,7 @@ class SyncEngine {
 	// Incoming messages
 	// ------------------------------------------------------------------
 
-	private _handleMessage(value: unknown, peerId: string) {
+	handleMessage(value: unknown, peerId: string) {
 		if (!value || typeof value !== 'object' || Array.isArray(value)) return
 		const msg = value as SyncMessage
 		if (msg.type === 'claim-coordinator') {
@@ -548,11 +619,12 @@ class SyncEngine {
 				!current ||
 				msg.term > current.term ||
 				(msg.term === current.term && msg.claimantId > current.claimantId)
-			)
+			) {
 				syncState.coordinationClaim = {
 					term: msg.term,
 					claimantId: msg.claimantId,
 				}
+			}
 			return
 		}
 		const fromCoordinator = peerId === this.coordinatorId
@@ -562,9 +634,12 @@ class SyncEngine {
 					'cmd-pause',
 					'cmd-seek',
 					'cmd-speed',
+					'request-player',
+					'play-file',
 					'join',
 					'leave',
 					'request-file',
+					'file-chunk',
 					'ping',
 					'pong',
 				])
@@ -574,12 +649,27 @@ class SyncEngine {
 						'now-playing',
 						'file-list',
 						'file-chunk',
+						'request-player',
+						'request-file',
 						'ping',
 						'pong',
 					])
-				: new Set(['ping', 'pong'])
+				: new Set(['request-player', 'ping', 'pong'])
 		if (!allowed.has(msg.type)) return
 		switch (msg.type) {
+			case 'request-player':
+				// A pure request: only the addressed device acts, and it claims
+				// through the fenced claim-coordinator message.
+				if (
+					typeof msg.sessionId !== 'string' ||
+					msg.sessionId !== syncState.sessionId
+				)
+					return
+				if (Date.now() - (this.lastPlayerRequestAt.get(peerId) ?? 0) < 2000)
+					return
+				this.lastPlayerRequestAt.set(peerId, Date.now())
+				void this.becomeActivePlayer()
+				return
 			case 'state-clock':
 				if (
 					typeof msg.isPlaying !== 'boolean' ||
@@ -593,7 +683,15 @@ class SyncEngine {
 				this._applyClockState(msg)
 				return
 			case 'now-playing':
-				if (typeof msg.name !== 'string' || msg.name.length > 256) return
+				if (
+					typeof msg.hash !== 'string' ||
+					msg.hash.length > 128 ||
+					typeof msg.name !== 'string' ||
+					msg.name.length > 256
+				)
+					return
+				// A peer is already playing; we're a follower.
+				this.pendingPlayerFile = null
 				void this._handleNowPlaying(msg).catch((err) =>
 					console.error('now-playing handler failed', err),
 				)
@@ -605,18 +703,37 @@ class SyncEngine {
 					msg.files.some(
 						(file) =>
 							!file ||
-							typeof file.id !== 'string' ||
+							typeof file.hash !== 'string' ||
+							file.hash.length > 128 ||
 							typeof file.name !== 'string' ||
 							file.name.length > 256,
 					)
 				)
 					return
+				// The coordinator answered our join (file-list always follows
+				// any now-playing on the same channel). No player announced and
+				// none claimed => nobody is playing, so take the role.
+				if (this.pendingPlayerFile && !syncState.coordinationClaim) {
+					const file = this.pendingPlayerFile
+					this.pendingPlayerFile = null
+					void this.becomeActivePlayer(file)
+				}
 				void this._handleFileList(msg).catch((err) =>
 					console.error('file-list handler failed', err),
 				)
 				return
 			case 'file-chunk':
 				this._handleFileChunk(msg)
+				return
+			case 'request-file':
+				if (typeof msg.hash !== 'string' || msg.hash.length > 128) return
+				if (
+					Date.now() - (this.fileTransfer.lastFileRequestAt.get(peerId) ?? 0) <
+					2000
+				)
+					return
+				this.fileTransfer.lastFileRequestAt.set(peerId, Date.now())
+				void this.fileTransfer.sendFile(msg.hash)
 				return
 			case 'ping':
 				this.send({ type: 'pong', sentAt: msg.sentAt })
@@ -626,6 +743,16 @@ class SyncEngine {
 		if (!this.isCoordinator) return
 
 		switch (msg.type) {
+			case 'play-file':
+				if (
+					typeof msg.hash !== 'string' ||
+					msg.hash.length > 128 ||
+					typeof msg.name !== 'string' ||
+					msg.name.length > 256
+				)
+					return
+				void this._handlePlayFile(msg.hash, msg.name)
+				return
 			case 'cmd-play':
 				if (!clock.isPlaying) {
 					toggleIsPlaying(true)
@@ -657,23 +784,16 @@ class SyncEngine {
 				this.broadcastClockState()
 				return
 			case 'join':
-				void this._handlePeerJoin()
+				void this.handlePeerJoin()
 				return
 			case 'leave':
 				this._handlePeerLeave(msg.deviceName)
-				return
-			case 'request-file':
-				if (typeof msg.fileName !== 'string' || msg.fileName.length > 256)
-					return
-				if (Date.now() - (this.lastFileRequestAt.get(peerId) ?? 0) < 2000)
-					return
-				this.lastFileRequestAt.set(peerId, Date.now())
-				void this.sendFile(msg.fileName)
 				return
 		}
 	}
 
 	private _applyClockState(msg: Extract<SyncMessage, { type: 'state-clock' }>) {
+		if (this.isScrubbing) return
 		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: msg.positionMs })
 		toggleIsPlaying(msg.isPlaying)
 		setClock({
@@ -683,10 +803,17 @@ class SyncEngine {
 		})
 	}
 
-	private async _handlePeerJoin() {
+	async handlePeerJoin() {
+		// A peer joined while we're the idle coordinator with a file open and
+		// nobody playing: take the stage so the newcomer has something to see.
+		if (this.pendingPlayerFile && !syncState.coordinationClaim) {
+			const file = this.pendingPlayerFile
+			this.pendingPlayerFile = null
+			await this.becomeActivePlayer(file)
+		}
 		// Push current state so a newly joined device catches up.
-		await this.broadcastNowPlaying()
-		await this.broadcastFileList()
+		await this.announceFile()
+		this.broadcastClockState()
 	}
 
 	private _handlePeerLeave(deviceName: string) {
@@ -699,371 +826,25 @@ class SyncEngine {
 		msg: Extract<SyncMessage, { type: 'now-playing' }>,
 	) {
 		const db = await initAndGetDb()
-		const existing = (await db.getAll('files')).find((f) => f.name === msg.name)
+		const existing = (await db.getAll('files')).find((f) => f.hash === msg.hash)
 		if (existing) {
-			syncState.pendingNowPlaying = { fileId: existing.id, name: msg.name }
+			syncState.nowPlayingFile = {
+				fileId: existing.id,
+				hash: msg.hash,
+				name: msg.name,
+			}
 			return
 		}
-		this.pendingNowPlayingRequests.set(msg.name, msg)
-		this.send({ type: 'request-file', fileName: msg.name })
+		syncState.nowPlayingFile = { fileId: null, hash: msg.hash, name: msg.name }
+		this.send({ type: 'request-file', hash: msg.hash })
 	}
 
-	private async _handleFileList(
-		msg: Extract<SyncMessage, { type: 'file-list' }>,
-	) {
-		const db = await initAndGetDb()
-		const localNames = new Set((await db.getAll('files')).map((f) => f.name))
-		for (const file of msg.files) {
-			if (!localNames.has(file.name)) {
-				this.send({ type: 'request-file', fileName: file.name })
-			}
-		}
+	private _handleFileList(msg: Extract<SyncMessage, { type: 'file-list' }>) {
+		return this.fileTransfer.handleFileList(msg)
 	}
 
 	private _handleFileChunk(msg: Extract<SyncMessage, { type: 'file-chunk' }>) {
-		if (
-			typeof msg.transferId !== 'string' ||
-			msg.transferId.length > 128 ||
-			typeof msg.fileName !== 'string' ||
-			msg.fileName.length > 256 ||
-			!Number.isInteger(msg.totalChunks) ||
-			msg.totalChunks < 1 ||
-			msg.totalChunks > MAX_TRANSFER_CHUNKS ||
-			!Number.isInteger(msg.chunkIndex) ||
-			msg.chunkIndex < 0 ||
-			msg.chunkIndex >= msg.totalChunks ||
-			typeof msg.data !== 'string' ||
-			msg.data.length > CHUNK_SIZE
-		)
-			return
-		let buffer = this.receiveBuffers.get(msg.transferId)
-		if (!buffer) {
-			if (this.receiveBuffers.size >= MAX_CONCURRENT_TRANSFERS) return
-			buffer = {
-				fileName: msg.fileName,
-				total: msg.totalChunks,
-				chunks: new Array<string | null>(msg.totalChunks).fill(null),
-				timeout: window.setTimeout(() => {
-					this.receiveBuffers.delete(msg.transferId)
-					this._updateTransfers()
-				}, 60_000),
-			}
-			this.receiveBuffers.set(msg.transferId, buffer)
-		}
-		if (buffer.total !== msg.totalChunks || buffer.fileName !== msg.fileName)
-			return
-		buffer.chunks[msg.chunkIndex] = msg.data
-		this._updateTransfers()
-
-		if (buffer.chunks.every((chunk) => chunk !== null)) {
-			window.clearTimeout(buffer.timeout)
-			this.receiveBuffers.delete(msg.transferId)
-			this._updateTransfers()
-			const text = (buffer.chunks as string[]).join('')
-			void this._importReceivedFile(buffer.fileName, text)
-		}
-	}
-
-	private _updateTransfers() {
-		syncState.transfers = [...this.receiveBuffers.values()].map((buffer) => ({
-			fileName: buffer.fileName,
-			received: buffer.chunks.filter((chunk) => chunk !== null).length,
-			total: buffer.total,
-		}))
-	}
-
-	private async _importReceivedFile(fileName: string, text: string) {
-		if (syncState.receivedFiles.some((file) => file.name === fileName)) return
-		try {
-			const fileId = await addFileToDatabase(text, fileName)
-			syncState.receivedFiles = [
-				...syncState.receivedFiles,
-				{ fileId, name: fileName },
-			]
-			const pending = this.pendingNowPlayingRequests.get(fileName)
-			if (pending) {
-				this.pendingNowPlayingRequests.delete(fileName)
-				syncState.pendingNowPlaying = { fileId, name: fileName }
-			}
-		} catch (err) {
-			console.error('Failed to import received file', err)
-		}
-	}
-
-	// ------------------------------------------------------------------
-	// WebRTC plumbing
-	// ------------------------------------------------------------------
-
-	private _monitorConnection(pc: RTCPeerConnection, peerId: string) {
-		pc.onconnectionstatechange = () => {
-			if (pc.connectionState === 'connected') {
-				this.peerReconnectAttempts.set(peerId, 0)
-				syncState.connectionState = 'connected'
-				this.presenceReconnectAttempts = 0
-				this._clearConnectTimeout()
-				if (syncState.sessionId && syncState.sessionId > peerId)
-					this._sendSignal({
-						type: 'ready',
-						to: peerId,
-						generation:
-							this.peerTransports.get(peerId)?.generation ?? makeConnectionId(),
-					})
-			}
-			if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
-				const transport = this.peerTransports.get(peerId)
-				if (transport?.pc === pc) this.peerTransports.delete(peerId)
-				syncState.roomPeers = syncState.roomPeers.map((peer) =>
-					peer.sessionId === peerId ? { ...peer, connected: false } : peer,
-				)
-				const retries = this.peerReconnectAttempts.get(peerId) ?? 0
-				if (
-					retries < 3 &&
-					!this.presenceIntentionalClose &&
-					syncState.roomCode
-				) {
-					this.peerReconnectAttempts.set(peerId, retries + 1)
-					this._schedulePresenceReconnect()
-				}
-			}
-		}
-	}
-
-	private _attachDataChannel(dc: RTCDataChannel, peerId: string) {
-		dc.onmessage = (event) => {
-			try {
-				if (
-					typeof event.data !== 'string' ||
-					event.data.length > MAX_DATA_MESSAGE_CHARS
-				)
-					return
-				this._handleMessage(JSON.parse(event.data), peerId)
-			} catch (err) {
-				console.warn('Ignoring malformed sync message', err)
-			}
-		}
-		dc.onopen = () => {
-			this.inboundDcs.set(peerId, dc)
-			syncState.roomPeers = syncState.roomPeers.map((peer) =>
-				peer.sessionId === peerId ? { ...peer, connected: true } : peer,
-			)
-			if (syncState.coordinationClaim?.claimantId === syncState.sessionId)
-				dc.send(
-					JSON.stringify({
-						type: 'claim-coordinator',
-						...syncState.coordinationClaim,
-					}),
-				)
-			this.send({ type: 'join', deviceName: syncState.deviceName })
-			if (this.isCoordinator) void this._handlePeerJoin()
-		}
-		dc.onclose = () => {
-			if (this.inboundDcs.get(peerId) === dc) this.inboundDcs.delete(peerId)
-		}
-	}
-
-	private _newPeer(peerId: string, generation: string): PeerTransport {
-		this.peerTransports.get(peerId)?.pc.close()
-		const pc = new RTCPeerConnection({
-			iceServers: [{ urls: 'stun:stun.cloudflare.com:3478' }],
-			iceTransportPolicy: 'all',
-			bundlePolicy: 'max-bundle',
-		})
-		const transport: PeerTransport = { pc, generation, pendingIce: [] }
-		const early = this.earlyIce.get(peerId)
-		if (early?.generation === generation)
-			transport.pendingIce.push(...early.candidates)
-		this.earlyIce.delete(peerId)
-		this.peerTransports.set(peerId, transport)
-		this.pc = pc
-		this._monitorConnection(pc, peerId)
-		pc.onicecandidate = (event) => {
-			if (event.candidate)
-				this._sendSignal({
-					type: 'ice',
-					to: peerId,
-					generation,
-					candidates: [event.candidate.toJSON()],
-				})
-		}
-		return transport
-	}
-
-	private async _offerPeer(peerId: string) {
-		const generation = makeConnectionId()
-		const transport = this._newPeer(peerId, generation)
-		const dc = transport.pc.createDataChannel(DC_NAME)
-		this._attachDataChannel(dc, peerId)
-		await transport.pc.setLocalDescription(await transport.pc.createOffer())
-		this._sendSignal({
-			type: 'offer',
-			to: peerId,
-			generation,
-			sdp: transport.pc.localDescription,
-		})
-	}
-
-	private async _handleSignal(message: SignalMessage) {
-		if (message.type === 'peers') {
-			const wasCoordinator = this.isCoordinator
-			const signaled = message.peers
-				.filter((peer) => peer.id !== syncState.sessionId)
-				.map((peer) => ({
-					sessionId: peer.id,
-					name: peer.name,
-					connected: this.inboundDcs.get(peer.id)?.readyState === 'open',
-				}))
-			syncState.roomPeers = signaled
-			if (
-				syncState.coordinationClaim &&
-				syncState.coordinationClaim.claimantId !== syncState.sessionId &&
-				!signaled.some(
-					(peer) => peer.sessionId === syncState.coordinationClaim?.claimantId,
-				)
-			)
-				syncState.coordinationClaim = null
-			if (!wasCoordinator && this.isCoordinator) {
-				this.broadcastClockState()
-				void this.onFileLoaded()
-			}
-			for (const peer of message.peers)
-				if (
-					syncState.sessionId &&
-					syncState.sessionId < peer.id &&
-					!this.peerTransports.has(peer.id)
-				)
-					void this._offerPeer(peer.id)
-			return
-		}
-		if (
-			message.type === 'offer' &&
-			syncState.sessionId &&
-			message.from < syncState.sessionId
-		) {
-			const transport = this._newPeer(message.from, message.generation)
-			transport.pc.ondatachannel = (event) =>
-				this._attachDataChannel(event.channel, message.from)
-			await transport.pc.setRemoteDescription(message.sdp)
-			for (const ice of transport.pendingIce.splice(0))
-				await transport.pc.addIceCandidate(ice)
-			await transport.pc.setLocalDescription(await transport.pc.createAnswer())
-			this._sendSignal({
-				type: 'answer',
-				to: message.from,
-				generation: message.generation,
-				sdp: transport.pc.localDescription,
-			})
-			return
-		}
-		const transport = this.peerTransports.get(message.from)
-		if (!transport || transport.generation !== message.generation) {
-			if (message.type === 'ice')
-				this.earlyIce.set(message.from, {
-					generation: message.generation,
-					candidates: message.candidates,
-				})
-			return
-		}
-		if (message.type === 'answer') {
-			await transport.pc.setRemoteDescription(message.sdp)
-			for (const ice of transport.pendingIce.splice(0))
-				await transport.pc.addIceCandidate(ice)
-		} else if (message.type === 'ice') {
-			if (!transport.pc.remoteDescription)
-				transport.pendingIce.push(...message.candidates)
-			else
-				for (const ice of message.candidates)
-					await transport.pc.addIceCandidate(ice)
-		}
-	}
-
-	// ------------------------------------------------------------------
-	// Discovery / presence (one hibernatable Durable Object WebSocket)
-	// ------------------------------------------------------------------
-
-	private _connectPresence(): Promise<void> {
-		if (!syncState.roomCode || !syncState.sessionId) {
-			return Promise.reject(new Error('Room transport is not ready'))
-		}
-		this._closePresenceSocket()
-		this.presenceIntentionalClose = false
-		const url = new URL(`${API}/room`, location.origin)
-		url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-		url.searchParams.set('code', syncState.roomCode)
-		url.searchParams.set('id', syncState.sessionId)
-		url.searchParams.set('name', syncState.deviceName.slice(0, 64))
-
-		return new Promise((resolve, reject) => {
-			const socket = new WebSocket(url, ['subtitle-sync'])
-			this.presenceSocket = socket
-			let settled = false
-			const fail = () => {
-				if (!settled) {
-					settled = true
-					reject(new Error('Could not connect to room presence'))
-				}
-			}
-			socket.onmessage = (event) => {
-				try {
-					const message = JSON.parse(String(event.data)) as SignalMessage
-					void this._handleSignal(message).catch((err) =>
-						console.warn('Signal failed', err),
-					)
-					this.presenceReconnectAttempts = 0
-					if (!settled && message.type === 'peers') {
-						settled = true
-						resolve()
-					}
-				} catch (err) {
-					console.warn('Ignoring malformed presence message', err)
-				}
-			}
-			socket.onerror = fail
-			socket.onclose = () => {
-				const isCurrentSocket = this.presenceSocket === socket
-				if (isCurrentSocket) this.presenceSocket = null
-				fail()
-				if (
-					isCurrentSocket &&
-					!this.presenceIntentionalClose &&
-					syncState.role === 'peer' &&
-					syncState.roomCode
-				) {
-					this._schedulePresenceReconnect()
-				}
-			}
-		})
-	}
-
-	private _sendSignal(message: Record<string, unknown>) {
-		if (this.presenceSocket?.readyState === WebSocket.OPEN)
-			this.presenceSocket.send(JSON.stringify(message))
-	}
-
-	private _schedulePresenceReconnect() {
-		if (this.presenceReconnectTimer !== null) return
-		if (this.presenceReconnectAttempts >= MAX_PRESENCE_RECONNECT_ATTEMPTS) {
-			if (syncState.connectionState !== 'connected') {
-				syncState.connectionState = 'error'
-				syncState.error = 'Could not reconnect directly to the other device'
-			}
-			return
-		}
-		const attempt = this.presenceReconnectAttempts++
-		const delay = Math.min(30_000, 1000 * 2 ** attempt) + Math.random() * 500
-		this.presenceReconnectTimer = window.setTimeout(() => {
-			this.presenceReconnectTimer = null
-			void this._connectPresence().catch(() => {})
-		}, delay)
-	}
-
-	private _closePresenceSocket() {
-		this.presenceIntentionalClose = true
-		if (this.presenceReconnectTimer !== null) {
-			window.clearTimeout(this.presenceReconnectTimer)
-			this.presenceReconnectTimer = null
-		}
-		this.presenceSocket?.close(1000, 'Leaving room')
-		this.presenceSocket = null
+		this.fileTransfer.handleFileChunk(msg)
 	}
 
 	// ------------------------------------------------------------------
@@ -1101,7 +882,7 @@ class SyncEngine {
 	}
 
 	private _startConnectTimeout() {
-		this._clearConnectTimeout()
+		this.clearConnectTimeout()
 		this.connectTimeout = window.setTimeout(() => {
 			if (syncState.connectionState === 'connecting') {
 				syncState.connectionState = 'error'
@@ -1110,7 +891,7 @@ class SyncEngine {
 		}, CONNECT_TIMEOUT_MS)
 	}
 
-	private _clearConnectTimeout() {
+	clearConnectTimeout() {
 		if (this.connectTimeout !== null) {
 			window.clearTimeout(this.connectTimeout)
 			this.connectTimeout = null
@@ -1132,21 +913,11 @@ class SyncEngine {
 	}
 
 	private _teardownTransport() {
-		this._closePresenceSocket()
+		this.rtc.teardown()
 		this._stopBroadcastTimer()
 		this._stopPing()
-		this._clearConnectTimeout()
-		for (const dc of this.inboundDcs.values()) {
-			dc.close()
-		}
-		this.inboundDcs.clear()
-		for (const transport of this.peerTransports.values()) transport.pc.close()
-		this.peerTransports.clear()
-		this.earlyIce.clear()
-		this.lastFileRequestAt.clear()
-		this.peerReconnectAttempts.clear()
-		this.pc?.close()
-		this.pc = null
+		this.clearConnectTimeout()
+		this.fileTransfer.lastFileRequestAt.clear()
 	}
 
 	reset() {
@@ -1160,8 +931,11 @@ class SyncEngine {
 		syncState.coordinationClaim = null
 		syncState.receivedFiles = []
 		syncState.transfers = []
-		syncState.pendingNowPlaying = null
-		this.suppressNextFileAnnouncement = false
+		syncState.nowPlayingFile = null
+		this.isScrubbing = false
+		// pendingPlayerFile is deliberately NOT cleared here: it survives a
+		// reconnect so a file opened before joining still claims once the
+		// group settles. Explicit leave clears it (see stopSharing/leaveGroup).
 	}
 }
 

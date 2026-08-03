@@ -8,6 +8,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from 'react-router'
+import { syncStore } from '~/shared/sync'
 import type { Route } from './+types/root'
 import stylesheet from './app.css?url'
 
@@ -72,6 +73,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+	// Reconnect the last active group once per app launch; the play page owns
+	// the renderer file-follow.
+	useEffect(() => {
+		void syncStore.restore()
+	}, [])
+
 	return <Outlet />
 }
 

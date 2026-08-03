@@ -13,8 +13,7 @@ export function cn(...inputs: ClassValue[]) {
 
 /** App-wide button chrome: the shadcn default is compact, the product language
  * is roomier. Applied to every Button via cn(). */
-export const buttonChrome =
-	'h-auto rounded-lg px-4 py-2 text-sm font-semibold'
+export const buttonChrome = 'h-auto rounded-lg px-4 py-2 text-sm font-semibold'
 
 /** The app may be opened directly via a QR code or external link, leaving no
  * previous history entry to go back to. */
@@ -314,6 +313,8 @@ interface MyDB extends DBSchema {
 		value: {
 			id: string
 			name: string
+			/** content hash used as the cross-device file identity */
+			hash?: string
 			/** length of file (TBD) */
 			length?: any
 			watched?: boolean
@@ -371,6 +372,54 @@ export const setSetting = async (key: string, value: unknown) => {
 	await db.put('settings', { key, value })
 }
 
+const formatTimestamp = (ms: number): string => {
+	const pad = (n: number, width = 2) => String(n).padStart(width, '0')
+	const hours = Math.floor(ms / 3_600_000)
+	const minutes = Math.floor((ms % 3_600_000) / 60_000)
+	const seconds = Math.floor((ms % 60_000) / 1000)
+	const millis = ms % 1000
+	return `${pad(hours)}:${pad(minutes)}:${pad(seconds)},${pad(millis, 3)}`
+}
+
+/** Raw SRT text is not stored, only parsed lines; rebuild it for transfer. */
+export const linesToSrtText = (lines: DbLine[]): string =>
+	lines
+		.map(
+			(line, index) =>
+				`${index + 1}\n${formatTimestamp(line.from)} --> ${formatTimestamp(line.to)}\n${line.text}\n`,
+		)
+		.join('\n')
+
+/**
+ * SHA-256 hex digest of a subtitle's canonical SRT text. The canonical text is
+ * deterministic for the same parsed lines, so two devices that imported the
+ * same file (or received it over a data channel) derive the same hash — that
+ * hash is the cross-device file identity, replacing name-based matching.
+ */
+export const hashText = async (text: string): Promise<string> => {
+	const digest = await crypto.subtle.digest(
+		'SHA-256',
+		new TextEncoder().encode(text),
+	)
+	return [...new Uint8Array(digest)]
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('')
+}
+
+/** Fill in missing hashes for files imported before hashing existed. */
+export const backfillFileHashes = once(async () => {
+	const db = await initAndGetDb()
+	const missing = (await db.getAll('files')).filter((file) => !file.hash)
+	for (const file of missing) {
+		const fileLines = await db.getAllFromIndex('lines', 'by-file-id', file.id)
+		if (fileLines.length === 0) continue
+		await db.put('files', {
+			...file,
+			hash: await hashText(linesToSrtText(fileLines)),
+		})
+	}
+})
+
 export const addFileToDatabase = async (text: string, fileName: string) => {
 	// console.log(`analyzing text for ${fileName}`, text)
 	// const text = await file.text();
@@ -380,32 +429,34 @@ export const addFileToDatabase = async (text: string, fileName: string) => {
 
 	const fileId = nanoid()
 
+	const lines: DbLine[] = entries.map((entry) => {
+		const { id: originalId, text: entryText, ...remaining } = entry
+		return {
+			id: nanoid(),
+			fileId,
+			// sometimes originalId and text
+			// have an extra /r at the end,
+			// etc, so trim them
+			originalId: originalId.trim(),
+			text: entryText.trim(),
+			...remaining,
+		}
+	})
+
+	const hash = await hashText(linesToSrtText(lines))
+
 	const tx = db.transaction(['files', 'lines'], 'readwrite')
 
 	tx.objectStore('files').add({
 		id: fileId,
 		name: fileName,
+		hash,
 		// duration of the subtitle track in ms (last cue's end time)
 		length: entries.length > 0 ? entries[entries.length - 1].to : 0,
 	})
 
-	const lines = tx.objectStore('lines')
-
-	await Promise.all(
-		entries.map((entry) => {
-			const { id: originalId, text, ...remaining } = entry
-			return lines.add({
-				id: nanoid(),
-				fileId,
-				// sometimes originalId and text
-				// have an extra /r at the end,
-				// etc, so trim them
-				originalId: originalId.trim(),
-				text: text.trim(),
-				...remaining,
-			})
-		}),
-	)
+	const lineStore = tx.objectStore('lines')
+	await Promise.all(lines.map((line) => lineStore.add(line)))
 
 	await tx.done
 

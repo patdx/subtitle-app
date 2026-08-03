@@ -1,6 +1,14 @@
 import { useSnapshot } from 'valtio'
+import { seekTo, syncStore, togglePlayback } from './sync'
 import { TimeDisplay } from './subtitle'
-import { clock, getDuration, setClock, toggleIsPlaying, uiState } from './utils'
+import {
+	clock,
+	getDuration,
+	getTimeElapsed,
+	setClock,
+	toggleIsPlaying,
+	uiState,
+} from './utils'
 
 export const Timeline = () => {
 	const uiSnap = useSnapshot(uiState)
@@ -15,6 +23,8 @@ export const Timeline = () => {
 
 	const handlePointerDown = () => {
 		wasPlaying.current = clock.isPlaying
+		// Ignore incoming clock state while dragging so peers don't fight the thumb.
+		syncStore.setScrubbing(true)
 		if (clock.isPlaying) {
 			toggleIsPlaying(false)
 		}
@@ -28,8 +38,11 @@ export const Timeline = () => {
 	}
 
 	const handlePointerUp = () => {
+		syncStore.setScrubbing(false)
+		// Commit the scrubbed position through sync so every device follows.
+		seekTo(getTimeElapsed())
 		if (wasPlaying.current) {
-			toggleIsPlaying(true)
+			togglePlayback()
 		}
 	}
 
