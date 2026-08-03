@@ -65,9 +65,9 @@ export const TranscriptDisplay = () => {
 			<SheetContent
 				side="bottom"
 				showCloseButton={false}
-				className="h-[min(85dvh,100%)] gap-0 border-t border-white/10 bg-ink-950 p-0 text-white sm:max-w-none!"
+				className="gap-0 border-t border-white/10 bg-ink-950 p-0 text-white data-[side=bottom]:h-[min(85dvh,100%)] data-[side=bottom]:max-h-[85dvh] sm:max-w-none!"
 			>
-				<SheetHeader className="flex flex-row items-center justify-between gap-3 border-b border-white/10 px-4 py-3 pl-safe pr-safe">
+				<SheetHeader className="flex shrink-0 flex-row items-center justify-between gap-3 border-b border-white/10 px-4 py-3 pl-safe pr-safe">
 					<SheetTitle className="text-sm font-semibold text-white">
 						Transcript
 					</SheetTitle>
