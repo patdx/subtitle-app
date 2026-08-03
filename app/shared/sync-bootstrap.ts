@@ -21,13 +21,19 @@ export function setFileFollowPaused(paused: boolean) {
 
 function followNowPlayingFile() {
 	if (fileFollowPaused) return
-	if (getActivePlayerId(syncState) !== syncState.sessionId) return
 	const fileId = syncState.nowPlayingFile?.fileId
 	if (!fileId) return
+
+	const isActivePlayer = getActivePlayerId(syncState) === syncState.sessionId
+	const onPlayPage = location.pathname === '/play'
+	// Active player always follows the cast file. Remotes only follow when
+	// already on /play (e.g. opened the now-playing bar before a transfer finished).
+	if (!isActivePlayer && !onPlayPage) return
+
 	const currentId = uiState.file?.[0]?.fileId
 	if (currentId === fileId) return
 	const url = new URL(location.href)
-	if (url.pathname === '/play' && url.searchParams.get('id') === fileId) return
+	if (onPlayPage && url.searchParams.get('id') === fileId) return
 	appNavigate?.(`/play?id=${fileId}`)
 }
 

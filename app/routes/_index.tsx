@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { once } from 'lodash-es'
-import { Link as RouterLink } from 'react-router'
+import { Link as RouterLink, useNavigate } from 'react-router'
 import { useSnapshot } from 'valtio'
 import { Page } from '~/components'
 import { Input } from '~/components/ui/input'
@@ -134,42 +134,78 @@ const posterInitials = (name: string): string => {
 }
 
 const NowPlayingBar = ({ snap }: { snap: SyncSnapshot }) => {
+	const navigate = useNavigate()
 	const title = snap.nowPlayingFile?.name ?? 'Nothing playing'
 	const strip = playingOnLabel(snap)
 	const hasTitle = !!snap.nowPlayingFile
 
+	const openPlayer = () => {
+		const np = snap.nowPlayingFile
+		if (!np) return
+		if (np.fileId) {
+			navigate(`/play?id=${np.fileId}`)
+			return
+		}
+		// Transfer still in flight — open the player; bootstrap follows once fileId lands.
+		navigate('/play')
+	}
+
 	return (
 		<div className="stage-now-playing-bar pointer-events-auto overflow-hidden rounded-t-panel border border-stage-edge border-b-0 bg-stage-raised shadow-[0_-8px_32px_oklch(0_0_0/0.35)]">
-			<div className="bg-ember-600 px-3 py-1 text-center text-[11px] font-medium tracking-wide text-white">
+			<button
+				type="button"
+				disabled={!hasTitle}
+				onClick={openPlayer}
+				aria-label={hasTitle ? `Open player: ${title}` : undefined}
+				className={cn(
+					'block w-full bg-ember-600 px-3 py-1 text-center text-[11px] font-medium tracking-wide text-white',
+					hasTitle
+						? 'cursor-pointer hover:bg-ember-500'
+						: 'cursor-default',
+				)}
+			>
 				{strip}
-			</div>
+			</button>
 			<div className="flex items-center gap-3 px-3 py-2.5">
-				<div
-					className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-sm font-semibold text-stage-fg/90"
-					style={posterCoverStyle(hasTitle ? title : 'idle')}
-					aria-hidden
+				<button
+					type="button"
+					disabled={!hasTitle}
+					onClick={openPlayer}
+					aria-label={hasTitle ? `Open player: ${title}` : undefined}
+					className={cn(
+						'flex min-w-0 flex-1 items-center gap-3 text-left',
+						hasTitle
+							? 'cursor-pointer rounded-control transition-colors hover:bg-stage-elevated/40'
+							: 'cursor-default',
+					)}
 				>
-					{hasTitle ? posterInitials(title) : <PhWaveform className="!size-5" />}
-				</div>
-				<div className="min-w-0 flex-1">
-					<p className="truncate text-sm font-medium text-stage-fg">
-						{hasTitle ? title : 'Pick a title to start'}
-					</p>
-					<p className="truncate text-xs text-stage-muted">
-						{hasTitle
-							? 'Switch playback device anytime'
-							: 'Choose a device, then open a file'}
-					</p>
-				</div>
+					<div
+						className="flex h-11 w-11 flex-none items-center justify-center rounded-control text-sm font-semibold text-stage-fg/90"
+						style={posterCoverStyle(hasTitle ? title : 'idle')}
+						aria-hidden
+					>
+						{hasTitle ? (
+							posterInitials(title)
+						) : (
+							<PhWaveform className="!size-5" />
+						)}
+					</div>
+					<div className="min-w-0 flex-1">
+						<p className="truncate text-sm font-medium text-stage-fg">
+							{hasTitle ? title : 'Pick a title to start'}
+						</p>
+						<p className="truncate text-xs text-stage-muted">
+							{hasTitle
+								? 'Tap to open player'
+								: 'Choose a device, then open a file'}
+						</p>
+					</div>
+				</button>
 				<DevicesMenu>
 					<button
 						type="button"
 						aria-label="Choose playback device"
 						className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-stage-edge text-stage-fg transition-colors hover:border-ember-500 hover:text-ember-500"
-						onClick={(e) => {
-							e.preventDefault()
-							e.stopPropagation()
-						}}
 					>
 						<PhDeviceMobile className="!size-5" />
 					</button>

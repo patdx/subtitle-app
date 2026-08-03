@@ -116,7 +116,10 @@ const Play = () => {
 				}}
 			>
 				{remote ? (
-					<RemotePanel />
+					<>
+						<RemotePanel />
+						<TranscriptDisplay />
+					</>
 				) : (
 					<>
 						<FileDisplay />
