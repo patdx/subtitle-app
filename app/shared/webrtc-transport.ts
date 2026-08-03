@@ -32,7 +32,7 @@ interface TransportHost {
 	handleMessage(value: unknown, peerId: string): void
 	readonly isCoordinator: boolean
 	handlePeerJoin(): Promise<void>
-	broadcastClockState(): void
+	broadcastGroupState(): void
 	becomeActivePlayer(file?: PlayerFile): Promise<void>
 	claimPendingPlayerFile(): PlayerFile | null
 	clearConnectTimeout(): void
@@ -201,13 +201,11 @@ export class WebRtcTransport {
 			this.state.roomPeers = this.state.roomPeers.map((peer) =>
 				peer.sessionId === peerId ? { ...peer, connected: true } : peer,
 			)
-			if (this.state.coordinationClaim?.claimantId === this.state.sessionId)
-				dc.send(
-					JSON.stringify({
-						type: 'claim-coordinator',
-						...this.state.coordinationClaim,
-					}),
-				)
+			// Claimant pushes the group document immediately so the peer learns
+			// who the player is and what media is on before any other chatter.
+			if (this.state.group.claim?.claimantId === this.state.sessionId) {
+				this.host.broadcastGroupState()
+			}
 			this.host.send({ type: 'join', deviceName: this.state.deviceName })
 			if (this.host.isCoordinator) void this.host.handlePeerJoin()
 		}
@@ -268,16 +266,16 @@ export class WebRtcTransport {
 				}))
 			this.state.roomPeers = signaled
 			if (
-				this.state.coordinationClaim &&
-				this.state.coordinationClaim.claimantId !== this.state.sessionId &&
+				this.state.group.claim &&
+				this.state.group.claim.claimantId !== this.state.sessionId &&
 				!signaled.some(
-					(peer) => peer.sessionId === this.state.coordinationClaim?.claimantId,
+					(peer) => peer.sessionId === this.state.group.claim?.claimantId,
 				)
 			) {
-				this.state.coordinationClaim = null
+				this.state.group.claim = null
 			}
 			if (!wasCoordinator && this.host.isCoordinator) {
-				this.host.broadcastClockState()
+				this.host.broadcastGroupState()
 			}
 			// Solo group with a file open and nobody playing: take the stage.
 			if (this.state.roomPeers.length === 0) {

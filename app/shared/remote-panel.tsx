@@ -51,11 +51,12 @@ export const RemotePanel = () => {
 
 	const playerName = activePlayerName(syncSnap)
 	const playerOnline = activePlayerOnline(syncSnap)
-	const nowPlaying = syncSnap.nowPlayingFile
+	const groupMedia = syncSnap.group.media
+	const localFile = syncSnap.nowPlayingFile
 	const files = filesQuery.data ?? []
 
 	const loadedMatchesNowPlaying =
-		!!nowPlaying?.fileId && uiSnap.file?.[0]?.fileId === nowPlaying.fileId
+		!!localFile?.fileId && uiSnap.file?.[0]?.fileId === localFile.fileId
 	const showCues = loadedMatchesNowPlaying && !controlSnap.showTranscript
 
 	const pickFile = (fileId: string) => {
@@ -74,12 +75,12 @@ export const RemotePanel = () => {
 							Now playing
 						</p>
 						<p className="truncate text-lg font-semibold">
-							{nowPlaying?.name ?? 'No file selected'}
+							{groupMedia?.name ?? 'No file selected'}
 						</p>
 						<p className="text-sm text-ink-400">
-							{nowPlaying && playerOnline && playerName
+							{groupMedia && playerOnline && playerName
 								? `on ${playerName}`
-								: nowPlaying && !playerOnline
+								: groupMedia && !playerOnline
 									? 'Player offline'
 									: 'Pick a device or a file to start'}
 						</p>
@@ -105,7 +106,7 @@ export const RemotePanel = () => {
 					getActiveNodes(uiSnap.file, clockSnap.actualTimeElapsedMs).map(
 						(node) => <Subtitle key={node.id} node={node} />,
 					)
-				) : nowPlaying && !loadedMatchesNowPlaying ? (
+				) : groupMedia && !loadedMatchesNowPlaying ? (
 					<p className="text-sm text-ink-500">Loading subtitles…</p>
 				) : null}
 			</div>
@@ -172,7 +173,7 @@ export const RemotePanel = () => {
 						)}
 						{filesQuery.isSuccess &&
 							files.map((file) => {
-								const isCurrent = nowPlaying?.hash === file.hash
+								const isCurrent = groupMedia?.hash === file.hash
 								return (
 									<button
 										key={file.id}

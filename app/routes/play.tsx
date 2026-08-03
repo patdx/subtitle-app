@@ -49,7 +49,7 @@ function applyLoadedFile(data: LoadedPlayerFile) {
 		// different file must not load it locally as if we were the renderer.
 		if (isRemoteController(syncState)) {
 			const castingDifferent =
-				!!playerFile && syncState.nowPlayingFile?.hash !== playerFile.hash
+				!!playerFile && syncState.group.media?.hash !== playerFile.hash
 			if (castingDifferent) {
 				void syncStore.playFile(playerFile.hash, playerFile.name)
 				return

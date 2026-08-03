@@ -143,15 +143,16 @@ const formatTime = (ms: number) => {
 
 const NowPlayingBar = ({ snap }: { snap: SyncSnapshot }) => {
 	const navigate = useNavigate()
-	const title = snap.nowPlayingFile?.name ?? 'Nothing playing'
-	const strip = snap.nowPlayingFile ? activePlayerLabel(snap) : 'Not playing'
-	const hasTitle = !!snap.nowPlayingFile
+	const media = snap.group.media
+	const title = media?.name ?? 'Nothing playing'
+	const strip = media ? activePlayerLabel(snap) : 'Not playing'
+	const hasTitle = !!media
 
 	const openPlayer = () => {
-		const np = snap.nowPlayingFile
-		if (!np) return
-		if (np.fileId) {
-			navigate(`/play?id=${np.fileId}`)
+		if (!media) return
+		const fileId = snap.nowPlayingFile?.fileId
+		if (fileId) {
+			navigate(`/play?id=${fileId}`)
 			return
 		}
 		// Transfer still in flight — open the player; bootstrap follows once fileId lands.
@@ -540,7 +541,7 @@ const EditFilesPage = () => {
 	const isLibraryLoading = result.isPending
 	const isEmpty = !!result.data && result.data.length === 0
 
-	const nowPlayingHash = syncSnap.nowPlayingFile?.hash
+	const nowPlayingHash = syncSnap.group.media?.hash
 
 	/** Now-playing (by hash) pinned first, then most recently played, then alpha. */
 	const files = () =>
@@ -558,13 +559,14 @@ const EditFilesPage = () => {
 	const showSyntheticNowPlaying =
 		!isLibraryLoading &&
 		syncSnap.role === 'peer' &&
-		!!syncSnap.nowPlayingFile &&
+		!!syncSnap.group.media &&
 		!hasLocalNowPlaying()
 
 	const showPeerBar = syncSnap.role === 'peer'
 	const contentPad = showPeerBar ? 'pb-safe-or-28' : 'pb-safe-or-10'
 	/** When the shelf has titles, actions collapse to a toolbar so posters lead. */
-	const hasShelfContent = !isLibraryLoading && (!isEmpty || showSyntheticNowPlaying)
+	const hasShelfContent =
+		!isLibraryLoading && (!isEmpty || showSyntheticNowPlaying)
 	/** Compact brand while loading so the empty-library hero does not flash. */
 	const useCompactBrand = hasShelfContent || isLibraryLoading
 	const showEmptyActionPosters = !hasShelfContent && !isLibraryLoading
@@ -721,7 +723,7 @@ const EditFilesPage = () => {
 					)}
 
 					{/* Synthetic remote now-playing poster */}
-					{showSyntheticNowPlaying && syncSnap.nowPlayingFile && (
+					{showSyntheticNowPlaying && syncSnap.group.media && (
 						<div
 							className={cn(
 								'stage-poster-now-playing relative flex aspect-2/3 flex-col overflow-hidden rounded-panel ring-2 ring-ember-500',
@@ -729,11 +731,11 @@ const EditFilesPage = () => {
 						>
 							<div
 								className="relative min-h-0 flex-1"
-								style={posterCoverStyle(syncSnap.nowPlayingFile.name)}
+								style={posterCoverStyle(syncSnap.group.media.name)}
 							>
 								<div className="absolute inset-0 flex items-center justify-center">
 									<span className="font-display text-3xl font-bold text-white/85 drop-shadow-md">
-										{posterInitials(syncSnap.nowPlayingFile.name)}
+										{posterInitials(syncSnap.group.media.name)}
 									</span>
 								</div>
 								<div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent px-2.5 pb-2.5 pt-8">
@@ -741,7 +743,7 @@ const EditFilesPage = () => {
 										Now playing
 									</p>
 									<p className="truncate text-sm font-medium text-white">
-										{syncSnap.nowPlayingFile.name}
+										{syncSnap.group.media.name}
 									</p>
 								</div>
 							</div>

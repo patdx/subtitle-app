@@ -11,7 +11,7 @@ interface TransferEngine {
 	send(msg: SyncMessage): void
 	sendWithBackpressure(msg: SyncMessage): Promise<void>
 	readonly isCoordinator: boolean
-	announceFile(): Promise<void>
+	broadcastGroupState(): void
 }
 
 interface ReceiveBuffer {
@@ -65,14 +65,14 @@ export class FileTransfer {
 		}
 	}
 
-	async handleFileList(msg: Extract<SyncMessage, { type: 'file-list' }>) {
+	async handleDeviceLibrary(library: { hash: string; name: string }[]) {
 		const db = await initAndGetDb()
 		const localHashes = new Set(
 			(await db.getAll('files'))
 				.map((file) => file.hash)
 				.filter((hash): hash is string => Boolean(hash)),
 		)
-		for (const file of msg.files) {
+		for (const file of library) {
 			if (!localHashes.has(file.hash)) {
 				this.engine.send({ type: 'request-file', hash: file.hash })
 			}
@@ -141,11 +141,15 @@ export class FileTransfer {
 				...this.state.receivedFiles,
 				{ fileId, hash, name },
 			]
-			if (this.state.nowPlayingFile?.hash === hash) {
-				this.state.nowPlayingFile = { ...this.state.nowPlayingFile, fileId }
-				// I'm the renderer and just received the picked file: tell the
-				// group so everyone maps it to their local copy.
-				if (this.engine.isCoordinator) void this.engine.announceFile()
+			if (this.state.group.media?.hash === hash) {
+				this.state.nowPlayingFile = {
+					fileId,
+					hash,
+					name: this.state.group.media.name,
+				}
+				// I'm the renderer and just received the picked file: re-broadcast
+				// the group doc so peers know transfer completed on the player.
+				if (this.engine.isCoordinator) this.engine.broadcastGroupState()
 			}
 		} catch (err) {
 			console.error('Failed to import received file', err)

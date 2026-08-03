@@ -23,9 +23,7 @@ export const SyncPill = () => {
 
 	if (inGroup) {
 		if (isRenderer(syncSnap)) {
-			label = syncSnap.nowPlayingFile
-				? 'Playing on this device'
-				: 'Ready to play'
+			label = syncSnap.group.media ? 'Playing on this device' : 'Ready to play'
 			dot = 'bg-ok'
 		} else if (isRemote(syncSnap)) {
 			const playerOnline =

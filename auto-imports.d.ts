@@ -117,7 +117,7 @@ declare global {
   export type { FileTransfer } from './app/shared/file-transfer'
   import('./app/shared/file-transfer')
   // @ts-ignore
-  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, PlayerFile, SyncMessage, SyncState, SyncSnapshot } from './app/shared/sync'
+  export type { SyncRole, ConnectionState, PeerInfo, ReceivedFile, PlayerFile, GroupMedia, GroupClaim, GroupClock, GroupState, DeviceLibraryEntry, GroupProposeOp, SyncMessage, SyncState, SyncSnapshot } from './app/shared/sync'
   import('./app/shared/sync')
   // @ts-ignore
   export type { Entry, DbLine } from './app/shared/utils'

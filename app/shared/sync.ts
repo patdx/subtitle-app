@@ -23,7 +23,9 @@ import { WebRtcTransport } from './webrtc-transport'
  * directly to every other member, and an internal coordinator is elected
  * automatically. There are no user-facing host/client roles.
  *
- * Topology is hub-and-spoke, with one full-duplex data channel per pair.
+ * Shared playback is modeled as a single-writer group document (`GroupState`):
+ * one media, one claim/player, one clock. Device libraries are gossiped
+ * separately. Subtitle bytes stay on P2P file-chunk transfers only.
  */
 
 const BROADCAST_INTERVAL_MS = 100
@@ -54,24 +56,57 @@ export interface PlayerFile {
 	name: string
 }
 
-export type SyncMessage =
-	| { type: 'cmd-play' }
-	| { type: 'cmd-pause' }
-	| { type: 'cmd-seek'; positionMs: number }
-	| { type: 'cmd-speed'; speed: number }
-	| { type: 'request-player'; sessionId: string }
-	| { type: 'play-file'; hash: string; name: string }
-	| { type: 'claim-coordinator'; term: number; claimantId: string }
+/** Cross-device media identity (group-scoped — only one at a time). */
+export interface GroupMedia {
+	hash: string
+	name: string
+}
+
+/** Fenced player/coordinator claim. */
+export interface GroupClaim {
+	term: number
+	claimantId: string
+}
+
+/** Playback clock carried in group snapshots. */
+export interface GroupClock {
+	isPlaying: boolean
+	positionMs: number
+	playSpeed: number
+}
+
+/**
+ * Authoritative shared group document. Single writer = claim claimant
+ * (or the default lowest-id coordinator before anyone claims).
+ */
+export interface GroupState {
+	media: GroupMedia | null
+	claim: GroupClaim | null
+	clock: GroupClock
+}
+
+export interface DeviceLibraryEntry {
+	hash: string
+	name: string
+}
+
+/** Proposed mutations from a follower → applied only by the claimant. */
+export type GroupProposeOp =
+	| { type: 'set-media'; hash: string; name: string }
 	| {
-			type: 'state-clock'
-			isPlaying: boolean
-			positionMs: number
-			playSpeed: number
+			type: 'set-clock'
+			isPlaying?: boolean
+			positionMs?: number
+			playSpeed?: number
 	  }
+	| { type: 'request-player'; sessionId: string }
+
+export type SyncMessage =
+	| { type: 'group-state'; state: GroupState }
+	| { type: 'group-propose'; op: GroupProposeOp }
+	| { type: 'device-state'; library: DeviceLibraryEntry[] }
 	| { type: 'join'; deviceName: string }
 	| { type: 'leave'; deviceName: string }
-	| { type: 'now-playing'; hash: string; name: string }
-	| { type: 'file-list'; files: { hash: string; name: string }[] }
 	| { type: 'request-file'; hash: string }
 	| {
 			type: 'file-chunk'
@@ -95,6 +130,64 @@ const makeRoomCode = (): string => {
 	return code
 }
 
+const emptyGroupClock = (): GroupClock => ({
+	isPlaying: false,
+	positionMs: 0,
+	playSpeed: 1,
+})
+
+const emptyGroupState = (): GroupState => ({
+	media: null,
+	claim: null,
+	clock: emptyGroupClock(),
+})
+
+const isValidClaim = (
+	claim: GroupClaim | null | undefined,
+): claim is GroupClaim =>
+	!!claim &&
+	Number.isSafeInteger(claim.term) &&
+	claim.term >= 1 &&
+	claim.term <= 1_000_000_000 &&
+	typeof claim.claimantId === 'string' &&
+	claim.claimantId.length > 0 &&
+	claim.claimantId.length <= 128
+
+/** True when `next` beats `current` under term/id fencing. */
+const claimIsSuperior = (
+	next: GroupClaim | null,
+	current: GroupClaim | null,
+): boolean => {
+	if (!next) return false
+	if (!current) return true
+	return (
+		next.term > current.term ||
+		(next.term === current.term && next.claimantId > current.claimantId)
+	)
+}
+
+const isValidGroupMedia = (
+	media: GroupMedia | null | undefined,
+): media is GroupMedia | null => {
+	if (media === null || media === undefined) return media === null
+	return (
+		typeof media.hash === 'string' &&
+		media.hash.length > 0 &&
+		media.hash.length <= 128 &&
+		typeof media.name === 'string' &&
+		media.name.length <= 256
+	)
+}
+
+const isValidGroupClock = (c: GroupClock | null | undefined): c is GroupClock =>
+	!!c &&
+	typeof c.isPlaying === 'boolean' &&
+	Number.isFinite(c.positionMs) &&
+	c.positionMs >= 0 &&
+	Number.isFinite(c.playSpeed) &&
+	c.playSpeed >= 0.1 &&
+	c.playSpeed <= 5
+
 export interface SyncState {
 	role: SyncRole
 	sessionId: string | null
@@ -103,15 +196,18 @@ export interface SyncState {
 	error: string | null
 	deviceName: string
 	roomPeers: PeerInfo[]
-	coordinationClaim: { term: number; claimantId: string } | null
-	receivedFiles: ReceivedFile[]
-	transfers: { fileName: string; received: number; total: number }[]
 	/**
-	 * The file the group is currently playing, mapped to this device's local
-	 * copy. fileId is null until a local copy exists (incoming transfer).
-	 * hash is the content hash — the cross-device file identity.
+	 * Authoritative group document. `media` is singular by construction —
+	 * the group plays at most one title.
+	 */
+	group: GroupState
+	/**
+	 * Local projection of `group.media` onto this device's IndexedDB copy.
+	 * fileId is null until a local copy exists (incoming transfer).
 	 */
 	nowPlayingFile: { fileId: string | null; hash: string; name: string } | null
+	receivedFiles: ReceivedFile[]
+	transfers: { fileName: string; received: number; total: number }[]
 	myGroupCode: string | null
 	/** group code we joined (null = our own group) */
 	joinedGroupCode: string | null
@@ -131,10 +227,10 @@ export const syncState = proxy<SyncState>({
 	error: null,
 	deviceName: `Device ${Math.floor(Math.random() * 1000)}`,
 	roomPeers: [],
-	coordinationClaim: null,
+	group: emptyGroupState(),
+	nowPlayingFile: null,
 	receivedFiles: [],
 	transfers: [],
-	nowPlayingFile: null,
 	myGroupCode: null,
 	joinedGroupCode: null,
 	wasSharing: false,
@@ -157,29 +253,26 @@ if (typeof window !== 'undefined') {
 const getCoordinatorId = (state: {
 	sessionId: string | null
 	roomPeers: readonly PeerInfo[]
-	coordinationClaim: { term: number; claimantId: string } | null
+	group: Pick<GroupState, 'claim'>
 }): string | null => {
 	if (!state.sessionId) return null
 	const online = [
 		state.sessionId,
 		...state.roomPeers.map((peer) => peer.sessionId),
 	]
-	if (
-		state.coordinationClaim &&
-		online.includes(state.coordinationClaim.claimantId)
-	)
-		return state.coordinationClaim.claimantId
+	if (state.group.claim && online.includes(state.group.claim.claimantId))
+		return state.group.claim.claimantId
 	return online.sort()[0]
 }
 
 /**
  * The device that renders is always the coordination claimant (the claim is
- * the sole authority transition — see the claim-coordinator handler). This
- * derives that id, so the two concepts can never drift apart.
+ * the sole authority transition). This derives that id so player and claim
+ * cannot drift apart.
  */
-export const getActivePlayerId = (
-	state: Pick<SyncState, 'coordinationClaim'>,
-): string | null => state.coordinationClaim?.claimantId ?? null
+export const getActivePlayerId = (state: {
+	group: Pick<GroupState, 'claim'>
+}): string | null => state.group.claim?.claimantId ?? null
 
 /** Readonly snapshot shape (from useSnapshot) accepted by the helpers. */
 export type SyncSnapshot = Readonly<{
@@ -187,7 +280,7 @@ export type SyncSnapshot = Readonly<{
 	sessionId: SyncState['sessionId']
 	deviceName: SyncState['deviceName']
 	roomPeers: readonly PeerInfo[]
-	coordinationClaim: SyncState['coordinationClaim']
+	group: Readonly<Pick<GroupState, 'claim' | 'media'>>
 	nowPlayingFile: SyncState['nowPlayingFile']
 }>
 
@@ -217,7 +310,7 @@ export const activePlayerLabel = (state: SyncSnapshot): string => {
 /** Shows the RemotePanel (controller UI) instead of the subtitle stage. */
 export const isRemote = (state: SyncSnapshot): boolean =>
 	state.role === 'peer' &&
-	state.nowPlayingFile !== null &&
+	state.group.media !== null &&
 	getActivePlayerId(state) !== state.sessionId
 
 /** Renders the subtitle stage as the active player. */
@@ -227,8 +320,6 @@ export const isRenderer = (state: SyncSnapshot): boolean =>
 /**
  * Should a freshly opened file be cast to the existing player rather than
  * played here? True when a live player exists and it isn't this device.
- * (Distinct from `isRemote`: that answers "show the remote panel", which also
- * holds when the player is offline.)
  */
 export const isRemoteController = (state: SyncSnapshot): boolean =>
 	state.role === 'peer' &&
@@ -240,12 +331,8 @@ export const isRemoteController = (state: SyncSnapshot): boolean =>
  * are safe to share across all `handleMessage` calls.
  */
 const COORDINATOR_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
-	'cmd-play',
-	'cmd-pause',
-	'cmd-seek',
-	'cmd-speed',
-	'request-player',
-	'play-file',
+	'group-propose',
+	'device-state',
 	'join',
 	'leave',
 	'request-file',
@@ -256,11 +343,9 @@ const COORDINATOR_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
 
 /** Types a follower accepts from the coordinator. */
 const FOLLOWER_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
-	'state-clock',
-	'now-playing',
-	'file-list',
+	'group-state',
+	'device-state',
 	'file-chunk',
-	'request-player',
 	'request-file',
 	'ping',
 	'pong',
@@ -268,7 +353,11 @@ const FOLLOWER_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
 
 /** Types an ordinary peer accepts from another non-coordinator peer. */
 const PEER_ALLOWED_MESSAGE_TYPES = new Set<SyncMessage['type']>([
-	'request-player',
+	'group-state',
+	'group-propose',
+	'device-state',
+	'request-file',
+	'file-chunk',
 	'ping',
 	'pong',
 ])
@@ -289,7 +378,7 @@ class SyncEngine {
 	/**
 	 * Set by the player page when a file is opened before the device has
 	 * joined a group: claim the player role once the group settles, unless a
-	 * peer is already playing (a now-playing announcement disarms this).
+	 * peer is already playing (a group-state with media/claim disarms this).
 	 */
 	pendingPlayerFile: PlayerFile | null = null
 
@@ -468,6 +557,62 @@ class SyncEngine {
 	}
 
 	// ------------------------------------------------------------------
+	// Group document helpers
+	// ------------------------------------------------------------------
+
+	/** Snapshot the live group document (clock read from the local clock store). */
+	private readGroupSnapshot(): GroupState {
+		return {
+			media: syncState.group.media ? { ...syncState.group.media } : null,
+			claim: syncState.group.claim ? { ...syncState.group.claim } : null,
+			clock: {
+				isPlaying: clock.isPlaying,
+				positionMs: getTimeElapsed(),
+				playSpeed: clock.playSpeed,
+			},
+		}
+	}
+
+	/** Broadcast the full group document (claimant / default coordinator only). */
+	broadcastGroupState() {
+		if (!this.isCoordinator || syncState.connectionState !== 'connected') return
+		this.send({ type: 'group-state', state: this.readGroupSnapshot() })
+	}
+
+	/** Alias kept for the file-transfer engine after a casted file arrives. */
+	async announceFile() {
+		this.broadcastGroupState()
+		await this.broadcastDeviceState()
+	}
+
+	/** Gossip this device's library hashes (not subtitle bytes). */
+	async broadcastDeviceState() {
+		if (syncState.role !== 'peer') return
+		const db = await initAndGetDb()
+		const files = await db.getAll('files')
+		this.send({
+			type: 'device-state',
+			library: files
+				.filter((file) => file.hash)
+				.slice(0, 256)
+				.map((file) => ({
+					hash: file.hash as string,
+					name: file.name.slice(0, 256),
+				})),
+		})
+	}
+
+	/** Domain hook for "the local library changed" (e.g. after an import). */
+	async onFilesChanged() {
+		await this.broadcastDeviceState()
+	}
+
+	/** @deprecated clock-only name — broadcasts the full group snapshot. */
+	broadcastClockState() {
+		this.broadcastGroupState()
+	}
+
+	// ------------------------------------------------------------------
 	// Clock helpers (used by the controls UI)
 	// ------------------------------------------------------------------
 
@@ -478,9 +623,12 @@ class SyncEngine {
 	seekTo(positionMs: number) {
 		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: positionMs })
 		if (this.isCoordinator) {
-			this.broadcastClockState()
+			this.broadcastGroupState()
 		} else if (syncState.role !== 'none') {
-			this.send({ type: 'cmd-seek', positionMs: getTimeElapsed() })
+			this.send({
+				type: 'group-propose',
+				op: { type: 'set-clock', positionMs: getTimeElapsed() },
+			})
 		}
 	}
 
@@ -488,9 +636,12 @@ class SyncEngine {
 		const isPlaying = !clock.isPlaying
 		toggleIsPlaying(isPlaying)
 		if (this.isCoordinator) {
-			this.broadcastClockState()
+			this.broadcastGroupState()
 		} else if (syncState.role !== 'none') {
-			this.send({ type: isPlaying ? 'cmd-play' : 'cmd-pause' })
+			this.send({
+				type: 'group-propose',
+				op: { type: 'set-clock', isPlaying },
+			})
 		} else {
 			void saveLocalProgress()
 		}
@@ -503,25 +654,27 @@ class SyncEngine {
 			lastTimeElapsedMs: getTimeElapsed(),
 		})
 		if (this.isCoordinator) {
-			this.broadcastClockState()
+			this.broadcastGroupState()
 		} else if (syncState.role !== 'none') {
-			this.send({ type: 'cmd-speed', speed })
+			this.send({
+				type: 'group-propose',
+				op: { type: 'set-clock', playSpeed: speed },
+			})
 		}
 	}
 
-	/** While true, incoming state-clock messages are ignored (timeline drag). */
+	/** While true, incoming group clock updates are ignored (timeline drag). */
 	setScrubbing(scrubbing: boolean) {
 		this.isScrubbing = scrubbing
 	}
 
 	// ------------------------------------------------------------------
-	// Active player / coordinator broadcasts
+	// Active player / group media mutations
 	// ------------------------------------------------------------------
 
 	/**
-	 * Make this device the active player (renders the subtitle stage): claim
-	 * coordination, then announce the file. The claim IS the player role.
-	 * `adoptFile` sets (or switches) the group's now-playing file.
+	 * Make this device the active player: claim coordination, optionally set
+	 * group media, then broadcast the group document. The claim IS the player.
 	 */
 	async becomeActivePlayer(adoptFile?: PlayerFile) {
 		if (syncState.role !== 'peer' || !syncState.sessionId) return
@@ -529,15 +682,14 @@ class SyncEngine {
 		// `isCoordinator`) matters: the default coordinator (lowest id, no claim
 		// yet) must still claim, or the derived player id stays null and this
 		// device would render the remote panel instead of the player.
-		if (syncState.coordinationClaim?.claimantId !== syncState.sessionId) {
-			const claim = {
-				term: (syncState.coordinationClaim?.term ?? 0) + 1,
+		if (syncState.group.claim?.claimantId !== syncState.sessionId) {
+			syncState.group.claim = {
+				term: (syncState.group.claim?.term ?? 0) + 1,
 				claimantId: syncState.sessionId,
 			}
-			syncState.coordinationClaim = claim
-			this.send({ type: 'claim-coordinator', ...claim })
 		}
 		if (adoptFile) {
+			syncState.group.media = { hash: adoptFile.hash, name: adoptFile.name }
 			syncState.nowPlayingFile = adoptFile
 		}
 		await this.announceFile()
@@ -554,11 +706,10 @@ class SyncEngine {
 
 	/**
 	 * Claim the player role if a file was opened before the device joined and
-	 * nobody is playing yet (a now-playing announcement disarms it). Clears the
-	 * pending file and returns it, or null if the role is taken.
+	 * nobody is playing yet (a group-state with claim/media disarms it).
 	 */
 	claimPendingPlayerFile(): PlayerFile | null {
-		if (this.pendingPlayerFile && !syncState.coordinationClaim) {
+		if (this.pendingPlayerFile && !syncState.group.claim) {
 			const file = this.pendingPlayerFile
 			this.pendingPlayerFile = null
 			return file
@@ -567,32 +718,9 @@ class SyncEngine {
 	}
 
 	/**
-	 * Re-assert our claim (so late joiners learn who the player is) and
-	 * broadcast the current now-playing file + library list.
-	 */
-	async announceFile() {
-		if (!this.isCoordinator) return
-		// Peers that join after we claimed never saw the original
-		// claim-coordinator message; re-send it with every announce.
-		if (syncState.coordinationClaim?.claimantId === syncState.sessionId) {
-			this.send({
-				type: 'claim-coordinator',
-				...syncState.coordinationClaim,
-			})
-		}
-		const np = syncState.nowPlayingFile
-		// Announce by hash even while the local fileId is still null (transfer
-		// in progress) so the whole group converges on the same title.
-		if (np?.hash) {
-			this.send({ type: 'now-playing', hash: np.hash, name: np.name })
-		}
-		await this.broadcastFileList()
-	}
-
-	/**
 	 * Pick which device renders. Selecting "this device" claims locally;
-	 * selecting a peer asks it to claim (a pure request — only the fenced
-	 * claim-coordinator message changes who the player is).
+	 * selecting a peer asks it to claim (only the fenced claim in group-state
+	 * changes who the player is).
 	 */
 	setPlayer(sessionId: string) {
 		if (syncState.role !== 'peer') return
@@ -602,27 +730,31 @@ class SyncEngine {
 		}
 		if (!syncState.roomPeers.some((peer) => peer.sessionId === sessionId))
 			return
-		this.send({ type: 'request-player', sessionId })
+		this.send({
+			type: 'group-propose',
+			op: { type: 'request-player', sessionId },
+		})
 	}
 
 	/**
-	 * Play a file by content hash. From a remote this routes to the
-	 * coordinator (which, by the claim invariant, is always the active player);
-	 * from the renderer itself it loads the file directly.
+	 * Set the group's singular media. From a remote this proposes to the
+	 * claimant; from the renderer it writes the group document directly.
 	 */
 	playFile(hash: string, name: string) {
 		if (syncState.role !== 'peer') return
 		if (this.isCoordinator) {
-			void this._handlePlayFile(hash, name)
+			void this._setGroupMedia(hash, name)
 			return
 		}
-		this.send({ type: 'play-file', hash, name })
+		this.send({
+			type: 'group-propose',
+			op: { type: 'set-media', hash, name },
+		})
 	}
 
 	/**
 	 * Resolve a file hash to the local copy when present; otherwise record it
-	 * as unavailable and ask the group to transfer it. Returns whether the
-	 * renderer had the file locally.
+	 * as unavailable and ask the group to transfer it.
 	 */
 	private async resolveNowPlayingFile(
 		hash: string,
@@ -634,49 +766,16 @@ class SyncEngine {
 			syncState.nowPlayingFile = { fileId: existing.id, hash, name }
 			return true
 		}
-		// Renderer doesn't have the file yet; pull it from the group.
 		syncState.nowPlayingFile = { fileId: null, hash, name }
 		this.send({ type: 'request-file', hash })
 		return false
 	}
 
-	private async _handlePlayFile(hash: string, name: string) {
+	private async _setGroupMedia(hash: string, name: string) {
 		if (!this.isCoordinator) return
+		syncState.group.media = { hash, name }
 		await this.resolveNowPlayingFile(hash, name)
-		// Always announce — even when we're still pulling the bytes — so remotes
-		// see the cast title immediately.
 		await this.announceFile()
-	}
-
-	async broadcastFileList() {
-		if (!this.isCoordinator) return
-		const db = await initAndGetDb()
-		const files = await db.getAll('files')
-		this.send({
-			type: 'file-list',
-			files: files
-				.filter((file) => file.hash)
-				.slice(0, 256)
-				.map((file) => ({
-					hash: file.hash as string,
-					name: file.name.slice(0, 256),
-				})),
-		})
-	}
-
-	/** Domain hook for "the local library changed" (e.g. after an import). */
-	async onFilesChanged() {
-		await this.broadcastFileList()
-	}
-
-	broadcastClockState() {
-		if (!this.isCoordinator || syncState.connectionState !== 'connected') return
-		this.send({
-			type: 'state-clock',
-			isPlaying: clock.isPlaying,
-			positionMs: getTimeElapsed(),
-			playSpeed: clock.playSpeed,
-		})
 	}
 
 	// ------------------------------------------------------------------
@@ -686,8 +785,10 @@ class SyncEngine {
 	handleMessage(value: unknown, peerId: string) {
 		if (!value || typeof value !== 'object' || Array.isArray(value)) return
 		const msg = value as SyncMessage
-		if (msg.type === 'claim-coordinator') {
-			this._handleClaimCoordinator(msg, peerId)
+		// group-state carries the fenced claim — accept before the role filter
+		// so an electing peer can overturn a stale default coordinator.
+		if (msg.type === 'group-state') {
+			void this._handleGroupState(msg, peerId)
 			return
 		}
 		const fromCoordinator = peerId === this.coordinatorId
@@ -698,17 +799,11 @@ class SyncEngine {
 				: PEER_ALLOWED_MESSAGE_TYPES
 		if (!allowedMessageTypes.has(msg.type)) return
 		switch (msg.type) {
-			case 'request-player':
-				this._handleRequestPlayer(msg, peerId)
+			case 'group-propose':
+				this._handleGroupPropose(msg, peerId)
 				return
-			case 'state-clock':
-				this._handleClockState(msg)
-				return
-			case 'now-playing':
-				this._handleNowPlayingMessage(msg)
-				return
-			case 'file-list':
-				this._handleFileListMessage(msg)
+			case 'device-state':
+				this._handleDeviceStateMessage(msg)
 				return
 			case 'file-chunk':
 				this._handleFileChunk(msg)
@@ -719,21 +814,6 @@ class SyncEngine {
 			case 'ping':
 				this._handlePing(msg)
 				return
-			case 'play-file':
-				this._handlePlayFileMessage(msg)
-				return
-			case 'cmd-play':
-				this._handleCmdPlay()
-				return
-			case 'cmd-pause':
-				this._handleCmdPause()
-				return
-			case 'cmd-seek':
-				this._handleCmdSeek(msg)
-				return
-			case 'cmd-speed':
-				this._handleCmdSpeed(msg)
-				return
 			case 'join':
 				void this.handlePeerJoin()
 				return
@@ -743,91 +823,141 @@ class SyncEngine {
 		}
 	}
 
-	private _handleClaimCoordinator(
-		msg: Extract<SyncMessage, { type: 'claim-coordinator' }>,
+	private async _handleGroupState(
+		msg: Extract<SyncMessage, { type: 'group-state' }>,
 		peerId: string,
 	) {
+		const incoming = msg.state
 		if (
-			msg.claimantId !== peerId ||
-			!Number.isSafeInteger(msg.term) ||
-			msg.term < 1 ||
-			msg.term > 1_000_000_000
+			!incoming ||
+			typeof incoming !== 'object' ||
+			!isValidGroupMedia(incoming.media) ||
+			!isValidGroupClock(incoming.clock) ||
+			(incoming.claim !== null && !isValidClaim(incoming.claim))
 		)
 			return
-		const current = syncState.coordinationClaim
-		if (
-			!current ||
-			msg.term > current.term ||
-			(msg.term === current.term && msg.claimantId > current.claimantId)
-		) {
-			syncState.coordinationClaim = {
-				term: msg.term,
-				claimantId: msg.claimantId,
+
+		const current = syncState.group.claim
+		if (incoming.claim) {
+			if (incoming.claim.claimantId !== peerId) return
+			if (!claimIsSuperior(incoming.claim, current) && current) {
+				// Inferior claim: re-assert ours so the peer can't stay split-brain.
+				if (current.claimantId === syncState.sessionId) {
+					void this.announceFile()
+				}
+				return
+			}
+			syncState.group.claim = {
+				term: incoming.claim.term,
+				claimantId: incoming.claim.claimantId,
+			}
+		} else if (current) {
+			// Claimed group ignores claimless snapshots.
+			if (current.claimantId === syncState.sessionId) {
+				void this.announceFile()
 			}
 			return
 		}
-		// Inferior claim: re-assert ours + now-playing so the peer can't stay
-		// in split-brain thinking it won (fenced claims are silent otherwise).
-		if (current.claimantId === syncState.sessionId) {
-			void this.announceFile()
+
+		// A peer published group media/claim — we're not taking the stage.
+		if (incoming.media || incoming.claim) {
+			this.pendingPlayerFile = null
+		}
+
+		const mediaChanged =
+			(incoming.media?.hash ?? null) !==
+				(syncState.group.media?.hash ?? null) ||
+			(incoming.media?.name ?? null) !== (syncState.group.media?.name ?? null)
+
+		syncState.group.media = incoming.media
+			? { hash: incoming.media.hash, name: incoming.media.name }
+			: null
+
+		if (mediaChanged) {
+			if (incoming.media) {
+				await this.resolveNowPlayingFile(
+					incoming.media.hash,
+					incoming.media.name,
+				).catch((err) => console.error('group media resolve failed', err))
+			} else {
+				syncState.nowPlayingFile = null
+			}
+		}
+
+		this._applyClockState(incoming.clock)
+	}
+
+	private _handleGroupPropose(
+		msg: Extract<SyncMessage, { type: 'group-propose' }>,
+		peerId: string,
+	) {
+		const op = msg.op
+		if (!op || typeof op !== 'object' || typeof op.type !== 'string') return
+
+		if (op.type === 'request-player') {
+			if (
+				typeof op.sessionId !== 'string' ||
+				op.sessionId !== syncState.sessionId
+			)
+				return
+			if (Date.now() - (this.lastPlayerRequestAt.get(peerId) ?? 0) < 2000)
+				return
+			this.lastPlayerRequestAt.set(peerId, Date.now())
+			void this.becomeActivePlayer()
+			return
+		}
+
+		// Remaining ops are applied only by the current coordinator/claimant.
+		if (!this.isCoordinator) return
+
+		if (op.type === 'set-media') {
+			if (
+				typeof op.hash !== 'string' ||
+				op.hash.length > 128 ||
+				typeof op.name !== 'string' ||
+				op.name.length > 256
+			)
+				return
+			void this._setGroupMedia(op.hash, op.name)
+			return
+		}
+
+		if (op.type === 'set-clock') {
+			if (op.isPlaying !== undefined) {
+				if (typeof op.isPlaying !== 'boolean') return
+				if (op.isPlaying !== clock.isPlaying) toggleIsPlaying(op.isPlaying)
+			}
+			if (op.positionMs !== undefined) {
+				if (!Number.isFinite(op.positionMs) || op.positionMs < 0) return
+				setClock({
+					lastActionAt: Date.now(),
+					lastTimeElapsedMs: op.positionMs,
+				})
+			}
+			if (op.playSpeed !== undefined) {
+				if (
+					!Number.isFinite(op.playSpeed) ||
+					op.playSpeed < 0.1 ||
+					op.playSpeed > 5
+				)
+					return
+				setClock({
+					playSpeed: op.playSpeed,
+					lastActionAt: Date.now(),
+					lastTimeElapsedMs: getTimeElapsed(),
+				})
+			}
+			this.broadcastGroupState()
 		}
 	}
 
-	private _handleRequestPlayer(
-		msg: Extract<SyncMessage, { type: 'request-player' }>,
-		peerId: string,
-	) {
-		// A pure request: only the addressed device acts, and it claims
-		// through the fenced claim-coordinator message.
-		if (
-			typeof msg.sessionId !== 'string' ||
-			msg.sessionId !== syncState.sessionId
-		)
-			return
-		if (Date.now() - (this.lastPlayerRequestAt.get(peerId) ?? 0) < 2000) return
-		this.lastPlayerRequestAt.set(peerId, Date.now())
-		void this.becomeActivePlayer()
-	}
-
-	private _handleClockState(
-		msg: Extract<SyncMessage, { type: 'state-clock' }>,
+	private _handleDeviceStateMessage(
+		msg: Extract<SyncMessage, { type: 'device-state' }>,
 	) {
 		if (
-			typeof msg.isPlaying !== 'boolean' ||
-			!Number.isFinite(msg.positionMs) ||
-			msg.positionMs < 0 ||
-			!Number.isFinite(msg.playSpeed) ||
-			msg.playSpeed < 0.1 ||
-			msg.playSpeed > 5
-		)
-			return
-		this._applyClockState(msg)
-	}
-
-	private _handleNowPlayingMessage(
-		msg: Extract<SyncMessage, { type: 'now-playing' }>,
-	) {
-		if (
-			typeof msg.hash !== 'string' ||
-			msg.hash.length > 128 ||
-			typeof msg.name !== 'string' ||
-			msg.name.length > 256
-		)
-			return
-		// A peer is already playing; we're a follower.
-		this.pendingPlayerFile = null
-		void this._handleNowPlaying(msg).catch((err) =>
-			console.error('now-playing handler failed', err),
-		)
-	}
-
-	private _handleFileListMessage(
-		msg: Extract<SyncMessage, { type: 'file-list' }>,
-	) {
-		if (
-			!Array.isArray(msg.files) ||
-			msg.files.length > 256 ||
-			msg.files.some(
+			!Array.isArray(msg.library) ||
+			msg.library.length > 256 ||
+			msg.library.some(
 				(file) =>
 					!file ||
 					typeof file.hash !== 'string' ||
@@ -837,14 +967,13 @@ class SyncEngine {
 			)
 		)
 			return
-		// The coordinator answered our join (file-list always follows
-		// any now-playing on the same channel). No player announced and
-		// none claimed => nobody is playing, so take the role.
+		// Peer answered our join with their library. No claim yet and nothing
+		// playing => take the stage if we opened a file before connecting.
 		const file = this.claimPendingPlayerFile()
 		if (file) void this.becomeActivePlayer(file)
-		void this._handleFileList(msg).catch((err) =>
-			console.error('file-list handler failed', err),
-		)
+		void this.fileTransfer
+			.handleDeviceLibrary(msg.library)
+			.catch((err) => console.error('device-state handler failed', err))
 	}
 
 	private _handleRequestFile(
@@ -865,58 +994,12 @@ class SyncEngine {
 		this.send({ type: 'pong', sentAt: msg.sentAt })
 	}
 
-	private _handlePlayFileMessage(
-		msg: Extract<SyncMessage, { type: 'play-file' }>,
-	) {
-		if (
-			typeof msg.hash !== 'string' ||
-			msg.hash.length > 128 ||
-			typeof msg.name !== 'string' ||
-			msg.name.length > 256
-		)
-			return
-		void this._handlePlayFile(msg.hash, msg.name)
-	}
-
-	private _handleCmdPlay() {
-		if (!clock.isPlaying) {
-			toggleIsPlaying(true)
-			this.broadcastClockState()
-		}
-	}
-
-	private _handleCmdPause() {
-		if (clock.isPlaying) {
-			toggleIsPlaying(false)
-			this.broadcastClockState()
-		}
-	}
-
-	private _handleCmdSeek(msg: Extract<SyncMessage, { type: 'cmd-seek' }>) {
-		if (!Number.isFinite(msg.positionMs) || msg.positionMs < 0) return
-		setClock({
-			lastActionAt: Date.now(),
-			lastTimeElapsedMs: msg.positionMs,
-		})
-		this.broadcastClockState()
-	}
-
-	private _handleCmdSpeed(msg: Extract<SyncMessage, { type: 'cmd-speed' }>) {
-		if (!Number.isFinite(msg.speed) || msg.speed < 0.1 || msg.speed > 5) return
-		setClock({
-			playSpeed: msg.speed,
-			lastActionAt: Date.now(),
-			lastTimeElapsedMs: getTimeElapsed(),
-		})
-		this.broadcastClockState()
-	}
-
-	private _applyClockState(msg: Extract<SyncMessage, { type: 'state-clock' }>) {
+	private _applyClockState(c: GroupClock) {
 		if (this.isScrubbing) return
-		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: msg.positionMs })
-		toggleIsPlaying(msg.isPlaying)
+		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: c.positionMs })
+		toggleIsPlaying(c.isPlaying)
 		setClock({
-			playSpeed: msg.playSpeed,
+			playSpeed: c.playSpeed,
 			lastActionAt: Date.now(),
 			lastTimeElapsedMs: getTimeElapsed(),
 		})
@@ -927,25 +1010,14 @@ class SyncEngine {
 		// nobody playing: take the stage so the newcomer has something to see.
 		const file = this.claimPendingPlayerFile()
 		if (file) await this.becomeActivePlayer(file)
-		// Push current state so a newly joined device catches up.
+		// Push group + library so a newly joined device catches up.
 		await this.announceFile()
-		this.broadcastClockState()
 	}
 
 	private _handlePeerLeave(deviceName: string) {
 		syncState.roomPeers = syncState.roomPeers.map((peer) =>
 			peer.name === deviceName ? { ...peer, connected: false } : peer,
 		)
-	}
-
-	private async _handleNowPlaying(
-		msg: Extract<SyncMessage, { type: 'now-playing' }>,
-	) {
-		await this.resolveNowPlayingFile(msg.hash, msg.name)
-	}
-
-	private _handleFileList(msg: Extract<SyncMessage, { type: 'file-list' }>) {
-		return this.fileTransfer.handleFileList(msg)
 	}
 
 	private _handleFileChunk(msg: Extract<SyncMessage, { type: 'file-chunk' }>) {
@@ -960,7 +1032,7 @@ class SyncEngine {
 		this._stopBroadcastTimer()
 		this.broadcastTimer = window.setInterval(() => {
 			if (this.isCoordinator && clock.isPlaying) {
-				this.broadcastClockState()
+				this.broadcastGroupState()
 			}
 		}, BROADCAST_INTERVAL_MS)
 	}
@@ -1033,7 +1105,7 @@ class SyncEngine {
 		syncState.connectionState = 'disconnected'
 		syncState.error = null
 		syncState.roomPeers = []
-		syncState.coordinationClaim = null
+		syncState.group = emptyGroupState()
 		syncState.receivedFiles = []
 		syncState.transfers = []
 		syncState.nowPlayingFile = null
