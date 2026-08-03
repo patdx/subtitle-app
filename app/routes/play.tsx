@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Page } from '~/components'
+import { BackToLibraryLink, Page } from '~/components'
 import { useSearchParams } from 'react-router'
 import { useSnapshot } from 'valtio'
 import {
@@ -84,7 +84,7 @@ const Play = () => {
 	// Sync query result → Valtio / sync roles (external systems).
 	useEffect(() => {
 		const data = fileQuery.data
-		if (!data || data.fileId !== fileIdParam) return
+		if (!data || data.fileId !== fileIdParam || !data.file) return
 		applyLoadedFile(data)
 	}, [fileQuery.data, fileIdParam])
 
@@ -96,6 +96,12 @@ const Play = () => {
 	}, [])
 
 	const remote = isRemote(syncSnap)
+	const isFileLoading = Boolean(fileIdParam) && fileQuery.isPending
+	const isFileMissing =
+		Boolean(fileIdParam) &&
+		fileQuery.isFetched &&
+		!fileQuery.isPending &&
+		!fileQuery.data?.file
 
 	return (
 		<>
@@ -115,7 +121,16 @@ const Play = () => {
 					pokeControls()
 				}}
 			>
-				{remote ? (
+				{isFileLoading ? (
+					<div className="absolute inset-0 z-10 flex items-center justify-center">
+						<p className="text-sm text-ink-500">Loading…</p>
+					</div>
+				) : isFileMissing ? (
+					<div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 px-4 text-center">
+						<p className="text-sm text-ink-400">File not found</p>
+						<BackToLibraryLink />
+					</div>
+				) : remote ? (
 					<>
 						<RemotePanel />
 						<TranscriptDisplay />

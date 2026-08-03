@@ -5,6 +5,7 @@ import { useSnapshot } from 'valtio'
 import { Page } from '~/components'
 import { Input } from '~/components/ui/input'
 import { Badge } from '~/components/ui/badge'
+import { Skeleton } from '~/components/ui/skeleton'
 import {
 	MenuItem,
 	MenuPopup,
@@ -536,7 +537,8 @@ const EditFilesPage = () => {
 
 	const parseVideo = use(parseVideoPromise())
 
-	const isEmpty = () => !data() || data()!.length === 0
+	const isLibraryLoading = result.isPending
+	const isEmpty = !!result.data && result.data.length === 0
 
 	const nowPlayingHash = syncSnap.nowPlayingFile?.hash
 
@@ -554,6 +556,7 @@ const EditFilesPage = () => {
 		(data() ?? []).some((file) => matchesNowPlayingHash(file, nowPlayingHash))
 
 	const showSyntheticNowPlaying =
+		!isLibraryLoading &&
 		syncSnap.role === 'peer' &&
 		!!syncSnap.nowPlayingFile &&
 		!hasLocalNowPlaying()
@@ -561,8 +564,10 @@ const EditFilesPage = () => {
 	const showPeerBar = syncSnap.role === 'peer'
 	const contentPad = showPeerBar ? 'pb-safe-or-28' : 'pb-safe-or-10'
 	/** When the shelf has titles, actions collapse to a toolbar so posters lead. */
-	const hasShelfContent = !isEmpty() || showSyntheticNowPlaying
-	const showEmptyActionPosters = !hasShelfContent
+	const hasShelfContent = !isLibraryLoading && (!isEmpty || showSyntheticNowPlaying)
+	/** Compact brand while loading so the empty-library hero does not flash. */
+	const useCompactBrand = hasShelfContent || isLibraryLoading
+	const showEmptyActionPosters = !hasShelfContent && !isLibraryLoading
 
 	const deleteFile = async (file: FileRecord) => {
 		const db = await initAndGetDb()
@@ -627,7 +632,7 @@ const EditFilesPage = () => {
 					'bg-[radial-gradient(ellipse_90%_55%_at_10%_-10%,oklch(0.32_0.08_35/0.55),transparent_55%),radial-gradient(ellipse_70%_45%_at_95%_5%,oklch(0.28_0.06_45/0.35),transparent_50%),var(--color-stage)]',
 				)}
 			>
-				<header className={cn('relative', hasShelfContent ? 'mb-4' : 'mb-8')}>
+				<header className={cn('relative', useCompactBrand ? 'mb-4' : 'mb-8')}>
 					<div className="flex items-start justify-between gap-4">
 						<div className="min-w-0">
 							<p className="text-xs font-medium tracking-[0.18em] text-ember-500 uppercase">
@@ -636,14 +641,14 @@ const EditFilesPage = () => {
 							<h1
 								className={cn(
 									'font-display mt-1 font-extrabold tracking-tight text-stage-fg',
-									hasShelfContent
+									useCompactBrand
 										? 'text-2xl sm:text-3xl'
 										: 'text-4xl sm:text-5xl',
 								)}
 							>
 								Subtitle App
 							</h1>
-							{!hasShelfContent && (
+							{!useCompactBrand && (
 								<p className="mt-2 max-w-md text-sm text-stage-muted">
 									Import subtitles, pick up where you left off, sync playback
 									across your devices.
@@ -674,6 +679,15 @@ const EditFilesPage = () => {
 				)}
 
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					{isLibraryLoading &&
+						Array.from({ length: 4 }, (_, i) => (
+							<Skeleton
+								key={i}
+								className="aspect-2/3 rounded-panel bg-stage-elevated"
+								aria-hidden
+							/>
+						))}
+
 					{showEmptyActionPosters && (
 						<>
 							<ActionTile

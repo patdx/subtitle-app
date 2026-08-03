@@ -8,6 +8,7 @@ import {
 	SheetTitle,
 } from '~/components/ui/sheet'
 import { MenuTrigger } from '~/components/ui/menu'
+import { Skeleton } from '~/components/ui/skeleton'
 import {
 	activePlayerName,
 	activePlayerOnline,
@@ -155,27 +156,37 @@ export const RemotePanel = () => {
 						<SheetTitle>Play another file</SheetTitle>
 					</SheetHeader>
 					<div className="flex flex-col overflow-y-auto px-4 pb-safe-or-6">
-						{files.length === 0 && (
+						{filesQuery.isPending &&
+							Array.from({ length: 4 }, (_, i) => (
+								<div
+									key={i}
+									className="flex items-center border-b border-border px-1 py-3"
+								>
+									<Skeleton className="h-4 w-48 max-w-full" aria-hidden />
+								</div>
+							))}
+						{filesQuery.isSuccess && files.length === 0 && (
 							<p className="px-1 text-sm text-muted-foreground">
 								No files yet — import an SRT from the library.
 							</p>
 						)}
-						{files.map((file) => {
-							const isCurrent = nowPlaying?.hash === file.hash
-							return (
-								<button
-									key={file.id}
-									type="button"
-									onClick={() => pickFile(file.id)}
-									className="flex items-center justify-between gap-3 border-b border-border px-1 py-3 text-left text-sm text-foreground transition-colors hover:bg-muted"
-								>
-									<span className="truncate">{file.name}</span>
-									{isCurrent && (
-										<PhCheck className="!size-4 flex-none text-ink-200" />
-									)}
-								</button>
-							)
-						})}
+						{filesQuery.isSuccess &&
+							files.map((file) => {
+								const isCurrent = nowPlaying?.hash === file.hash
+								return (
+									<button
+										key={file.id}
+										type="button"
+										onClick={() => pickFile(file.id)}
+										className="flex items-center justify-between gap-3 border-b border-border px-1 py-3 text-left text-sm text-foreground transition-colors hover:bg-muted"
+									>
+										<span className="truncate">{file.name}</span>
+										{isCurrent && (
+											<PhCheck className="!size-4 flex-none text-ink-200" />
+										)}
+									</button>
+								)
+							})}
 					</div>
 				</SheetContent>
 			</Sheet>

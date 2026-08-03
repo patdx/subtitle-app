@@ -4,6 +4,7 @@ import { BackButton, Block, List, ListItem, Navbar, Page } from '~/components'
 import { Alert, AlertDescription } from '~/components/ui/alert'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
+import { Skeleton } from '~/components/ui/skeleton'
 import { QrCode } from '~/shared/qr'
 import { QrScanner } from '~/shared/qr-scanner'
 import { buttonChrome, cn } from '~/shared/utils'
@@ -101,10 +102,12 @@ const SyncPage = () => {
 				<label className="flex items-center gap-2 text-sm">
 					<span className="text-ink-500">Device name</span>
 					<Input
-						value={syncSnap.deviceName}
+						value={syncSnap.settingsReady ? syncSnap.deviceName : ''}
 						onChange={(e) => {
 							void syncStore.setDeviceName(e.target.value)
 						}}
+						disabled={!syncSnap.settingsReady}
+						placeholder={syncSnap.settingsReady ? undefined : '…'}
 						className="flex-1 rounded-field border-edge bg-paper-raised px-3 py-1.5 text-base text-ink-900 placeholder:text-ink-400 sm:text-sm"
 						maxLength={24}
 					/>
@@ -215,7 +218,11 @@ const SyncPage = () => {
 					<Block className="px-4">
 						<div className="rounded-panel border border-edge bg-paper-raised p-5 text-center">
 							<p className="text-sm font-medium text-ink-900">This device</p>
-							{syncSnap.myGroupCode ? (
+							{!syncSnap.settingsReady ? (
+								<div className="mt-2 flex justify-center">
+									<Skeleton className="h-8 w-56" aria-hidden />
+								</div>
+							) : syncSnap.myGroupCode ? (
 								<p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-ink-900">
 									{syncSnap.myGroupCode}
 								</p>

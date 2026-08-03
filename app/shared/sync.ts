@@ -119,6 +119,8 @@ export interface SyncState {
 	wasSharing: boolean
 	/** true while restoring a previously active group */
 	isRestoring: boolean
+	/** true after IndexedDB settings (device name, group codes) have loaded */
+	settingsReady: boolean
 }
 
 export const syncState = proxy<SyncState>({
@@ -137,6 +139,7 @@ export const syncState = proxy<SyncState>({
 	joinedGroupCode: null,
 	wasSharing: false,
 	isRestoring: false,
+	settingsReady: false,
 })
 
 // Debug hooks (kept for manual inspection in the browser console).
@@ -318,6 +321,7 @@ class SyncEngine {
 		// Files imported before hashing existed need a content hash before they
 		// can be announced or matched across devices.
 		await backfillFileHashes()
+		syncState.settingsReady = true
 	}
 
 	/** Bring back the previously active group when opening the app. */
