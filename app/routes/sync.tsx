@@ -72,6 +72,17 @@ const SyncPage = () => {
 				<p className="max-w-prose text-sm text-ink-500">
 					Pair your own devices and control playback together.
 				</p>
+				<p className="mt-2 max-w-prose text-sm text-ink-500">
+					After devices connect, playback timing and subtitle files go
+					directly between them. Subtitle files stay on your devices —
+					they are never uploaded to our servers.
+				</p>
+				<p className="mt-2 max-w-prose text-sm text-ink-500">
+					Our server only relays short connection-setup messages so
+					devices can link. Subtitle files and playback timing never go
+					through it. Devices must be on networks that allow a direct
+					connection.
+				</p>
 			</Block>
 
 			<Block className="px-4">
