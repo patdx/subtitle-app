@@ -17,6 +17,7 @@ import { RemotePanel } from '~/shared/remote-panel'
 import { SyncPill } from '~/shared/sync-pill'
 import { TranscriptDisplay } from '~/shared/transcript-display'
 import { KeyboardShortcuts } from '~/shared/keyboard-shortcuts'
+import { resolvePlayerContentState } from '~/shared/player-content-state'
 import {
 	controlState,
 	unfadeControls,
@@ -86,10 +87,13 @@ function applyLoadedFile(data: LoadedPlayerFile) {
 
 const Play = () => {
 	const [searchParams] = useSearchParams()
+	const [hydrated, setHydrated] = useState(false)
 	const fileIdParam = searchParams.get('id')
 	const syncSnap = useSnapshot(syncState)
 
 	usePlayerKeyboard()
+
+	useEffect(() => setHydrated(true), [])
 
 	const fileQuery = useQuery({
 		...fileQueryOptions(fileIdParam ?? ''),
@@ -111,12 +115,13 @@ const Play = () => {
 	}, [])
 
 	const remote = isRemote(syncSnap)
-	const isFileLoading = Boolean(fileIdParam) && fileQuery.isPending
-	const isFileMissing =
-		Boolean(fileIdParam) &&
-		fileQuery.isFetched &&
-		!fileQuery.isPending &&
-		!fileQuery.data?.file
+	const contentState = resolvePlayerContentState({
+		hydrated,
+		hasFileId: Boolean(fileIdParam),
+		isPending: fileQuery.isPending,
+		isFetched: fileQuery.isFetched,
+		hasFile: Boolean(fileQuery.data?.file),
+	})
 
 	return (
 		<>
@@ -136,11 +141,11 @@ const Play = () => {
 					pokeControls()
 				}}
 			>
-				{isFileLoading ? (
+				{contentState === 'loading' ? (
 					<div className="absolute inset-0 z-10 flex items-center justify-center">
 						<p className="text-sm text-ink-500">Loading…</p>
 					</div>
-				) : isFileMissing ? (
+				) : contentState === 'missing' ? (
 					<div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 px-4 text-center">
 						<p className="text-sm text-ink-400">File not found</p>
 						<BackToLibraryLink />

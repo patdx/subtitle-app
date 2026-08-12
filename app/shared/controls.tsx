@@ -95,6 +95,12 @@ export const Controls = () => {
 	const syncSnap = useSnapshot(syncState)
 
 	useEffect(() => {
+		// Effects run after hydration, so the prerendered no-fullscreen state and
+		// the first client render remain identical.
+		controlState.fullScreenEnabled = document.fullscreenEnabled
+	}, [])
+
+	useEffect(() => {
 		// Test/debug hook: ?keep-ui-open=1 disables the auto-fade so the
 		// controls stay visible while iterating on the layout.
 		const keepOpen =

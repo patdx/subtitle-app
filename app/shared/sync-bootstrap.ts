@@ -1,6 +1,6 @@
 import { subscribe } from 'valtio'
 import { getActivePlayerId, syncState, syncStore } from './sync'
-import { controlState, uiState } from './utils'
+import { uiState } from './utils'
 
 let didBootstrap = false
 
@@ -45,11 +45,6 @@ function followNowPlayingFile() {
 export function bootstrapSync() {
 	if (didBootstrap) return
 	didBootstrap = true
-
-	// Defer past hydration so prerendered `fullScreenEnabled: false` matches.
-	queueMicrotask(() => {
-		controlState.fullScreenEnabled = document.fullscreenEnabled
-	})
 
 	subscribe(syncState, followNowPlayingFile)
 

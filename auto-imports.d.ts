@@ -74,6 +74,7 @@ declare global {
   const memo: typeof import('react').memo
   const nodeIsActive: typeof import('./app/shared/utils').nodeIsActive
   const pokeControls: typeof import('./app/shared/utils').pokeControls
+  const resolvePlayerContentState: typeof import('./app/shared/player-content-state').resolvePlayerContentState
   const sanitizeSubtitleHtml: typeof import('./app/shared/utils').sanitizeSubtitleHtml
   const saveLocalProgress: typeof import('./app/shared/utils').saveLocalProgress
   const seekBy: typeof import('./app/shared/sync').seekBy
