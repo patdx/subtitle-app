@@ -2,11 +2,14 @@ import { proxy } from 'valtio'
 import {
 	backfillFileHashes,
 	clock,
+	getDuration,
 	getTimeElapsed,
 	initAndGetDb,
 	makeConnectionId,
 	saveLocalProgress,
 	setClock,
+	clampPlaybackPosition,
+	setPlaybackEndedHandler,
 	setSetting,
 	getSetting,
 	toggleIsPlaying,
@@ -629,7 +632,10 @@ export class SyncEngine {
 	}
 
 	seekTo(positionMs: number) {
-		setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: positionMs })
+		setClock({
+			lastActionAt: Date.now(),
+			lastTimeElapsedMs: clampPlaybackPosition(positionMs),
+		})
 		if (this.isCoordinator) {
 			this.broadcastGroupState()
 		} else if (this.state.role !== 'none') {
@@ -642,6 +648,10 @@ export class SyncEngine {
 
 	togglePlayback() {
 		const isPlaying = !clock.isPlaying
+		const duration = getDuration()
+		if (isPlaying && duration > 0 && getTimeElapsed() >= duration) {
+			setClock({ lastActionAt: Date.now(), lastTimeElapsedMs: 0 })
+		}
 		toggleIsPlaying(isPlaying)
 		if (this.isCoordinator) {
 			this.broadcastGroupState()
@@ -668,6 +678,20 @@ export class SyncEngine {
 				type: 'group-propose',
 				op: { type: 'set-clock', playSpeed: speed },
 			})
+		}
+	}
+
+	/** Publish the terminal position when the local media clock ends naturally. */
+	handlePlaybackEnded(positionMs: number) {
+		if (this.isCoordinator) {
+			this.broadcastGroupState()
+		} else if (this.state.role !== 'none') {
+			this.send({
+				type: 'group-propose',
+				op: { type: 'set-clock', isPlaying: false, positionMs },
+			})
+		} else {
+			void saveLocalProgress()
 		}
 	}
 
@@ -1112,6 +1136,10 @@ export function createSyncEngine(deps: CreateSyncEngineDeps): SyncEngine {
 }
 
 export const syncStore = createSyncEngine({ state: syncState })
+
+setPlaybackEndedHandler((positionMs) => {
+	syncStore.handlePlaybackEnded(positionMs)
+})
 
 // ----------------------------------------------------------------------
 // Playback helpers (exported for the controls UI)

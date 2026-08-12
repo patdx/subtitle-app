@@ -16,11 +16,14 @@ const IconTextButton = ({
 	text,
 	onClick,
 	label,
+	primary,
 }: {
 	icon: React.ReactNode
 	text: string
 	onClick?: () => void
 	label: string
+	/** Keep the coarse seek action visible in the compact mobile transport. */
+	primary?: boolean
 }) => {
 	return (
 		<Tooltip>
@@ -31,6 +34,9 @@ const IconTextButton = ({
 						className={cn(
 							iconButtonClass,
 							'relative focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600',
+							primary
+								? 'h-14 w-14 bg-white/5 text-white hover:bg-white/10'
+								: 'hidden sm:flex',
 						)}
 						onClick={onClick}
 					>
@@ -62,7 +68,11 @@ const SEEK_FORWARD = [
 export const TransportCluster = () => {
 	const clockSnap = useSnapshot(clock)
 	return (
-		<div className="flex items-center justify-center">
+		<div
+			className="flex items-center justify-center gap-1 sm:gap-0"
+			role="group"
+			aria-label="Playback controls"
+		>
 			{SEEK_BACK.map((step) => (
 				<IconTextButton
 					key={step.ms}
@@ -70,12 +80,13 @@ export const TransportCluster = () => {
 					text={step.text}
 					label={step.label}
 					onClick={() => seekBy(step.ms)}
+					primary={step.ms === -10000}
 				/>
 			))}
 
 			<button
 				type="button"
-				className="mx-1 flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:bg-white/25"
+				className="mx-1 flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600 sm:h-14 sm:w-14"
 				onClick={togglePlayback}
 				aria-label={clockSnap.isPlaying ? 'Pause' : 'Play'}
 			>
@@ -89,6 +100,7 @@ export const TransportCluster = () => {
 					text={step.text}
 					label={step.label}
 					onClick={() => seekBy(step.ms)}
+					primary={step.ms === 10000}
 				/>
 			))}
 		</div>

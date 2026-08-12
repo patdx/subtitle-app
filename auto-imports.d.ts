@@ -38,7 +38,9 @@ declare global {
   const buttonChrome: typeof import('./app/shared/utils').buttonChrome
   const cache: typeof import('react').cache
   const cacheSignal: typeof import('react').cacheSignal
+  const calculatePlaybackPosition: typeof import('./app/shared/utils').calculatePlaybackPosition
   const canGoBack: typeof import('./app/shared/utils').canGoBack
+  const clampPlaybackPosition: typeof import('./app/shared/utils').clampPlaybackPosition
   const clock: typeof import('./app/shared/utils').clock
   const cn: typeof import('./app/shared/utils').cn
   const controlState: typeof import('./app/shared/utils').controlState
@@ -79,6 +81,7 @@ declare global {
   const setFile: typeof import('./app/shared/utils').setFile
   const setFileFollowPaused: typeof import('./app/shared/sync-bootstrap').setFileFollowPaused
   const setPlaySpeed: typeof import('./app/shared/sync').setPlaySpeed
+  const setPlaybackEndedHandler: typeof import('./app/shared/utils').setPlaybackEndedHandler
   const setSetting: typeof import('./app/shared/utils').setSetting
   const setTextSize: typeof import('./app/shared/utils').setTextSize
   const startTransition: typeof import('react').startTransition

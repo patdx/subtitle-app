@@ -228,16 +228,64 @@ export const clock = proxy({
 /** true while the requestAnimationFrame tick loop is scheduled */
 let ticking = false
 
-const calculateActualTimeElapsedMs = () => {
-	const timeSinceLastAction = clock.isPlaying
-		? Math.abs(Date.now() - clock.lastActionAt) * clock.playSpeed
-		: 0
+type PlaybackPosition = {
+	positionMs: number
+	hasEnded: boolean
+}
 
-	clock.actualTimeElapsedMs = timeSinceLastAction + clock.lastTimeElapsedMs
+/** Calculate a bounded media position without depending on the live clock. */
+export function calculatePlaybackPosition(
+	lastPositionMs: number,
+	elapsedSinceActionMs: number,
+	playSpeed: number,
+	durationMs: number,
+): PlaybackPosition {
+	const unboundedPosition =
+		lastPositionMs + Math.max(0, elapsedSinceActionMs) * playSpeed
+	if (durationMs <= 0) {
+		return { positionMs: Math.max(0, unboundedPosition), hasEnded: false }
+	}
+
+	return {
+		positionMs: Math.min(durationMs, Math.max(0, unboundedPosition)),
+		hasEnded: unboundedPosition >= durationMs,
+	}
+}
+
+let playbackEndedHandler: ((positionMs: number) => void) | undefined
+
+/** The sync layer registers once so a natural ending can publish final state. */
+export const setPlaybackEndedHandler = (
+	handler: (positionMs: number) => void,
+) => {
+	playbackEndedHandler = handler
+}
+
+const calculateActualTimeElapsedMs = () => {
+	const elapsedSinceAction = clock.isPlaying
+		? Math.max(0, Date.now() - clock.lastActionAt)
+		: 0
+	const result = calculatePlaybackPosition(
+		clock.lastTimeElapsedMs,
+		elapsedSinceAction,
+		clock.playSpeed,
+		getDuration(),
+	)
+	clock.actualTimeElapsedMs = result.positionMs
+	return result.hasEnded && clock.isPlaying
 }
 
 const tick = () => {
-	calculateActualTimeElapsedMs()
+	const hasEnded = calculateActualTimeElapsedMs()
+	if (hasEnded) {
+		clock.isPlaying = false
+		clock.lastActionAt = Date.now()
+		clock.lastTimeElapsedMs = clock.actualTimeElapsedMs
+		disableNoSleep()
+		ticking = false
+		playbackEndedHandler?.(clock.actualTimeElapsedMs)
+		return
+	}
 	if (clock.isPlaying) {
 		requestAnimationFrame(tick)
 	} else {
@@ -276,6 +324,11 @@ export const setClock = (value: Partial<typeof clock>) => {
 }
 
 export const getTimeElapsed = () => clock.actualTimeElapsedMs
+
+export const clampPlaybackPosition = (positionMs: number) => {
+	const duration = getDuration()
+	return Math.min(duration || Number.POSITIVE_INFINITY, Math.max(0, positionMs))
+}
 
 export const TEXT_SIZES = [
 	'text-sm',
