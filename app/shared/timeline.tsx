@@ -1,6 +1,7 @@
 import { useSnapshot } from 'valtio'
 import { seekTo, syncStore, togglePlayback } from './sync'
 import { TimeDisplay } from './subtitle'
+import { applyTimelineChange } from './timeline-interaction'
 import {
 	clock,
 	getDuration,
@@ -14,6 +15,7 @@ export const Timeline = () => {
 	const uiSnap = useSnapshot(uiState)
 	const clockSnap = useSnapshot(clock)
 	const wasPlaying = useRef(false)
+	const isPointerScrubbing = useRef(false)
 
 	const duration = getDuration(uiSnap.file)
 	if (!duration || duration <= 0) return null
@@ -22,6 +24,7 @@ export const Timeline = () => {
 	const percent = (elapsed / duration) * 100
 
 	const handlePointerDown = () => {
+		isPointerScrubbing.current = true
 		wasPlaying.current = clock.isPlaying
 		// Ignore incoming clock state while dragging so peers don't fight the thumb.
 		syncStore.setScrubbing(true)
@@ -31,13 +34,19 @@ export const Timeline = () => {
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setClock({
-			lastActionAt: Date.now(),
-			lastTimeElapsedMs: Number(e.target.value),
+		applyTimelineChange(Number(e.target.value), isPointerScrubbing.current, {
+			preview: (positionMs) => {
+				setClock({
+					lastActionAt: Date.now(),
+					lastTimeElapsedMs: positionMs,
+				})
+			},
+			commit: seekTo,
 		})
 	}
 
 	const handlePointerUp = () => {
+		isPointerScrubbing.current = false
 		syncStore.setScrubbing(false)
 		// Commit the scrubbed position through sync so every device follows.
 		seekTo(getTimeElapsed())

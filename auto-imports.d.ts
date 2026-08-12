@@ -33,6 +33,7 @@ declare global {
   const activePlayerName: typeof import('./app/shared/sync').activePlayerName
   const activePlayerOnline: typeof import('./app/shared/sync').activePlayerOnline
   const addFileToDatabase: typeof import('./app/shared/utils').addFileToDatabase
+  const applyTimelineChange: typeof import('./app/shared/timeline-interaction').applyTimelineChange
   const backfillFileHashes: typeof import('./app/shared/utils').backfillFileHashes
   const bootstrapSync: typeof import('./app/shared/sync-bootstrap').bootstrapSync
   const buttonChrome: typeof import('./app/shared/utils').buttonChrome
