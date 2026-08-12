@@ -12,6 +12,7 @@ declare global {
   const FileDisplay: typeof import('./app/shared/file-display').FileDisplay
   const FileTransfer: typeof import('./app/shared/file-transfer').FileTransfer
   const Fragment: typeof import('react').Fragment
+  const KeyboardShortcuts: typeof import('./app/shared/keyboard-shortcuts').KeyboardShortcuts
   const LOCAL_DB_NAME: typeof import('./app/shared/utils').LOCAL_DB_NAME
   const PLAYBACK_SPEEDS: typeof import('./app/shared/utils').PLAYBACK_SPEEDS
   const PlayOnDeviceButton: typeof import('./app/shared/device-picker').PlayOnDeviceButton
@@ -90,6 +91,7 @@ declare global {
   const syncStore: typeof import('./app/shared/sync').syncStore
   const toggleFullscreen: typeof import('./app/shared/utils').toggleFullscreen
   const toggleIsPlaying: typeof import('./app/shared/utils').toggleIsPlaying
+  const toggleKeyboardHelp: typeof import('./app/shared/utils').toggleKeyboardHelp
   const togglePlayback: typeof import('./app/shared/sync').togglePlayback
   const toggleTranscript: typeof import('./app/shared/utils').toggleTranscript
   const uiState: typeof import('./app/shared/utils').uiState

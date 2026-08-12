@@ -6,6 +6,7 @@ import {
 	PLAYBACK_SPEEDS,
 	pokeControls,
 	toggleFullscreen,
+	toggleKeyboardHelp,
 	uiState,
 	unfadeControls,
 } from './utils'
@@ -96,6 +97,9 @@ export function usePlayerKeyboard() {
 						break
 					}
 					void toggleFullscreen()
+					break
+				case '?':
+					toggleKeyboardHelp()
 					break
 				case 'Escape':
 					if (document.fullscreenElement) {

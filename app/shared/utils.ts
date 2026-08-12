@@ -162,6 +162,7 @@ export const controlState = proxy({
 	faded: false,
 	/** bumped on interaction to reset the auto-fade timer */
 	activity: 0,
+	showKeyboardHelp: false,
 	/**
 	 * fullscreen support is client-only; starts false so prerendered HTML
 	 * matches the first client render, then sync-bootstrap flips it on
@@ -178,6 +179,10 @@ export const unfadeControls = () => {
 }
 export const toggleTranscript = () => {
 	controlState.showTranscript = !controlState.showTranscript
+}
+
+export const toggleKeyboardHelp = () => {
+	controlState.showKeyboardHelp = !controlState.showKeyboardHelp
 }
 
 export const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const

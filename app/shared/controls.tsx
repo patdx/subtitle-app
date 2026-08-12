@@ -9,6 +9,7 @@ import PhCheck from '~icons/ph/check'
 import PhCornersOut from '~icons/ph/corners-out'
 import PhFileText from '~icons/ph/file-text'
 import PhGearSix from '~icons/ph/gear-six'
+import PhKeyboard from '~icons/ph/keyboard'
 import { BackToLibraryLink } from '~/components'
 import { PlayOnDeviceButton } from './device-picker'
 import { setPlaySpeed, syncState } from './sync'
@@ -24,6 +25,7 @@ import {
 	setTextSize,
 	TEXT_SIZES,
 	toggleFullscreen,
+	toggleKeyboardHelp,
 	toggleTranscript,
 } from './utils'
 import {
@@ -99,6 +101,7 @@ export const Controls = () => {
 			new URL(location.href).searchParams.get('keep-ui-open') === '1'
 		if (keepOpen || controlSnap.faded) return
 		const timer = window.setTimeout(() => {
+			if (document.activeElement?.closest('[data-player-controls]')) return
 			controlState.faded = true
 			// Blur the active element so keyboard focus doesn't land on a hidden control
 			if (document.activeElement instanceof HTMLElement) {
@@ -113,6 +116,7 @@ export const Controls = () => {
 			<AnimatePresence initial={false}>
 				{!controlSnap.faded && (
 					<motion.div
+						data-player-controls
 						key="top-bar"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -149,6 +153,21 @@ export const Controls = () => {
 								<TooltipContent>Toggle transcript</TooltipContent>
 							</Tooltip>
 
+							<Tooltip>
+								<TooltipTrigger
+									render={
+										<button
+											onClick={toggleKeyboardHelp}
+											aria-label="Keyboard shortcuts"
+											className={iconButtonClass}
+										>
+											<PhKeyboard />
+										</button>
+									}
+								/>
+								<TooltipContent>Keyboard shortcuts</TooltipContent>
+							</Tooltip>
+
 							{controlSnap.fullScreenEnabled && (
 								/* full screen button (for Android) */
 								<Tooltip>
@@ -176,6 +195,7 @@ export const Controls = () => {
 			<AnimatePresence initial={false}>
 				{!controlSnap.faded && (
 					<motion.div
+						data-player-controls
 						key="bottom-bar"
 						initial={{ opacity: 0, y: 12 }}
 						animate={{ opacity: 1, y: 0 }}

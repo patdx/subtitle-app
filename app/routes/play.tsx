@@ -16,6 +16,7 @@ import { usePlayerKeyboard } from '~/shared/player-keyboard'
 import { RemotePanel } from '~/shared/remote-panel'
 import { SyncPill } from '~/shared/sync-pill'
 import { TranscriptDisplay } from '~/shared/transcript-display'
+import { KeyboardShortcuts } from '~/shared/keyboard-shortcuts'
 import {
 	controlState,
 	unfadeControls,
@@ -157,6 +158,7 @@ const Play = () => {
 					</>
 				)}
 				<SyncPill />
+				<KeyboardShortcuts />
 			</div>
 		</>
 	)
