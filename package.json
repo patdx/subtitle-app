@@ -65,7 +65,7 @@
     "typescript": "7.0.2",
     "unplugin-auto-import": "21.1.0",
     "unplugin-icons": "23.0.1",
-    "vite": "8.3.2",
+    "vite": "8.3.3",
     "vite-plugin-qrcode": "0.4.1",
     "vitest": "4.1.11",
     "wrangler": "4.118.0"
